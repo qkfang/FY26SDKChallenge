@@ -1,11 +1,25 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { deploymentService } from '../services/deploymentService.js';
 import { fabricService } from '../services/fabricService.js';
 
 export const deploymentRouter = Router();
 
+// Rate limiting for deployment endpoints
+const deploymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 deployments per window
+  message: 'Too many deployment requests, please try again later.'
+});
+
+const configLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: 'Too many configuration requests, please try again later.'
+});
+
 // Start a new deployment
-deploymentRouter.post('/start', async (req, res) => {
+deploymentRouter.post('/start', deploymentLimiter, async (req, res) => {
   try {
     const { requirement, workspaceName, lakehouseName } = req.body;
 
@@ -44,7 +58,7 @@ deploymentRouter.get('/status/:deploymentId', (req, res) => {
 });
 
 // Configure Fabric API token
-deploymentRouter.post('/configure', (req, res) => {
+deploymentRouter.post('/configure', configLimiter, (req, res) => {
   try {
     const { accessToken } = req.body;
 
@@ -61,7 +75,7 @@ deploymentRouter.post('/configure', (req, res) => {
 });
 
 // Get Fabric workspaces
-deploymentRouter.get('/workspaces', async (req, res) => {
+deploymentRouter.get('/workspaces', configLimiter, async (req, res) => {
   try {
     if (!fabricService.isAuthenticated()) {
       return res.status(401).json({ error: 'Fabric API not authenticated' });
