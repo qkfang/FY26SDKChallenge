@@ -7,6 +7,13 @@ dist/
 build/
 *.tsbuildinfo
 
+# TypeScript build artifacts
+*.d.ts
+*.d.ts.map
+*.js.map
+backend/src/**/*.js
+shared/types/**/*.js
+
 # Environment variables
 .env
 .env.local
@@ -37,3 +44,6 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Playwright
+/tmp/playwright-logs/
