@@ -1,0 +1,39 @@
+{
+  "name": "fabric-automation-app",
+  "version": "1.0.0",
+  "description": "Fabric Automation Application using GitHub Copilot CLI SDK",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start": "npm start --workspace=backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qkfang/FY26SDKChallenge.git"
+  },
+  "keywords": [
+    "fabric",
+    "automation",
+    "copilot",
+    "sdk",
+    "lakehouse"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qkfang/FY26SDKChallenge/issues"
+  },
+  "homepage": "https://github.com/qkfang/FY26SDKChallenge#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
