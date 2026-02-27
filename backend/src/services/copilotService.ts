@@ -150,6 +150,7 @@ never change it directly, make a copy of the project folder and create new folde
 create additional new fabric resources in the new folder
 
 ## Deployment Steps
+use 'validate.ps1' script to deploy the resource
 use 'deploy.ps1' script to deploy the resource
 you must try to deploy the project and make sure no error happens
 check the output of the 'fabric_cicd.error.log' log file for any error and troubleshooting
