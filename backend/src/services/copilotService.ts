@@ -138,13 +138,13 @@ This is an automated deployment plan for Microsoft Fabric resources based on you
 
 ## Prerequisites
 the template project is here 'C:\\repo\\FY26SDKChallenge\\ghsdk\\fabric_cicd'
-dont change it directly, make a copy of the project folder with timestamp inside 'C:\\temp\\ghcsdk\\ws'
+never change it directly, make a copy of the project folder and create new folder with timestamp inside 'C:\\temp\\ghcsdk\\ws'
 create additional new fabric resources in the new folder
 
 ## Deployment Steps
 use 'deploy.ps1' script to deploy the resource
 you must try to deploy the project and make sure no error happens
-check the output of the log file for any error and troubleshooting
+check the output of the 'fabric_cicd.error.log' log file for any error and troubleshooting
 
 `;
 
@@ -177,9 +177,11 @@ check the output of the log file for any error and troubleshooting
             case 'session.error':
               onMessage({ type: 'error', message: `[SDK] Error: ${event.data.message}` });
               break;
-            case 'tool.execution_start':
-              onMessage({ type: 'info', message: `[SDK] Tool executing: ${event.data.toolName}` });
+            case 'tool.execution_start': {
+              const args = event.data.arguments ? JSON.stringify(event.data.arguments) : '';
+              onMessage({ type: 'info', message: `[SDK] Tool executing: ${event.data.toolName} ${args}` });
               break;
+            }
             case 'tool.execution_complete': {
               const result = event.data.result;
               const parts: string[] = [];
@@ -200,7 +202,7 @@ check the output of the log file for any error and troubleshooting
       // Send and wait for the full response
       const response = await session.sendAndWait(
         { prompt },
-        120000 // 2 minute timeout
+        300000 // 5 minute timeout
       );
 
       const content = response?.data?.content || '';

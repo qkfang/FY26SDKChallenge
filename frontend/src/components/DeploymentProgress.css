@@ -108,6 +108,8 @@
 .message-text {
   flex: 1;
   color: #374151;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .message-info {
