@@ -1,0 +1,44 @@
+# parameter.yml — Environment-specific parameterization for fabric-cicd
+#
+# This file drives find_replace and key_value_replace rules so the same
+# repository artifacts can be deployed to DEV, QA, and PROD workspaces
+# without manual edits.
+#
+# Docs: https://microsoft.github.io/fabric-cicd/parameterization/
+#
+# ────────────────────────────────────────────────────────────────────
+# INSTRUCTIONS:
+#   1. Replace the placeholder IDs below with your real Fabric resource
+#      IDs (workspace IDs, lakehouse IDs, connection strings, etc.).
+#   2. The DEV values should match what is already in the exported
+#      workspace/ folder (the Git-as-source-of-truth baseline).
+#   3. QA and PROD values are the target equivalents in those environments.
+# ────────────────────────────────────────────────────────────────────
+
+# ── find_replace ─────────────────────────────────────────────────────
+# Performs literal string replacement across all item definition files.
+# Use this for workspace IDs, lakehouse IDs, connection IDs, etc.
+find_replace:
+  DEV:
+    # Workspace ID for the DEV environment (source / baseline)
+    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000001"
+    # Lakehouse ID in DEV
+    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000A"
+    # SQL connection string (DEV)
+    "dev-sql-server.database.windows.net": "dev-sql-server.database.windows.net"
+
+  QA:
+    # Map DEV workspace ID → QA workspace ID
+    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000002"
+    # Map DEV lakehouse ID → QA lakehouse ID
+    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000B"
+    # SQL connection string (QA)
+    "dev-sql-server.database.windows.net": "qa-sql-server.database.windows.net"
+
+  PROD:
+    # Map DEV workspace ID → PROD workspace ID
+    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000003"
+    # Map DEV lakehouse ID → PROD lakehouse ID
+    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000C"
+    # SQL connection string (PROD)
+    "dev-sql-server.database.windows.net": "prod-sql-server.database.windows.net"

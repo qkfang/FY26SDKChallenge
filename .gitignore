@@ -47,3 +47,10 @@ temp/
 
 # Playwright
 /tmp/playwright-logs/
+
+
+**/__pycache__
+__pycache__
+**/env*/
+**/.env
+**/.venv

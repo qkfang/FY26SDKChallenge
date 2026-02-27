@@ -53,15 +53,20 @@ export class DeploymentService {
         progress: 10
       });
 
-      // Initialize Copilot session if not already done
-      try {
-        await copilotService.initialize();
-      } catch (error) {
-        // Copilot might already be initialized
-      }
+      // Initialize Copilot service (will fall back gracefully if CLI unavailable)
+      await copilotService.initialize();
 
-      this.addMessage(deploymentId, 'info', 'Creating Copilot session...');
+      this.addMessage(deploymentId, 'info', 'Creating Copilot SDK session...');
       await copilotService.createSession(deploymentId);
+
+      // Display session info
+      const sessionInfo = copilotService.getSessionInfo(deploymentId);
+      if (sessionInfo.sdkSessionId) {
+        this.addMessage(deploymentId, 'info', `Connected to Copilot SDK (v${sessionInfo.clientVersion || '?'}, protocol ${sessionInfo.protocolVersion || '?'})`);
+        this.addMessage(deploymentId, 'info', `Auth: ${sessionInfo.authStatus?.login || 'N/A'} (${sessionInfo.authStatus?.authType || 'none'})`);
+      } else {
+        this.addMessage(deploymentId, 'info', 'Copilot SDK not available — using built-in plan generation');
+      }
 
       this.updateDeploymentStatus(deploymentId, { progress: 20 });
       this.addMessage(deploymentId, 'info', 'Analyzing requirements with Copilot...');

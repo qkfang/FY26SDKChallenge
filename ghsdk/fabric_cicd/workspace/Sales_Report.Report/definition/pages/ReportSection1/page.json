@@ -1,0 +1,21 @@
+{
+  "name": "ReportSection1",
+  "displayName": "Sales Overview",
+  "filters": "[]",
+  "ordinal": 0,
+  "visualContainers": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "width": 1280,
+      "height": 56,
+      "config": "{\"name\":\"titleTextbox\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":0,\"z\":0,\"tabOrder\":0,\"width\":1280,\"height\":56}}],\"singleVisual\":{\"visualType\":\"textbox\",\"drillFilterOtherVisuals\":true,\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Sales Overview\",\"textStyle\":{\"fontWeight\":\"bold\",\"fontSize\":\"20pt\"}}],\"horizontalTextAlignment\":\"center\"}]}}]}}}",
+      "filters": "[]",
+      "tabOrder": 0
+    }
+  ],
+  "config": "{\"defaultSlicer\":null,\"activeSectionIndex\":0}",
+  "width": 1280,
+  "height": 720
+}

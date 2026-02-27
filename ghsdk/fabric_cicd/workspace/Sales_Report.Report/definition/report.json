@@ -1,0 +1,14 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "resourcePackages": [],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": 1,
+    "filterPaneEnabled": true,
+    "isHighContrastEnabled": false
+  },
+  "theme": {
+    "name": "CY24SU10",
+    "reportVersionNumber": 5
+  }
+}

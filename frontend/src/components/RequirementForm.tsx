@@ -7,9 +7,9 @@ interface RequirementFormProps {
 }
 
 const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }) => {
-  const [requirement, setRequirement] = useState('');
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [lakehouseName, setLakehouseName] = useState('');
+  const [requirement, setRequirement] = useState('create hello world notebook');
+  const [workspaceName, setWorkspaceName] = useState('ghcsdk');
+  const [lakehouseName, setLakehouseName] = useState('ghcsdk');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

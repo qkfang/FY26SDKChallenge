@@ -1,42 +1,104 @@
-import { spawn, ChildProcess } from 'child_process';
+import { CopilotClient, CopilotSession, approveAll } from '@github/copilot-sdk';
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
   message: string;
 }
 
+interface CopilotSessionInfo {
+  sessionId: string;
+  sdkSessionId?: string;
+  clientVersion?: string;
+  protocolVersion?: number;
+  authStatus?: {
+    isAuthenticated: boolean;
+    authType?: string;
+    login?: string;
+  };
+  model?: string;
+}
+
 export class CopilotService {
-  private sessions: Map<string, ChildProcess> = new Map();
+  private client: CopilotClient | null = null;
+  private sessions: Map<string, CopilotSession> = new Map();
   private isAvailable: boolean = false;
+  private clientInfo: { version?: string; protocolVersion?: number } = {};
+  private authInfo: { isAuthenticated?: boolean; authType?: string; login?: string } = {};
 
   async initialize(): Promise<void> {
-    // Check if GitHub Copilot CLI is available
-    return new Promise((resolve, reject) => {
-      const checkProcess = spawn('gh', ['copilot', '--version']);
-      
-      checkProcess.on('error', () => {
-        this.isAvailable = false;
-        reject(new Error('GitHub Copilot CLI is not installed. Please install it: gh extension install github/gh-copilot'));
-      });
+    try {
+      this.client = new CopilotClient({ logLevel: 'info' });
+      await this.client.start();
+      this.isAvailable = true;
+      console.log('GitHub Copilot SDK connected successfully');
 
-      checkProcess.on('close', (code) => {
-        if (code === 0) {
-          this.isAvailable = true;
-          console.log('GitHub Copilot CLI is available');
-          resolve();
-        } else {
-          this.isAvailable = false;
-          reject(new Error('GitHub Copilot CLI is not properly configured'));
-        }
-      });
-    });
+      // Fetch and log status info
+      try {
+        const status = await this.client.getStatus();
+        this.clientInfo = {
+          version: status.version,
+          protocolVersion: status.protocolVersion
+        };
+        console.log(`Copilot CLI version: ${status.version}, protocol: ${status.protocolVersion}`);
+      } catch (e: any) {
+        console.warn(`Could not get CLI status: ${e.message}`);
+      }
+
+      // Fetch and log auth info
+      try {
+        const auth = await this.client.getAuthStatus();
+        this.authInfo = {
+          isAuthenticated: auth.isAuthenticated,
+          authType: auth.authType,
+          login: auth.login
+        };
+        console.log(`Auth: authenticated=${auth.isAuthenticated}, type=${auth.authType}, user=${auth.login || 'N/A'}`);
+      } catch (e: any) {
+        console.warn(`Could not get auth status: ${e.message}`);
+      }
+
+      // List available models
+      try {
+        const models = await this.client.listModels();
+        console.log(`Available models (${models.length}): ${models.map(m => m.id).join(', ')}`);
+      } catch (e: any) {
+        console.warn(`Could not list models: ${e.message}`);
+      }
+    } catch (error: any) {
+      this.isAvailable = false;
+      console.warn(`Copilot SDK initialization failed: ${error.message}. Falling back to built-in plan generation.`);
+    }
+  }
+
+  getSessionInfo(sessionId: string): CopilotSessionInfo {
+    const session = this.sessions.get(sessionId);
+    return {
+      sessionId,
+      sdkSessionId: session?.sessionId,
+      clientVersion: this.clientInfo.version,
+      protocolVersion: this.clientInfo.protocolVersion,
+      authStatus: {
+        isAuthenticated: this.authInfo.isAuthenticated ?? false,
+        authType: this.authInfo.authType,
+        login: this.authInfo.login
+      }
+    };
   }
 
   async createSession(sessionId: string): Promise<void> {
-    // Session creation is implicit when using CLI
-    // We just store the sessionId for tracking
-    if (!this.isAvailable) {
-      throw new Error('Copilot CLI not available');
+    if (!this.isAvailable || !this.client) {
+      console.log(`Session ${sessionId}: Copilot SDK not available, will use fallback plan generation`);
+      return;
+    }
+
+    try {
+      const session = await this.client.createSession({
+        onPermissionRequest: approveAll
+      });
+      this.sessions.set(sessionId, session);
+      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}`);
+    } catch (error: any) {
+      console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
     }
   }
 
@@ -45,11 +107,19 @@ export class CopilotService {
     requirement: string,
     onMessage?: (message: CopilotMessage) => void
   ): Promise<string> {
-    if (!this.isAvailable) {
-      throw new Error('Copilot CLI not available');
+    const session = this.sessions.get(sessionId);
+
+    if (!this.isAvailable || !session) {
+      if (onMessage) {
+        onMessage({
+          type: 'info',
+          message: 'Copilot SDK not available. Using built-in plan generation.'
+        });
+      }
+      return this.generateFallbackPlan(requirement);
     }
 
-    return new Promise((resolve, reject) => {
+    try {
       const prompt = `You are an expert in Microsoft Fabric deployment automation.
 
 User Requirement: ${requirement}
@@ -69,58 +139,113 @@ Focus on creating lakehouses, workspaces, and related Fabric resources using the
 
 Provide the plan in a clear, structured format.`;
 
-      // Use gh copilot suggest command
-      const copilotProcess = spawn('gh', ['copilot', 'suggest', prompt], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
+      // Display session details to the user
+      if (onMessage) {
+        const info = this.getSessionInfo(sessionId);
+        onMessage({ type: 'info', message: `[SDK] Session ID: ${info.sdkSessionId}` });
+        onMessage({ type: 'info', message: `[SDK] CLI version: ${info.clientVersion || 'unknown'}, protocol: ${info.protocolVersion || 'unknown'}` });
+        onMessage({ type: 'info', message: `[SDK] Auth: ${info.authStatus?.isAuthenticated ? 'authenticated' : 'not authenticated'}, type: ${info.authStatus?.authType || 'N/A'}, user: ${info.authStatus?.login || 'N/A'}` });
+        onMessage({ type: 'progress', message: 'Sending requirement to Copilot...' });
+      }
 
-      let output = '';
-      let errorOutput = '';
+      // Subscribe to session events — only show content and tool activity
+      session.on((event) => {
+        const eventType = event.type;
+        console.log(`[SDK Event] ${eventType}:`, JSON.stringify(event.data).substring(0, 200));
 
-      copilotProcess.stdout?.on('data', (data) => {
-        const text = data.toString();
-        output += text;
-        
         if (onMessage) {
-          onMessage({
-            type: 'progress',
-            message: text
-          });
-        }
-      });
-
-      copilotProcess.stderr?.on('data', (data) => {
-        errorOutput += data.toString();
-      });
-
-      copilotProcess.on('error', (error) => {
-        if (onMessage) {
-          onMessage({
-            type: 'error',
-            message: `Copilot CLI error: ${error.message}`
-          });
-        }
-        reject(new Error(`Failed to execute Copilot CLI: ${error.message}`));
-      });
-
-      copilotProcess.on('close', (code) => {
-        if (code === 0 && output) {
-          resolve(output);
-        } else {
-          // If Copilot CLI fails, provide a fallback response
-          const fallbackResponse = this.generateFallbackPlan(requirement);
-          if (onMessage) {
-            onMessage({
-              type: 'info',
-              message: 'Using fallback plan generation (Copilot CLI not fully available)'
-            });
+          switch (eventType) {
+            case 'assistant.message_delta':
+              if ('deltaContent' in event.data && event.data.deltaContent) {
+                onMessage({ type: 'progress', message: event.data.deltaContent });
+              }
+              break;
+            case 'assistant.message':
+              if ('content' in event.data && event.data.content) {
+                onMessage({ type: 'success', message: event.data.content });
+              }
+              break;
+            case 'session.error':
+              onMessage({ type: 'error', message: `[SDK] Error: ${event.data.message}` });
+              break;
+            case 'tool.execution_start':
+              onMessage({ type: 'info', message: `[SDK] Tool executing: ${event.data.toolName}` });
+              break;
+            case 'tool.execution_complete': {
+              const result = event.data.result;
+              const parts: string[] = [];
+              if (result?.content) parts.push(result.content);
+              if (result?.detailedContent) parts.push(result.detailedContent);
+              if (parts.length > 0) {
+                onMessage({ type: 'info', message: `[SDK] Tool result: ${parts.join(' — ')}` });
+              }
+              break;
+            }
+            // Silently ignore usage, model_change, idle, turn_start/end, etc.
+            default:
+              break;
           }
-          resolve(fallbackResponse);
         }
       });
 
-      this.sessions.set(sessionId, copilotProcess);
-    });
+      // Send and wait for the full response
+      const response = await session.sendAndWait(
+        { prompt },
+        120000 // 2 minute timeout
+      );
+
+      const content = response?.data?.content || '';
+      const messageId = response?.data?.messageId;
+
+      if (onMessage) {
+        onMessage({ type: 'info', message: `[SDK] Response message ID: ${messageId || 'N/A'}` });
+        onMessage({ type: 'info', message: `[SDK] Response length: ${content.length} characters` });
+      }
+
+      if (content) {
+        if (onMessage) {
+          onMessage({ type: 'success', message: 'Copilot generated deployment plan successfully' });
+        }
+        return content;
+      } else {
+        if (onMessage) {
+          onMessage({ type: 'info', message: 'Copilot returned empty response. Using fallback plan.' });
+        }
+        return this.generateFallbackPlan(requirement);
+      }
+    } catch (error: any) {
+      const fullError = error.stack || error.message;
+      console.error('Copilot SDK error:', fullError);
+      if (onMessage) {
+        onMessage({
+          type: 'error',
+          message: `[SDK] Error: ${error.message}`
+        });
+        // Show full stack trace for debugging
+        if (error.stack) {
+          onMessage({
+            type: 'info',
+            message: `[SDK] Stack: ${error.stack}`
+          });
+        }
+        // Show any additional error properties
+        const extras = Object.keys(error)
+          .filter(k => k !== 'message' && k !== 'stack')
+          .map(k => `${k}: ${JSON.stringify(error[k])}`)
+          .join(', ');
+        if (extras) {
+          onMessage({
+            type: 'info',
+            message: `[SDK] Details: ${extras}`
+          });
+        }
+        onMessage({
+          type: 'info',
+          message: 'Falling back to built-in plan generation.'
+        });
+      }
+      return this.generateFallbackPlan(requirement);
+    }
   }
 
   private generateFallbackPlan(requirement: string): string {
@@ -218,9 +343,13 @@ Set up any additional configurations:
   }
 
   async destroySession(sessionId: string): Promise<void> {
-    const process = this.sessions.get(sessionId);
-    if (process) {
-      process.kill();
+    const session = this.sessions.get(sessionId);
+    if (session) {
+      try {
+        await session.destroy();
+      } catch (error: any) {
+        console.warn(`Failed to destroy session ${sessionId}: ${error.message}`);
+      }
       this.sessions.delete(sessionId);
     }
   }
@@ -229,6 +358,15 @@ Set up any additional configurations:
     // Destroy all active sessions
     for (const [sessionId] of this.sessions) {
       await this.destroySession(sessionId);
+    }
+    // Stop the Copilot client
+    if (this.client) {
+      try {
+        await this.client.stop();
+      } catch (error: any) {
+        console.warn(`Failed to stop Copilot client: ${error.message}`);
+      }
+      this.client = null;
     }
   }
 }
