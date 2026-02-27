@@ -70,7 +70,7 @@
 }
 
 .messages-list {
-  max-height: 400px;
+  max-height: 800px;
   overflow-y: auto;
   border: 2px solid #e0e0e0;
   border-radius: 8px;

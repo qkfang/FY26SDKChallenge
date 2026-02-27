@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DeploymentStatus } from '../services/api';
 import './DeploymentProgress.css';
 
@@ -14,12 +14,20 @@ interface Message {
 
 const DeploymentProgress: React.FC<DeploymentProgressProps> = ({ status }) => {
   const [displayedMessages, setDisplayedMessages] = useState<Message[]>([]);
+  const messagesListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (status?.messages) {
       setDisplayedMessages(status.messages);
     }
   }, [status?.messages]);
+
+  useEffect(() => {
+    const el = messagesListRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [displayedMessages]);
 
   if (!status) {
     return null;
@@ -74,7 +82,7 @@ const DeploymentProgress: React.FC<DeploymentProgressProps> = ({ status }) => {
 
       <div className="messages-container">
         <h3>Activity Log</h3>
-        <div className="messages-list">
+        <div className="messages-list" ref={messagesListRef}>
           {displayedMessages.map((msg, index) => (
             <div key={index} className={`message message-${msg.type}`}>
               <span className="message-time">

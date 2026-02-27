@@ -1,8 +1,14 @@
 import { CopilotClient, CopilotSession, approveAll } from '@github/copilot-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-const SESSION_DIR = 'c:\\temp\\ghcsdk';
+// Resolve temp directories relative to the project root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
+const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'ghcsdk');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'ws');
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -31,9 +37,11 @@ export class CopilotService {
 
   async initialize(): Promise<void> {
     try {
-      // Ensure session directory exists
+      // Ensure temp directories exist
       fs.mkdirSync(SESSION_DIR, { recursive: true });
+      fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
       console.log(`Session directory: ${SESSION_DIR}`);
+      console.log(`Workspace directory: ${WORKSPACE_DIR}`);
 
       this.client = new CopilotClient({ logLevel: 'info', cwd: SESSION_DIR });
       await this.client.start();
@@ -137,8 +145,8 @@ export class CopilotService {
 This is an automated deployment plan for Microsoft Fabric resources based on your requirement.
 
 ## Prerequisites
-the template project is here 'C:\\repo\\FY26SDKChallenge\\ghsdk\\fabric_cicd'
-never change it directly, make a copy of the project folder and create new folder with timestamp inside 'C:\\temp\\ghcsdk\\ws'
+the template project is here '${path.resolve(PROJECT_ROOT, 'ghsdk', 'fabric_cicd')}'
+never change it directly, make a copy of the project folder and create new folder with timestamp inside '${WORKSPACE_DIR}'
 create additional new fabric resources in the new folder
 
 ## Deployment Steps
@@ -202,7 +210,7 @@ check the output of the 'fabric_cicd.error.log' log file for any error and troub
       // Send and wait for the full response
       const response = await session.sendAndWait(
         { prompt },
-        300000 // 5 minute timeout
+        1800000 // 30 minute timeout
       );
 
       const content = response?.data?.content || '';
