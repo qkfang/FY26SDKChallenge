@@ -1,4 +1,8 @@
 import { CopilotClient, CopilotSession, approveAll } from '@github/copilot-sdk';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const SESSION_DIR = 'c:\\temp\\ghcsdk';
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -27,7 +31,11 @@ export class CopilotService {
 
   async initialize(): Promise<void> {
     try {
-      this.client = new CopilotClient({ logLevel: 'info' });
+      // Ensure session directory exists
+      fs.mkdirSync(SESSION_DIR, { recursive: true });
+      console.log(`Session directory: ${SESSION_DIR}`);
+
+      this.client = new CopilotClient({ logLevel: 'info', cwd: SESSION_DIR });
       await this.client.start();
       this.isAvailable = true;
       console.log('GitHub Copilot SDK connected successfully');
@@ -93,7 +101,10 @@ export class CopilotService {
 
     try {
       const session = await this.client.createSession({
-        onPermissionRequest: approveAll
+        onPermissionRequest: approveAll,
+        configDir: SESSION_DIR,
+        workingDirectory: SESSION_DIR,
+        model: 'claude-sonnet-4.6'
       });
       this.sessions.set(sessionId, session);
       console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}`);
@@ -116,28 +127,26 @@ export class CopilotService {
           message: 'Copilot SDK not available. Using built-in plan generation.'
         });
       }
-      return this.generateFallbackPlan(requirement);
+      return `No deployment plan available — Copilot SDK not connected.`;
     }
 
     try {
-      const prompt = `You are an expert in Microsoft Fabric deployment automation.
+      const prompt = `# Deployment Plan for: ${requirement}
 
-User Requirement: ${requirement}
+## Overview
+This is an automated deployment plan for Microsoft Fabric resources based on your requirement.
 
-Please analyze this requirement and provide a detailed deployment plan including:
+## Prerequisites
+the template project is here 'C:\\repo\\FY26SDKChallenge\\ghsdk\\fabric_cicd'
+dont change it directly, make a copy of the project folder with timestamp inside 'C:\\temp\\ghcsdk\\ws'
+create additional new fabric resources in the new folder
 
-1. **Overview**: Brief summary of what will be deployed
-2. **Prerequisites**: What needs to be in place before deployment
-3. **Deployment Steps**: Step-by-step instructions with:
-   - Fabric API endpoints to call
-   - Complete request bodies (JSON format)
-   - Expected responses
-4. **Configuration**: Any required configurations or settings
-5. **Verification**: How to verify the deployment was successful
+## Deployment Steps
+use 'deploy.ps1' script to deploy the resource
+you must try to deploy the project and make sure no error happens
+check the output of the log file for any error and troubleshooting
 
-Focus on creating lakehouses, workspaces, and related Fabric resources using the Microsoft Fabric REST API (https://api.fabric.microsoft.com/v1).
-
-Provide the plan in a clear, structured format.`;
+`;
 
       // Display session details to the user
       if (onMessage) {
@@ -211,7 +220,7 @@ Provide the plan in a clear, structured format.`;
         if (onMessage) {
           onMessage({ type: 'info', message: 'Copilot returned empty response. Using fallback plan.' });
         }
-        return this.generateFallbackPlan(requirement);
+        return `No deployment plan available — Copilot returned empty response.`;
       }
     } catch (error: any) {
       const fullError = error.stack || error.message;
@@ -244,102 +253,8 @@ Provide the plan in a clear, structured format.`;
           message: 'Falling back to built-in plan generation.'
         });
       }
-      return this.generateFallbackPlan(requirement);
+      return `No deployment plan available — SDK error: ${error.message}`;
     }
-  }
-
-  private generateFallbackPlan(requirement: string): string {
-    return `# Deployment Plan for: ${requirement}
-
-## Overview
-This is an automated deployment plan for Microsoft Fabric resources based on your requirement.
-
-## Prerequisites
-1. Azure subscription with Microsoft Fabric capacity
-2. Service principal or user account with Fabric administrator permissions
-3. Access token for Fabric REST API authentication
-4. Workspace ID (or create a new workspace)
-
-## Deployment Steps
-
-### Step 1: Authenticate with Fabric API
-Obtain an access token from Azure AD:
-- Endpoint: https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
-- Scope: https://api.fabric.microsoft.com/.default
-
-### Step 2: Create Workspace (if needed)
-**API Call:**
-\`\`\`
-POST https://api.fabric.microsoft.com/v1/workspaces
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-  "displayName": "Your Workspace Name",
-  "description": "Workspace for deployment"
-}
-\`\`\`
-
-**Expected Response:**
-\`\`\`json
-{
-  "id": "workspace-guid",
-  "displayName": "Your Workspace Name",
-  "type": "Workspace"
-}
-\`\`\`
-
-### Step 3: Create Lakehouse
-**API Call:**
-\`\`\`
-POST https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/lakehouses
-Authorization: Bearer {access_token}
-Content-Type: application/json
-
-{
-  "displayName": "Your Lakehouse Name",
-  "description": "Lakehouse created for ${requirement}"
-}
-\`\`\`
-
-**Expected Response:**
-\`\`\`json
-{
-  "id": "lakehouse-guid",
-  "displayName": "Your Lakehouse Name",
-  "type": "Lakehouse"
-}
-\`\`\`
-
-### Step 4: Configure Lakehouse (Optional)
-Set up any additional configurations:
-- Tables and schemas
-- Data connections
-- Access permissions
-
-## Configuration
-- **Region**: Use the same region as your Fabric capacity
-- **Permissions**: Grant necessary access to users/service principals
-- **Naming Convention**: Follow your organization's naming standards
-
-## Verification
-1. Navigate to the Fabric portal
-2. Verify the workspace appears in your workspace list
-3. Open the workspace and confirm the lakehouse is present
-4. Check lakehouse properties and configurations
-
-## Additional Resources
-- Microsoft Fabric REST API: https://learn.microsoft.com/en-us/rest/api/fabric/
-- Lakehouse Tutorial: https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-lakehouse-introduction
-
-## Notes
-- This plan was generated automatically based on your requirement
-- Adjust names, descriptions, and configurations as needed
-- Ensure proper authentication before executing API calls
-- Monitor the deployment process for any errors
-
----
-*Generated by Fabric Automation App*`;
   }
 
   async destroySession(sessionId: string): Promise<void> {
