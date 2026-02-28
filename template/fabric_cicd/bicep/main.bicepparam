@@ -15,10 +15,11 @@ param qaWorkspaceName = 'fabric-workspace-qa'
 param prodWorkspaceName = 'fabric-workspace-prod'
 
 // Client ID of the user-assigned managed identity used by deployment scripts.
-// Replace with your actual managed identity client ID.
+// Replace with your actual managed identity resource ID.
 param managedIdentityId = ''
 
 param tags = {
   project: 'fabric-cicd'
   managedBy: 'bicep'
+  resourceGroup: 'rg-fabricsdk'
 }
