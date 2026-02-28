@@ -47,6 +47,8 @@ temp/
 
 # Playwright
 /tmp/playwright-logs/
+test-results/
+playwright-report/
 
 
 **/__pycache__
