@@ -145,7 +145,7 @@ export class CopilotService {
 This is an automated deployment plan for Microsoft Fabric resources based on your requirement.
 
 ## Prerequisites
-the template project is here '${path.resolve(PROJECT_ROOT, 'ghsdk', 'fabric_cicd')}'
+the template project is here '${path.resolve(PROJECT_ROOT, 'template', 'fabric_cicd')}'
 never change it directly, make a copy of the project folder and create new folder with timestamp inside '${WORKSPACE_DIR}'
 create additional new fabric resources in the new folder
 
