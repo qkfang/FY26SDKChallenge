@@ -12,6 +12,27 @@
   font-size: 24px;
 }
 
+.form-section {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-section-title {
+  margin: 0 0 12px 0;
+  color: #444;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.form-section-hint {
+  margin: -8px 0 14px 0;
+  color: #888;
+  font-size: 13px;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -33,6 +54,7 @@
   font-size: 14px;
   font-family: inherit;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .form-group textarea:focus,
@@ -51,6 +73,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+
+.form-row-3 {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .requirement-form button[type="submit"] {
@@ -120,7 +146,8 @@
 }
 
 @media (max-width: 768px) {
-  .form-row {
+  .form-row,
+  .form-row-3 {
     grid-template-columns: 1fr;
   }
 }
