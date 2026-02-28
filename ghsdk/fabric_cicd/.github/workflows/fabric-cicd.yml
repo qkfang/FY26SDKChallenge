@@ -1,0 +1,250 @@
+# ──────────────────────────────────────────────────────────────────────
+# fabric-cicd.yml — GitHub Actions workflow for Microsoft Fabric CI/CD
+#
+# Jobs:
+#   0. validate    — lint & repo structure checks
+#   1. deploy-dev  — auto on push to main (no approval)
+#   2. deploy-qa   — after DEV succeeds, requires qa environment approval
+#   3. deploy-prod — after QA succeeds, requires prod environment approval
+# ──────────────────────────────────────────────────────────────────────
+
+name: Fabric CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".github/CODEOWNERS"
+      - ".github/dependabot.yml"
+      - "LICENSE"
+      - ".env.example"
+  workflow_dispatch:   # Allow manual trigger from the Actions UI
+
+permissions:
+  contents: read
+
+# Prevent parallel deployments on the same branch
+concurrency:
+  group: fabric-cicd-${{ github.ref }}
+  cancel-in-progress: false            # never cancel a running deployment
+
+# ── Reusable environment variables ────────────────────────────────────
+env:
+  PYTHON_VERSION: "3.11"
+  ITEMS_IN_SCOPE: "Notebook,SemanticModel,Report,Environment"
+  CLEAN_ORPHANS: "false"
+  REPO_DIR: "./workspace"
+
+# ──────────────────────────────────────────────────────────────────────
+jobs:
+
+  # ── 0. Validate & Lint ──────────────────────────────────────────────
+  validate:
+    name: Validate & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: ruff check deploy/
+
+      - name: Validate repository structure
+        run: python deploy/validate_repo.py
+        env:
+          REPO_ROOT: "."
+
+  # ── 1. Deploy to DEV ────────────────────────────────────────────────
+  deploy-dev:
+    name: Deploy to DEV
+    runs-on: ubuntu-latest
+    needs: validate
+    timeout-minutes: 30
+    environment: dev                     # GitHub Environment (no reviewers)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to DEV workspace
+        run: python deploy/deploy_workspace.py
+        env:
+          DEV_TENANT_ID:       ${{ secrets.DEV_TENANT_ID }}
+          DEV_CLIENT_ID:       ${{ secrets.DEV_CLIENT_ID }}
+          DEV_CLIENT_SECRET:   ${{ secrets.DEV_CLIENT_SECRET }}
+          FABRIC_TENANT_ID:    ${{ secrets.FABRIC_TENANT_ID }}   # fallback
+          FABRIC_CLIENT_ID:    ${{ secrets.FABRIC_CLIENT_ID }}   # fallback
+          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }} # fallback
+          TARGET_WORKSPACE_ID: ${{ secrets.DEV_WORKSPACE_ID }}
+          TARGET_ENVIRONMENT:  "DEV"
+          REPO_DIR:            ${{ env.REPO_DIR }}
+          ITEMS_IN_SCOPE:      ${{ env.ITEMS_IN_SCOPE }}
+          CLEAN_ORPHANS:       ${{ env.CLEAN_ORPHANS }}
+
+      - name: Print fabric_cicd error log
+        if: always()
+        run: |
+          if [ -f fabric_cicd.error.log ]; then
+            echo "=== fabric_cicd.error.log ==="
+            cat fabric_cicd.error.log
+          else
+            echo "No fabric_cicd.error.log file found."
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "### :rocket: DEV Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | DEV |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Triggered by** | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
+
+  # ── 2. Deploy to QA (requires approval) ─────────────────────────────
+  deploy-qa:
+    name: Deploy to QA
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    timeout-minutes: 30
+    environment: qa                      # GitHub Environment — requires reviewers
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to QA workspace
+        run: python deploy/deploy_workspace.py
+        env:
+          QA_TENANT_ID:        ${{ secrets.QA_TENANT_ID }}
+          QA_CLIENT_ID:        ${{ secrets.QA_CLIENT_ID }}
+          QA_CLIENT_SECRET:    ${{ secrets.QA_CLIENT_SECRET }}
+          FABRIC_TENANT_ID:    ${{ secrets.FABRIC_TENANT_ID }}   # fallback
+          FABRIC_CLIENT_ID:    ${{ secrets.FABRIC_CLIENT_ID }}   # fallback
+          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }} # fallback
+          TARGET_WORKSPACE_ID: ${{ secrets.QA_WORKSPACE_ID }}
+          TARGET_ENVIRONMENT:  "QA"
+          REPO_DIR:            ${{ env.REPO_DIR }}
+          ITEMS_IN_SCOPE:      ${{ env.ITEMS_IN_SCOPE }}
+          CLEAN_ORPHANS:       ${{ env.CLEAN_ORPHANS }}
+
+      - name: Print fabric_cicd error log
+        if: always()
+        run: |
+          if [ -f fabric_cicd.error.log ]; then
+            echo "=== fabric_cicd.error.log ==="
+            cat fabric_cicd.error.log
+          else
+            echo "No fabric_cicd.error.log file found."
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "### :rocket: QA Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | QA |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Triggered by** | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
+
+  # ── 3. Deploy to PROD (requires approval) ───────────────────────────
+  deploy-prod:
+    name: Deploy to PROD
+    runs-on: ubuntu-latest
+    needs: deploy-qa
+    timeout-minutes: 30
+    environment: prod                    # GitHub Environment — requires reviewers
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to PROD workspace
+        run: python deploy/deploy_workspace.py
+        env:
+          PROD_TENANT_ID:      ${{ secrets.PROD_TENANT_ID }}
+          PROD_CLIENT_ID:      ${{ secrets.PROD_CLIENT_ID }}
+          PROD_CLIENT_SECRET:  ${{ secrets.PROD_CLIENT_SECRET }}
+          FABRIC_TENANT_ID:    ${{ secrets.FABRIC_TENANT_ID }}   # fallback
+          FABRIC_CLIENT_ID:    ${{ secrets.FABRIC_CLIENT_ID }}   # fallback
+          FABRIC_CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }} # fallback
+          TARGET_WORKSPACE_ID: ${{ secrets.PROD_WORKSPACE_ID }}
+          TARGET_ENVIRONMENT:  "PROD"
+          REPO_DIR:            ${{ env.REPO_DIR }}
+          ITEMS_IN_SCOPE:      ${{ env.ITEMS_IN_SCOPE }}
+          CLEAN_ORPHANS:       ${{ env.CLEAN_ORPHANS }}
+
+      - name: Print fabric_cicd error log
+        if: always()
+        run: |
+          if [ -f fabric_cicd.error.log ]; then
+            echo "=== fabric_cicd.error.log ==="
+            cat fabric_cicd.error.log
+          else
+            echo "No fabric_cicd.error.log file found."
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "### :rocket: PROD Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | PROD |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Triggered by** | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
