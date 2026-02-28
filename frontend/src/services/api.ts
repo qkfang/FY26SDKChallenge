@@ -2,10 +2,21 @@ import axios from 'axios';
 
 const API_BASE_URL = '/api';
 
+export interface ResourceConfig {
+  notebookName?: string;
+  sqlServerName?: string;
+  workspaces: {
+    dev?: string;
+    qa?: string;
+    prod?: string;
+  };
+}
+
 export interface DeploymentRequest {
   requirement: string;
   workspaceName?: string;
   lakehouseName?: string;
+  resourceConfig?: ResourceConfig;
 }
 
 export interface DeploymentStatus {

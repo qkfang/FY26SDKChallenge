@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import RequirementForm from './components/RequirementForm';
 import DeploymentProgress from './components/DeploymentProgress';
-import { api, DeploymentStatus } from './services/api';
+import { api, DeploymentStatus, ResourceConfig } from './services/api';
 import './App.css';
 
 function App() {
@@ -43,8 +43,7 @@ function App() {
 
   const handleStartDeployment = async (
     requirement: string,
-    workspaceName?: string,
-    lakehouseName?: string
+    resourceConfig: ResourceConfig
   ) => {
     setIsLoading(true);
     setDeploymentStatus(null);
@@ -52,8 +51,7 @@ function App() {
     try {
       const response = await api.startDeployment({
         requirement,
-        workspaceName,
-        lakehouseName
+        resourceConfig
       });
       setDeploymentId(response.deploymentId);
     } catch (error: any) {

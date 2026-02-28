@@ -1,24 +1,33 @@
 import React, { useState } from 'react';
+import { ResourceConfig } from '../services/api';
 import './RequirementForm.css';
 
 interface RequirementFormProps {
-  onSubmit: (requirement: string, workspaceName?: string, lakehouseName?: string) => void;
+  onSubmit: (requirement: string, resourceConfig: ResourceConfig) => void;
   isLoading: boolean;
 }
 
 const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }) => {
   const [requirement, setRequirement] = useState('create hello world notebook');
-  const [workspaceName, setWorkspaceName] = useState('ghcsdk');
-  const [lakehouseName, setLakehouseName] = useState('ghcsdk');
+  const [notebookName, setNotebookName] = useState('');
+  const [sqlServerName, setSqlServerName] = useState('');
+  const [devWorkspace, setDevWorkspace] = useState('fabric-workspace-dev');
+  const [qaWorkspace, setQaWorkspace] = useState('fabric-workspace-qa');
+  const [prodWorkspace, setProdWorkspace] = useState('fabric-workspace-prod');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (requirement.trim()) {
-      onSubmit(
-        requirement,
-        workspaceName || undefined,
-        lakehouseName || undefined
-      );
+      const resourceConfig: ResourceConfig = {
+        notebookName: notebookName.trim() || undefined,
+        sqlServerName: sqlServerName.trim() || undefined,
+        workspaces: {
+          dev: devWorkspace.trim() || undefined,
+          qa: qaWorkspace.trim() || undefined,
+          prod: prodWorkspace.trim() || undefined,
+        },
+      };
+      onSubmit(requirement, resourceConfig);
     }
   };
 
@@ -30,7 +39,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
 
   return (
     <div className="requirement-form">
-      <h2>Define Your Fabric Deployment Requirement</h2>
+      <h2>Configure Fabric Deployment</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="requirement">Deployment Requirement *</label>
@@ -39,40 +48,82 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
             value={requirement}
             onChange={(e) => setRequirement(e.target.value)}
             placeholder="Describe what you want to deploy in Microsoft Fabric..."
-            rows={6}
+            rows={4}
             required
             disabled={isLoading}
           />
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="workspaceName">Workspace Name (Optional)</label>
-            <input
-              type="text"
-              id="workspaceName"
-              value={workspaceName}
-              onChange={(e) => setWorkspaceName(e.target.value)}
-              placeholder="e.g., Analytics Workspace"
-              disabled={isLoading}
-            />
+        <div className="form-section">
+          <h3 className="form-section-title">Fabric Artifacts</h3>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="notebookName">Notebook Name</label>
+              <input
+                type="text"
+                id="notebookName"
+                value={notebookName}
+                onChange={(e) => setNotebookName(e.target.value)}
+                placeholder="e.g., Notebook_Sales"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="sqlServerName">SQL Server Name</label>
+              <input
+                type="text"
+                id="sqlServerName"
+                value={sqlServerName}
+                onChange={(e) => setSqlServerName(e.target.value)}
+                placeholder="e.g., dev-sql-server"
+                disabled={isLoading}
+              />
+            </div>
           </div>
+        </div>
 
-          <div className="form-group">
-            <label htmlFor="lakehouseName">Lakehouse Name (Optional)</label>
-            <input
-              type="text"
-              id="lakehouseName"
-              value={lakehouseName}
-              onChange={(e) => setLakehouseName(e.target.value)}
-              placeholder="e.g., Sales Data Lakehouse"
-              disabled={isLoading}
-            />
+        <div className="form-section">
+          <h3 className="form-section-title">Workspace Names per Environment</h3>
+          <p className="form-section-hint">Leave empty to skip creating that environment's workspace.</p>
+          <div className="form-row form-row-3">
+            <div className="form-group">
+              <label htmlFor="devWorkspace">DEV Workspace</label>
+              <input
+                type="text"
+                id="devWorkspace"
+                value={devWorkspace}
+                onChange={(e) => setDevWorkspace(e.target.value)}
+                placeholder="fabric-workspace-dev"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="qaWorkspace">QA Workspace</label>
+              <input
+                type="text"
+                id="qaWorkspace"
+                value={qaWorkspace}
+                onChange={(e) => setQaWorkspace(e.target.value)}
+                placeholder="fabric-workspace-qa"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="prodWorkspace">PROD Workspace</label>
+              <input
+                type="text"
+                id="prodWorkspace"
+                value={prodWorkspace}
+                onChange={(e) => setProdWorkspace(e.target.value)}
+                placeholder="fabric-workspace-prod"
+                disabled={isLoading}
+              />
+            </div>
           </div>
         </div>
 
         <button type="submit" disabled={!requirement.trim() || isLoading}>
-          {isLoading ? 'Processing...' : 'Start Deployment'}
+          {isLoading ? 'Deploying...' : 'Start Deployment'}
         </button>
       </form>
 
