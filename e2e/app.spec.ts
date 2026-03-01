@@ -40,8 +40,8 @@ test.describe('Fabric Automation App - End to End', () => {
     // Progress bar should be visible
     await expect(page.locator('.progress-bar-container')).toBeVisible();
 
-    // Wait for deployment to complete or fail (up to 10 minutes — Copilot SDK runs real tools)
-    await expect(page.locator('.status-badge')).toContainText(/COMPLETED|FAILED/, { timeout: 600000 });
+    // Wait for deployment to complete successfully (Copilot SDK runs real tools — up to 10 minutes)
+    await expect(page.locator('.status-badge')).toContainText('COMPLETED', { timeout: 600000 });
 
     // Progress should be 100%
     await expect(page.locator('.progress-text')).toContainText('100%');
@@ -51,9 +51,10 @@ test.describe('Fabric Automation App - End to End', () => {
     await expect(log).toContainText('Phase 1');
     await expect(log).toContainText('Phase 2');
     await expect(log).toContainText('Phase 3');
+    await expect(log).toContainText('completed successfully');
 
-    // Result section or error section should be visible
-    await expect(page.locator('.result-container, .error-container')).toBeVisible();
+    // Result section should be visible with deployed resources
+    await expect(page.locator('.result-container')).toBeVisible();
   });
 
   test('can start a new deployment after completion', async ({ page }) => {
@@ -62,17 +63,10 @@ test.describe('Fabric Automation App - End to End', () => {
     await expect(page.locator('.connection-status')).toHaveClass(/connected/, { timeout: 10000 });
 
     await page.locator('button[type="submit"]').click();
-    await expect(page.locator('.status-badge')).toContainText(/COMPLETED|FAILED/, { timeout: 600000 });
-
-    // "Start New Deployment" only appears on successful completion — skip if deployment failed
-    const newDeployBtn = page.locator('button').filter({ hasText: 'Start New Deployment' });
-    if (!(await newDeployBtn.isVisible())) {
-      test.skip();
-      return;
-    }
+    await expect(page.locator('.status-badge')).toContainText('COMPLETED', { timeout: 600000 });
 
     // Click "Start New Deployment"
-    await newDeployBtn.click();
+    await page.locator('button').filter({ hasText: 'Start New Deployment' }).click();
 
     // Form should be visible again
     await expect(page.locator('h2').filter({ hasText: 'Configure Fabric Deployment' })).toBeVisible();
