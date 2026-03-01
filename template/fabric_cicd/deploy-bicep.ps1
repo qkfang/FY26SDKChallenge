@@ -32,23 +32,36 @@ if (-not $rgExists) {
     Write-Host "Resource group '$ResourceGroup' already exists."
 }
 
+# ── Auto-detect AAD admin for SQL Server if not set ──────────────────────────
+if (-not $env:SQL_AAD_ADMIN_NAME -or -not $env:SQL_AAD_ADMIN_OBJECT_ID) {
+    Write-Host "Detecting signed-in user for SQL AAD admin..."
+    $adUser = az ad signed-in-user show --output json | ConvertFrom-Json
+    $env:SQL_AAD_ADMIN_NAME = $adUser.userPrincipalName
+    $env:SQL_AAD_ADMIN_OBJECT_ID = $adUser.id
+    Write-Host "  SQL AAD Admin: $($env:SQL_AAD_ADMIN_NAME) ($($env:SQL_AAD_ADMIN_OBJECT_ID))"
+}
+
 # ── Deploy Bicep template ─────────────────────────────────────────────────────
 Write-Host "Deploying Bicep template '$TemplateFile' to '$ResourceGroup'..."
 $rawOutput = az deployment group create `
     --resource-group $ResourceGroup `
     --template-file $TemplateFile `
     --parameters $ParameterFile `
-    --output json 2>$null
+    --verbose `
+    --output json 2>&1
+
+$jsonLines = $rawOutput | Where-Object { $_ -notmatch '^\s*(WARNING|INFO|VERBOSE|Bicep CLI)' }
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep deployment failed. Re-run with --verbose for details."
+    Write-Host "Deployment failed. Raw output:"
+    $rawOutput | ForEach-Object { Write-Host $_ }
     exit 1
 }
 
 Write-Host "Raw output:"
 Write-Host ($rawOutput | Out-String)
 
-$deployOutput = $rawOutput | Out-String | ConvertFrom-Json
+$deployOutput = $jsonLines | Out-String | ConvertFrom-Json
 
 # ── Display deployment outputs ────────────────────────────────────────────────
 $outputs = $deployOutput.properties.outputs

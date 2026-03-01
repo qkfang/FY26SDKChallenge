@@ -44,8 +44,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $capacityId = $deployOutput.properties.outputs.capacityId.value
-Write-Host "Bicep outputs:"
-Write-Host "  capacityId = $capacityId"
+Write-Host "Fabric Capacity ID: $capacityId"
 
 # ── Create Fabric workspaces via REST API ─────────────────────────────────────
 $token = (az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
