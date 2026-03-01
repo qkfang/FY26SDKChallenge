@@ -30,9 +30,20 @@ param devWorkspaceName string = ''
 param qaWorkspaceName string = ''
 param prodWorkspaceName string = ''
 
-@description('Client ID of the user-assigned managed identity used by deployment scripts.')
-param managedIdentityId string
+// ── Managed Identity ──────────────────────────────────────────────────────────
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-fabric-deploy'
+  location: location
+}
 
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentity.id, 'Contributor')
+  properties: {
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+  }
+}
 
 // ── Fabric Capacity ──────────────────────────────────────────────────────────
 module capacity 'fabric_capacity.bicep' = {
@@ -53,7 +64,7 @@ module devWorkspace 'workspace.bicep' = if (!empty(devWorkspaceName)) {
     environment: 'DEV'
     capacityId: capacity.outputs.capacityId
     location: location
-    managedIdentityId: managedIdentityId
+    managedIdentityId: managedIdentity.id
   }
 }
 
@@ -65,7 +76,7 @@ module qaWorkspace 'workspace.bicep' = if (!empty(qaWorkspaceName)) {
     environment: 'QA'
     capacityId: capacity.outputs.capacityId
     location: location
-    managedIdentityId: managedIdentityId
+    managedIdentityId: managedIdentity.id
   }
 }
 
@@ -77,7 +88,7 @@ module prodWorkspace 'workspace.bicep' = if (!empty(prodWorkspaceName)) {
     environment: 'PROD'
     capacityId: capacity.outputs.capacityId
     location: location
-    managedIdentityId: managedIdentityId
+    managedIdentityId: managedIdentity.id
   }
 }
 
