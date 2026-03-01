@@ -113,6 +113,7 @@ $existingSql = $existingItems | Where-Object { $_.displayName -eq $sqlDbDisplayN
 
 if ($existingSql) {
     Write-Host "SQL Database '$sqlDbDisplayName' already exists in DEV workspace (id=$($existingSql.id))."
+    $sqlDbId = $existingSql.id
 } else {
     Write-Host "Creating Fabric SQL Database '$sqlDbDisplayName' in DEV workspace..."
     $sqlBody = @{
@@ -123,6 +124,7 @@ if ($existingSql) {
     if ($response.StatusCode -in 200,201) {
         $item = $response.Content | ConvertFrom-Json
         Write-Host "Created Fabric SQL Database '$sqlDbDisplayName' (id=$($item.id))."
+        $sqlDbId = $item.id
     } elseif ($response.StatusCode -eq 202) {
         Write-Host "SQL Database creation accepted (async). Waiting for provisioning..."
         $opUrl = $response.Headers["Location"]
@@ -137,5 +139,18 @@ if ($existingSql) {
                 Write-Host "  Status: $($opResp.status)..."
             }
         }
+        $created = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers).value |
+            Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }
+        $sqlDbId = $created.id
     }
+}
+
+# ── Write SQL Database ID to variable.json ────────────────────────────────────
+if ($sqlDbId) {
+    $variables = Get-Content $variableFile -Raw | ConvertFrom-Json
+    $variables.DEV  | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
+    $variables.QA   | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
+    $variables.PROD | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
+    $variables | ConvertTo-Json -Depth 3 | Set-Content $variableFile
+    Write-Host "config/variable.json updated with sqlDatabaseId=$sqlDbId"
 }

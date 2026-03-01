@@ -73,8 +73,6 @@ foreach ($env in @("DEV", "QA", "PROD")) {
     $variableConfig[$env] = @{
         capacityId      = $outputs.capacityId.value
         capacityName    = $outputs.capacityName.value
-        sqlServerFqdn   = $outputs.sqlServerFqdn.value
-        sqlDatabaseName = $outputs.sqlDatabaseName.value
     }
 }
 
