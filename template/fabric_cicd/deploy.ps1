@@ -7,7 +7,7 @@
 
 param(
     [string]$ResourceGroup = "rg-fabricsdk",
-    [string]$Location = "eastus",
+    [string]$Location = "australiaeast",
     # Placeholder GUIDs used in config/parameter.yml; override if your file uses different values.
     [string]$PlaceholderDevId  = "00000000-0000-0000-0000-000000000001",
     [string]$PlaceholderQaId   = "00000000-0000-0000-0000-000000000002",
@@ -30,7 +30,7 @@ if (Test-Path ".env") {
 Write-Host "Ensuring resource group '$ResourceGroup' exists in '$Location'..."
 az group create --name $ResourceGroup --location $Location --output none
 
-# ── Deploy Bicep template ─────────────────────────────────────────────────────
+# ── Deploy Bicep template (capacity only) ─────────────────────────────────────
 Write-Host "Deploying Bicep template to '$ResourceGroup'..."
 $deployOutput = az deployment group create `
     --resource-group $ResourceGroup `
@@ -43,18 +43,40 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# ── Extract resource IDs from deployment outputs ──────────────────────────────
-$outputs = $deployOutput.properties.outputs
-
-$devWorkspaceId  = $outputs.devWorkspaceId.value
-$qaWorkspaceId   = $outputs.qaWorkspaceId.value
-$prodWorkspaceId = $outputs.prodWorkspaceId.value
-
+$capacityId = $deployOutput.properties.outputs.capacityId.value
 Write-Host "Bicep outputs:"
-Write-Host "  capacityId       = $($outputs.capacityId.value)"
-Write-Host "  devWorkspaceId   = $devWorkspaceId"
-Write-Host "  qaWorkspaceId    = $qaWorkspaceId"
-Write-Host "  prodWorkspaceId  = $prodWorkspaceId"
+Write-Host "  capacityId = $capacityId"
+
+# ── Create Fabric workspaces via REST API ─────────────────────────────────────
+$token = (az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
+$headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
+
+function New-FabricWorkspace {
+    param([string]$Name, [string]$CapacityId)
+    $existing = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces" -Headers $headers).value |
+        Where-Object { $_.displayName -eq $Name }
+    if ($existing) {
+        Write-Host "Workspace '$Name' already exists (id=$($existing.id))."
+        return $existing.id
+    }
+    $body = @{ displayName = $Name; capacityId = $CapacityId } | ConvertTo-Json
+    $resp = Invoke-RestMethod -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces" -Headers $headers -Body $body
+    Write-Host "Created workspace '$Name' (id=$($resp.id))."
+    return $resp.id
+}
+
+$devWorkspaceName  = "fabric-workspace-dev"
+$qaWorkspaceName   = "fabric-workspace-qa"
+$prodWorkspaceName = "fabric-workspace-prod"
+
+$devWorkspaceId  = New-FabricWorkspace -Name $devWorkspaceName  -CapacityId $capacityId
+$qaWorkspaceId   = New-FabricWorkspace -Name $qaWorkspaceName   -CapacityId $capacityId
+$prodWorkspaceId = New-FabricWorkspace -Name $prodWorkspaceName -CapacityId $capacityId
+
+Write-Host "Workspace IDs:"
+Write-Host "  DEV  = $devWorkspaceId"
+Write-Host "  QA   = $qaWorkspaceId"
+Write-Host "  PROD = $prodWorkspaceId"
 
 # ── Update config/parameter.yml with real workspace IDs ──────────────────────
 if ($devWorkspaceId -and $qaWorkspaceId -and $prodWorkspaceId) {
@@ -62,7 +84,6 @@ if ($devWorkspaceId -and $qaWorkspaceId -and $prodWorkspaceId) {
     $paramFile = "config/parameter.yml"
     $content = Get-Content $paramFile -Raw
 
-    # Replace placeholder GUIDs with real workspace IDs
     $content = $content -replace $PlaceholderDevId, $devWorkspaceId
     $content = $content -replace $PlaceholderQaId, $qaWorkspaceId
     $content = $content -replace $PlaceholderProdId, $prodWorkspaceId

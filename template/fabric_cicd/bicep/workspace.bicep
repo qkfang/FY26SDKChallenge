@@ -24,6 +24,13 @@ param location string = resourceGroup().location
 @description('User-assigned managed identity client ID used by the deployment script to authenticate against the Fabric API.')
 param managedIdentityId string
 
+@description('Name of the storage account used by the deployment script.')
+param storageAccountName string
+
+@secure()
+@description('Access key of the storage account used by the deployment script.')
+param storageAccountKey string
+
 @description('Resource tags.')
 param tags object = {}
 
@@ -42,6 +49,10 @@ resource deployWorkspace 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
     azCliVersion: '2.52.0'
     retentionInterval: 'PT1H'
     timeout: 'PT10M'
+    storageAccountSettings: {
+      storageAccountName: storageAccountName
+      storageAccountKey: storageAccountKey
+    }
     environmentVariables: [
       {
         name: 'WORKSPACE_NAME'

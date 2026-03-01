@@ -6,7 +6,7 @@
 
 param(
     [string]$ResourceGroup = "rg-fabricsdk",
-    [string]$Location = "eastus",
+    [string]$Location = "australiaeast",
     [string]$TemplateFile = "bicep/main.bicep",
     [string]$ParameterFile = "bicep/main.bicepparam"
 )
@@ -34,22 +34,25 @@ if (-not $rgExists) {
 
 # ── Deploy Bicep template ─────────────────────────────────────────────────────
 Write-Host "Deploying Bicep template '$TemplateFile' to '$ResourceGroup'..."
-$deployOutput = az deployment group create `
+$rawOutput = az deployment group create `
     --resource-group $ResourceGroup `
     --template-file $TemplateFile `
     --parameters $ParameterFile `
-    --output json | ConvertFrom-Json
+    --output json 2>$null
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep deployment failed."
+    Write-Error "Bicep deployment failed. Re-run with --verbose for details."
     exit 1
 }
+
+Write-Host "Raw output:"
+Write-Host ($rawOutput | Out-String)
+
+$deployOutput = $rawOutput | Out-String | ConvertFrom-Json
 
 # ── Display deployment outputs ────────────────────────────────────────────────
 $outputs = $deployOutput.properties.outputs
 
 Write-Host "Deployment succeeded. Outputs:"
 Write-Host "  capacityId       = $($outputs.capacityId.value)"
-Write-Host "  devWorkspaceId   = $($outputs.devWorkspaceId.value)"
-Write-Host "  qaWorkspaceId    = $($outputs.qaWorkspaceId.value)"
-Write-Host "  prodWorkspaceId  = $($outputs.prodWorkspaceId.value)"
+Write-Host "  capacityName     = $($outputs.capacityName.value)"
