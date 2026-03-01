@@ -14,7 +14,8 @@
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend",
     "build": "npm run build:backend && npm run build:frontend",
-    "start": "npm start --workspace=backend"
+    "start": "npm start --workspace=backend",
+    "test:e2e": "playwright test"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
   },
   "homepage": "https://github.com/qkfang/FY26SDKChallenge#readme",
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "concurrently": "^9.1.2"
   }
 }
