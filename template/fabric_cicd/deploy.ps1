@@ -1,14 +1,12 @@
-# deploy.ps1 — Provision Azure resources via Bicep, then deploy Fabric workspace items.
+# deploy.ps1 — Create Fabric workspaces and deploy workspace items.
 #
 # Usage:
 #   .\deploy.ps1
 #
-# Requires: Azure CLI (az) logged in, Python 3.10+, and a .env file with FABRIC_* vars.
+# Requires: Azure CLI (az) logged in, Python 3.10+, config/variable.json populated
+#           (run deploy-bicep.ps1 first), and a .env file with FABRIC_* vars.
 
 param(
-    [string]$ResourceGroup = "rg-fabricsdk",
-    [string]$Location = "australiaeast",
-    # Placeholder GUIDs used in config/parameter.yml; override if your file uses different values.
     [string]$PlaceholderDevId  = "00000000-0000-0000-0000-000000000001",
     [string]$PlaceholderQaId   = "00000000-0000-0000-0000-000000000002",
     [string]$PlaceholderProdId = "00000000-0000-0000-0000-000000000003"
@@ -26,29 +24,29 @@ if (Test-Path ".env") {
     }
 }
 
-# ── Ensure resource group exists ─────────────────────────────────────────────
-Write-Host "Ensuring resource group '$ResourceGroup' exists in '$Location'..."
-az group create --name $ResourceGroup --location $Location --output none
-
-# ── Deploy Bicep template (capacity only) ─────────────────────────────────────
-Write-Host "Deploying Bicep template to '$ResourceGroup'..."
-$deployOutput = az deployment group create `
-    --resource-group $ResourceGroup `
-    --template-file "bicep/main.bicep" `
-    --parameters "bicep/main.bicepparam" `
-    --output json | ConvertFrom-Json
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep deployment failed."
+# ── Read variables from config/variable.json ──────────────────────────────────
+$variableFile = "config/variable.json"
+if (-not (Test-Path $variableFile)) {
+    Write-Error "Missing $variableFile. Run deploy-bicep.ps1 first."
     exit 1
 }
+$variables = Get-Content $variableFile -Raw | ConvertFrom-Json
 
-$capacityId = $deployOutput.properties.outputs.capacityId.value
-Write-Host "Fabric Capacity ID: $capacityId"
+$capacityName = $variables.DEV.capacityName
+Write-Host "Fabric Capacity: $capacityName"
 
-# ── Create Fabric workspaces via REST API ─────────────────────────────────────
+# ── Resolve capacity GUID from name via Fabric REST API ──────────────────────
 $token = (az account get-access-token --resource https://api.fabric.microsoft.com --query accessToken -o tsv)
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
+
+$allCapacities = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/capacities" -Headers $headers).value
+$capacity = $allCapacities | Where-Object { $_.displayName -eq $capacityName }
+if (-not $capacity) {
+    Write-Error "Capacity '$capacityName' not found in Fabric."
+    exit 1
+}
+$capacityId = $capacity.id
+Write-Host "Fabric Capacity ID (GUID): $capacityId"
 
 function New-FabricWorkspace {
     param([string]$Name, [string]$CapacityId)
@@ -76,6 +74,13 @@ Write-Host "Workspace IDs:"
 Write-Host "  DEV  = $devWorkspaceId"
 Write-Host "  QA   = $qaWorkspaceId"
 Write-Host "  PROD = $prodWorkspaceId"
+
+# ── Update config/variable.json with workspace IDs ───────────────────────────
+$variables.DEV  | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $devWorkspaceId  -Force
+$variables.QA   | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $qaWorkspaceId   -Force
+$variables.PROD | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $prodWorkspaceId -Force
+$variables | ConvertTo-Json -Depth 3 | Set-Content $variableFile
+Write-Host "config/variable.json updated with workspace IDs."
 
 # ── Update config/parameter.yml with real workspace IDs ──────────────────────
 if ($devWorkspaceId -and $qaWorkspaceId -and $prodWorkspaceId) {

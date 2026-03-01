@@ -1,0 +1,20 @@
+{
+  "QA": {
+    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
+    "capacityName": "fabriccapacitycicd",
+    "sqlDatabaseName": "fabricdb",
+    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd"
+  },
+  "PROD": {
+    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
+    "capacityName": "fabriccapacitycicd",
+    "sqlDatabaseName": "fabricdb",
+    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd"
+  },
+  "DEV": {
+    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
+    "capacityName": "fabriccapacitycicd",
+    "sqlDatabaseName": "fabricdb",
+    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd"
+  }
+}

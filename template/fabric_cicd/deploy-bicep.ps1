@@ -32,40 +32,53 @@ if (-not $rgExists) {
     Write-Host "Resource group '$ResourceGroup' already exists."
 }
 
+# ── Auto-detect signed-in user ────────────────────────────────────────────────
+$adUser = az ad signed-in-user show --output json | ConvertFrom-Json
+
 # ── Auto-detect AAD admin for SQL Server if not set ──────────────────────────
 if (-not $env:SQL_AAD_ADMIN_NAME -or -not $env:SQL_AAD_ADMIN_OBJECT_ID) {
-    Write-Host "Detecting signed-in user for SQL AAD admin..."
-    $adUser = az ad signed-in-user show --output json | ConvertFrom-Json
     $env:SQL_AAD_ADMIN_NAME = $adUser.userPrincipalName
     $env:SQL_AAD_ADMIN_OBJECT_ID = $adUser.id
     Write-Host "  SQL AAD Admin: $($env:SQL_AAD_ADMIN_NAME) ($($env:SQL_AAD_ADMIN_OBJECT_ID))"
 }
 
+# ── Auto-detect capacity admin if not set ────────────────────────────────────
+if (-not $env:FABRIC_CAPACITY_ADMIN_ID) {
+    $env:FABRIC_CAPACITY_ADMIN_ID = $adUser.userPrincipalName
+    Write-Host "  Capacity Admin: $($env:FABRIC_CAPACITY_ADMIN_ID)"
+}
+
 # ── Deploy Bicep template ─────────────────────────────────────────────────────
 Write-Host "Deploying Bicep template '$TemplateFile' to '$ResourceGroup'..."
+$adminArray = "[\""$($env:FABRIC_CAPACITY_ADMIN_ID)\""]"
 $rawOutput = az deployment group create `
     --resource-group $ResourceGroup `
     --template-file $TemplateFile `
     --parameters $ParameterFile `
-    --verbose `
+    --parameters capacityAdminMembers="$adminArray" `
+    --only-show-errors `
     --output json 2>&1
 
 $jsonLines = $rawOutput | Where-Object { $_ -notmatch '^\s*(WARNING|INFO|VERBOSE|Bicep CLI)' }
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Deployment failed. Raw output:"
-    $rawOutput | ForEach-Object { Write-Host $_ }
+    Write-Error "Bicep deployment failed."
     exit 1
 }
 
-Write-Host "Raw output:"
-Write-Host ($rawOutput | Out-String)
-
 $deployOutput = $jsonLines | Out-String | ConvertFrom-Json
-
-# ── Display deployment outputs ────────────────────────────────────────────────
 $outputs = $deployOutput.properties.outputs
 
-Write-Host "Deployment succeeded. Outputs:"
-Write-Host "  capacityId       = $($outputs.capacityId.value)"
-Write-Host "  capacityName     = $($outputs.capacityName.value)"
+# ── Write outputs to config/variable.json per environment ─────────────────────
+$variableConfig = @{}
+foreach ($env in @("DEV", "QA", "PROD")) {
+    $variableConfig[$env] = @{
+        capacityId      = $outputs.capacityId.value
+        capacityName    = $outputs.capacityName.value
+        sqlServerFqdn   = $outputs.sqlServerFqdn.value
+        sqlDatabaseName = $outputs.sqlDatabaseName.value
+    }
+}
+
+$variableConfig | ConvertTo-Json -Depth 3 | Set-Content "config/variable.json"
+Write-Host "config/variable.json updated."
