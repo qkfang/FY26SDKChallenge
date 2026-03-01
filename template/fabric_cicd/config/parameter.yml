@@ -21,7 +21,7 @@
 find_replace:
   DEV:
     # Workspace ID for the DEV environment (source / baseline)
-    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000001"
+    "4b5fb93b-484d-4485-8bfd-34210a853a54": "4b5fb93b-484d-4485-8bfd-34210a853a54"
     # Lakehouse ID in DEV
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000A"
     # SQL connection string (DEV)
@@ -29,7 +29,7 @@ find_replace:
 
   QA:
     # Map DEV workspace ID → QA workspace ID
-    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000002"
+    "4b5fb93b-484d-4485-8bfd-34210a853a54": "461ed1ca-16e5-4374-bf04-0c8942525205"
     # Map DEV lakehouse ID → QA lakehouse ID
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000B"
     # SQL connection string (QA)
@@ -37,8 +37,9 @@ find_replace:
 
   PROD:
     # Map DEV workspace ID → PROD workspace ID
-    "00000000-0000-0000-0000-000000000001": "00000000-0000-0000-0000-000000000003"
+    "4b5fb93b-484d-4485-8bfd-34210a853a54": "a9fbd7ca-47c4-4c58-9ebe-d9f32fe98386"
     # Map DEV lakehouse ID → PROD lakehouse ID
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000C"
     # SQL connection string (PROD)
     "dev-sql-server.database.windows.net": "prod-sql-server.database.windows.net"
+

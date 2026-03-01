@@ -42,15 +42,13 @@ if (-not $env:SQL_AAD_ADMIN_NAME -or -not $env:SQL_AAD_ADMIN_OBJECT_ID) {
     Write-Host "  SQL AAD Admin: $($env:SQL_AAD_ADMIN_NAME) ($($env:SQL_AAD_ADMIN_OBJECT_ID))"
 }
 
-# ── Auto-detect capacity admin if not set ────────────────────────────────────
-if (-not $env:FABRIC_CAPACITY_ADMIN_ID) {
-    $env:FABRIC_CAPACITY_ADMIN_ID = $adUser.userPrincipalName
-    Write-Host "  Capacity Admin: $($env:FABRIC_CAPACITY_ADMIN_ID)"
-}
+# ── Auto-detect capacity admin ────────────────────────────────────────────────
+$capacityAdmin = if ($env:FABRIC_CAPACITY_ADMIN_ID) { $env:FABRIC_CAPACITY_ADMIN_ID } else { $adUser.userPrincipalName }
+Write-Host "  Capacity Admin: $capacityAdmin"
 
 # ── Deploy Bicep template ─────────────────────────────────────────────────────
 Write-Host "Deploying Bicep template '$TemplateFile' to '$ResourceGroup'..."
-$adminArray = "[\""$($env:FABRIC_CAPACITY_ADMIN_ID)\""]"
+$adminArray = "[\""$capacityAdmin\""]"
 $rawOutput = az deployment group create `
     --resource-group $ResourceGroup `
     --template-file $TemplateFile `
