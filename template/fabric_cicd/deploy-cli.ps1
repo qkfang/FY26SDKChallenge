@@ -50,7 +50,7 @@ function New-FabricWorkspace {
     }
     $body = @{ displayName = $Name; capacityId = $CapacityId } | ConvertTo-Json
     $resp = Invoke-RestMethod -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces" -Headers $headers -Body $body
-    Write-Host "Created workspace '$Name' (id=$($resp.id))."
+    Write-Host "Created workspace '$Name' (id=$($resp.id)) with capacity '$CapacityId'."
     return $resp.id
 }
 
