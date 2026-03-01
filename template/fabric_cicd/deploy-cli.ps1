@@ -104,3 +104,38 @@ if ($targetWorkspaceId) {
     [System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $targetWorkspaceId)
     Write-Host "TARGET_WORKSPACE_ID set to $targetWorkspaceId (env=$targetEnv)"
 }
+
+# ── Create Fabric SQL Database in DEV workspace ──────────────────────────────
+$sqlDbDisplayName = "fabricdb"
+
+$existingItems = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers).value
+$existingSql = $existingItems | Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }
+
+if ($existingSql) {
+    Write-Host "SQL Database '$sqlDbDisplayName' already exists in DEV workspace (id=$($existingSql.id))."
+} else {
+    Write-Host "Creating Fabric SQL Database '$sqlDbDisplayName' in DEV workspace..."
+    $sqlBody = @{
+        displayName = $sqlDbDisplayName
+        type = "SQLDatabase"
+    } | ConvertTo-Json
+    $response = Invoke-WebRequest -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers -Body $sqlBody
+    if ($response.StatusCode -in 200,201) {
+        $item = $response.Content | ConvertFrom-Json
+        Write-Host "Created Fabric SQL Database '$sqlDbDisplayName' (id=$($item.id))."
+    } elseif ($response.StatusCode -eq 202) {
+        Write-Host "SQL Database creation accepted (async). Waiting for provisioning..."
+        $opUrl = $response.Headers["Location"]
+        if ($opUrl) {
+            for ($i = 0; $i -lt 30; $i++) {
+                Start-Sleep -Seconds 5
+                $opResp = Invoke-RestMethod -Uri $opUrl -Headers $headers -ErrorAction SilentlyContinue
+                if ($opResp.status -eq "Succeeded") {
+                    Write-Host "Fabric SQL Database '$sqlDbDisplayName' provisioned."
+                    break
+                }
+                Write-Host "  Status: $($opResp.status)..."
+            }
+        }
+    }
+}

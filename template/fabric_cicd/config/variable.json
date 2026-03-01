@@ -1,32 +1,17 @@
 {
-  "QA": {
-    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
-    "capacityName": "fabriccapacitycicd",
-    "sqlDatabaseName": "fabricdb",
-    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
-    "workspaceId": [
-      "",
-      "9b6c012c-1c20-4807-9feb-a7703a7671bd"
-    ]
-  },
   "PROD": {
-    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
-    "capacityName": "fabriccapacitycicd",
-    "sqlDatabaseName": "fabricdb",
     "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
-    "workspaceId": [
-      "",
-      "7d836180-43af-494d-80e9-de50ed5f8529"
-    ]
+    "capacityName": "fabriccapacitycicd",
+    "workspaceId": "7d836180-43af-494d-80e9-de50ed5f8529"
   },
   "DEV": {
-    "sqlServerFqdn": "fabricsqlcicd.database.windows.net",
-    "capacityName": "fabriccapacitycicd",
-    "sqlDatabaseName": "fabricdb",
     "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
-    "workspaceId": [
-      "",
-      "334687d9-c5a3-4af6-a9b1-9c02bad79934"
-    ]
+    "capacityName": "fabriccapacitycicd",
+    "workspaceId": "334687d9-c5a3-4af6-a9b1-9c02bad79934"
+  },
+  "QA": {
+    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
+    "capacityName": "fabriccapacitycicd",
+    "workspaceId": "9b6c012c-1c20-4807-9feb-a7703a7671bd"
   }
 }
