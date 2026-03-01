@@ -4,8 +4,8 @@
 
 using './main.bicep'
 
-param location = 'eastus'
-param capacityName = 'fabriccapacity'
+param location = 'australiaeast'
+param capacityName = 'fabriccapacitycicd'
 param capacitySkuName = 'F2'
 param capacityAdminMembers = []
 
@@ -16,10 +16,4 @@ param prodWorkspaceName = 'fabric-workspace-prod'
 
 // Client ID of the user-assigned managed identity used by deployment scripts.
 // Replace with your actual managed identity resource ID.
-param managedIdentityId = ''
-
-param tags = {
-  project: 'fabric-cicd'
-  managedBy: 'bicep'
-  resourceGroup: 'rg-fabricsdk'
-}
+param managedIdentityId = 'd1a41b26-540b-4ba4-9762-b18af64afe5f'

@@ -16,33 +16,23 @@ param location string = resourceGroup().location
 
 // ── Capacity ─────────────────────────────────────────────────────────────────
 @description('Name of the Fabric capacity resource.')
-param capacityName string = 'fabriccapacity'
+param capacityName string = 'fabriccapacitycicd'
 
 @description('Fabric SKU.')
-@allowed(['F2', 'F4', 'F8', 'F16', 'F32', 'F64', 'F128', 'F256', 'F512', 'F1024', 'F2048'])
+@allowed(['F2', 'F4'])
 param capacitySkuName string = 'F2'
 
 @description('AAD object IDs of Fabric capacity administrators.')
 param capacityAdminMembers array = []
 
 // ── Workspaces ────────────────────────────────────────────────────────────────
-@description('Workspace display name for the DEV environment. Leave empty to skip.')
 param devWorkspaceName string = ''
-
-@description('Workspace display name for the QA environment. Leave empty to skip.')
 param qaWorkspaceName string = ''
-
-@description('Workspace display name for the PROD environment. Leave empty to skip.')
 param prodWorkspaceName string = ''
 
 @description('Client ID of the user-assigned managed identity used by deployment scripts.')
 param managedIdentityId string
 
-@description('Resource tags applied to all resources.')
-param tags object = {
-  project: 'fabric-cicd'
-  managedBy: 'bicep'
-}
 
 // ── Fabric Capacity ──────────────────────────────────────────────────────────
 module capacity 'fabric_capacity.bicep' = {
@@ -52,7 +42,6 @@ module capacity 'fabric_capacity.bicep' = {
     location: location
     skuName: capacitySkuName
     adminMembers: capacityAdminMembers
-    tags: tags
   }
 }
 
@@ -65,7 +54,6 @@ module devWorkspace 'workspace.bicep' = if (!empty(devWorkspaceName)) {
     capacityId: capacity.outputs.capacityId
     location: location
     managedIdentityId: managedIdentityId
-    tags: union(tags, { environment: 'DEV' })
   }
 }
 
@@ -78,7 +66,6 @@ module qaWorkspace 'workspace.bicep' = if (!empty(qaWorkspaceName)) {
     capacityId: capacity.outputs.capacityId
     location: location
     managedIdentityId: managedIdentityId
-    tags: union(tags, { environment: 'QA' })
   }
 }
 
@@ -91,7 +78,6 @@ module prodWorkspace 'workspace.bicep' = if (!empty(prodWorkspaceName)) {
     capacityId: capacity.outputs.capacityId
     location: location
     managedIdentityId: managedIdentityId
-    tags: union(tags, { environment: 'PROD' })
   }
 }
 
