@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "Notebook_MockData",
+    "description": "Generates mock Delta tables in SalesLakehouse for SalesReport"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f7e6d5c4-b3a2-1098-fedc-ba9876543210"
+  }
+}

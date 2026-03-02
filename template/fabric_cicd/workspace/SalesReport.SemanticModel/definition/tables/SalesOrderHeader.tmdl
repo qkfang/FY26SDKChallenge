@@ -67,6 +67,33 @@ table SalesOrderHeader
 
 		annotation SummarizationSetBy = Automatic
 
+	column DueDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b1c2d3e4-5f6a-7890-b0c1-d2e3f4a5b6c7
+		summarizeBy: none
+		sourceColumn: DueDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalDue
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: c2d3e4f5-6a7b-8901-c1d2-e3f4a5b6c7d8
+		summarizeBy: sum
+		sourceColumn: TotalDue
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column SalesTerritory
+		dataType: string
+		lineageTag: d3e4f5a6-7b8c-9012-d2e3-f4a5b6c7d8e9
+		summarizeBy: none
+		sourceColumn: SalesTerritory
+
+		annotation SummarizationSetBy = Automatic
+
 	measure TotalRevenue = SUM(SalesOrderHeader[SubTotal]) + SUM(SalesOrderHeader[TaxAmt]) + SUM(SalesOrderHeader[Freight])
 		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
 		lineageTag: f8a9b0c1-d2e3-4567-5678-90abcdef0123
@@ -77,25 +104,60 @@ table SalesOrderHeader
 		formatString: 0
 		lineageTag: a9b0c1d2-e3f4-5678-6789-0abcdef01234
 
+	measure AvgOrderValue = DIVIDE(SUM(SalesOrderHeader[SubTotal]), COUNTROWS(SalesOrderHeader))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: ba0c1d2e-f3a4-6789-789a-bcdef0123456
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
 	partition SalesOrderHeader = m
 		mode: import
 		source =
 			let
 			    Source = Table.FromRows(
 			        {
-			            {1, DateTime.From("2024-01-15"), 101, 1500.00, 120.00, 50.00, 5},
-			            {2, DateTime.From("2024-02-20"), 102, 2500.00, 200.00, 80.00, 5},
-			            {3, DateTime.From("2024-03-10"), 103,  800.00,  64.00, 25.00, 5},
-			            {4, DateTime.From("2024-04-05"), 104, 3200.00, 256.00, 90.00, 5}
+			            { 1, DateTime.From("2024-01-15"), DateTime.From("2024-01-29"),  1, 4803.00, 384.24, 120.08, 5307.32, 5, "Northwest"},
+			            { 2, DateTime.From("2024-01-22"), DateTime.From("2024-02-05"),  2, 1431.50, 114.52,  35.79, 1581.81, 5, "Northwest"},
+			            { 3, DateTime.From("2024-02-01"), DateTime.From("2024-02-15"),  3,  539.99,  43.20,  13.50,  596.69, 5, "Southwest"},
+			            { 4, DateTime.From("2024-02-14"), DateTime.From("2024-02-28"),  4, 2863.00, 229.04,  71.58, 3163.62, 5, "Southwest"},
+			            { 5, DateTime.From("2024-02-28"), DateTime.From("2024-03-13"),  5,   99.98,   8.00,   2.50,  110.48, 5, "Southwest"},
+			            { 6, DateTime.From("2024-03-05"), DateTime.From("2024-03-19"),  6, 1071.98,  85.76,  26.80, 1184.54, 5, "Central"},
+			            { 7, DateTime.From("2024-03-18"), DateTime.From("2024-04-01"),  7, 4295.49, 343.64, 107.39, 4746.52, 5, "Central"},
+			            { 8, DateTime.From("2024-03-25"), DateTime.From("2024-04-08"),  8,  124.97,  10.00,   3.12,  138.09, 5, "Central"},
+			            { 9, DateTime.From("2024-04-08"), DateTime.From("2024-04-22"),  9, 2863.00, 229.04,  71.58, 3163.62, 5, "Northwest"},
+			            {10, DateTime.From("2024-04-15"), DateTime.From("2024-04-29"), 10,  539.99,  43.20,  13.50,  596.69, 5, "Northeast"},
+			            {11, DateTime.From("2024-05-03"), DateTime.From("2024-05-17"), 11, 4803.00, 384.24, 120.08, 5307.32, 5, "Northwest"},
+			            {12, DateTime.From("2024-05-20"), DateTime.From("2024-06-03"), 12, 2863.00, 229.04,  71.58, 3163.62, 5, "Northwest"},
+			            {13, DateTime.From("2024-06-01"), DateTime.From("2024-06-15"), 13, 1071.98,  85.76,  26.80, 1184.54, 5, "Northwest"},
+			            {14, DateTime.From("2024-06-10"), DateTime.From("2024-06-24"), 14,  539.99,  43.20,  13.50,  596.69, 5, "Northwest"},
+			            {15, DateTime.From("2024-06-22"), DateTime.From("2024-07-06"), 15, 4295.49, 343.64, 107.39, 4746.52, 5, "Northwest"},
+			            {16, DateTime.From("2024-07-05"), DateTime.From("2024-07-19"),  1, 1431.50, 114.52,  35.79, 1581.81, 5, "Northwest"},
+			            {17, DateTime.From("2024-07-18"), DateTime.From("2024-08-01"),  3, 2319.99, 185.60,  58.00, 2563.59, 5, "Southwest"},
+			            {18, DateTime.From("2024-08-02"), DateTime.From("2024-08-16"),  5, 1431.50, 114.52,  35.79, 1581.81, 5, "Southwest"},
+			            {19, DateTime.From("2024-08-14"), DateTime.From("2024-08-28"),  7,  539.99,  43.20,  13.50,  596.69, 5, "Central"},
+			            {20, DateTime.From("2024-09-03"), DateTime.From("2024-09-17"),  9, 4803.00, 384.24, 120.08, 5307.32, 5, "Northwest"},
+			            {21, DateTime.From("2024-09-21"), DateTime.From("2024-10-05"), 11, 1071.98,  85.76,  26.80, 1184.54, 5, "Northwest"},
+			            {22, DateTime.From("2024-10-07"), DateTime.From("2024-10-21"), 13, 2863.00, 229.04,  71.58, 3163.62, 5, "Northwest"},
+			            {23, DateTime.From("2024-10-15"), DateTime.From("2024-10-29"),  2,  124.97,  10.00,   3.12,  138.09, 5, "Northwest"},
+			            {24, DateTime.From("2024-11-01"), DateTime.From("2024-11-15"),  4, 4295.49, 343.64, 107.39, 4746.52, 5, "Southwest"},
+			            {25, DateTime.From("2024-11-18"), DateTime.From("2024-12-02"),  6, 1431.50, 114.52,  35.79, 1581.81, 5, "Central"},
+			            {26, DateTime.From("2024-12-05"), DateTime.From("2024-12-19"),  8, 2319.99, 185.60,  58.00, 2563.59, 5, "Central"},
+			            {27, DateTime.From("2024-12-20"), DateTime.From("2025-01-03"), 10,  539.99,  43.20,  13.50,  596.69, 5, "Northeast"},
+			            {28, DateTime.From("2025-01-08"), DateTime.From("2025-01-22"), 12, 4803.00, 384.24, 120.08, 5307.32, 5, "Northwest"},
+			            {29, DateTime.From("2025-01-22"), DateTime.From("2025-02-05"), 14, 1071.98,  85.76,  26.80, 1184.54, 5, "Northwest"},
+			            {30, DateTime.From("2025-02-10"), DateTime.From("2025-02-24"), 15, 2863.00, 229.04,  71.58, 3163.62, 5, "Northwest"}
 			        },
 			        type table [
-			            SalesOrderID = Int64.Type,
-			            OrderDate    = datetime,
-			            CustomerID   = Int64.Type,
-			            SubTotal     = Currency.Type,
-			            TaxAmt       = Currency.Type,
-			            Freight      = Currency.Type,
-			            Status       = Int64.Type
+			            SalesOrderID   = Int64.Type,
+			            OrderDate      = datetime,
+			            DueDate        = datetime,
+			            CustomerID     = Int64.Type,
+			            SubTotal       = Currency.Type,
+			            TaxAmt         = Currency.Type,
+			            Freight        = Currency.Type,
+			            TotalDue       = Currency.Type,
+			            Status         = Int64.Type,
+			            SalesTerritory = text
 			        ]
 			    )
 			in

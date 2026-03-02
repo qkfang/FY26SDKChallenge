@@ -1,0 +1,42 @@
+table ProductCategory
+	lineageTag: f5a6b7c8-d9e0-1234-f012-345678901234
+
+	column ProductCategoryID
+		dataType: int64
+		formatString: 0
+		lineageTag: be2f3a4b-5c6d-7890-ef12-3456789abcde
+		summarizeBy: none
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: cf3a4b5c-6d7e-8901-f023-456789abcdef
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ProductCategory = m
+		mode: import
+		source =
+			let
+			    Source = Table.FromRows(
+			        {
+			            {1, "Bikes"},
+			            {2, "Components"},
+			            {3, "Clothing"},
+			            {4, "Accessories"}
+			        },
+			        type table [
+			            ProductCategoryID = Int64.Type,
+			            Name              = text
+			        ]
+			    )
+			in
+			    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

@@ -6,7 +6,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["SalesOrderHeader","SalesOrderDetail","Product"]
+annotation PBI_QueryOrder = ["SalesOrderHeader","SalesOrderDetail","Product","Customer","ProductCategory"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
@@ -15,5 +15,7 @@ annotation PBI_ProTooling = ["DevMode"]
 ref table SalesOrderHeader
 ref table SalesOrderDetail
 ref table Product
+ref table Customer
+ref table ProductCategory
 
 ref cultureInfo en-US

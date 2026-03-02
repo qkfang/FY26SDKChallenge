@@ -7,3 +7,13 @@ relationship SalesOrderDetail_to_Product
 	fromCardinality: many
 	fromColumn: SalesOrderDetail.ProductID
 	toColumn: Product.ProductID
+
+relationship SalesOrderHeader_to_Customer
+	fromCardinality: many
+	fromColumn: SalesOrderHeader.CustomerID
+	toColumn: Customer.CustomerID
+
+relationship Product_to_ProductCategory
+	fromCardinality: many
+	fromColumn: Product.ProductCategoryID
+	toColumn: ProductCategory.ProductCategoryID
