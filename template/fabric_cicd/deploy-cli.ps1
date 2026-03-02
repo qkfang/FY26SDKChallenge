@@ -40,6 +40,11 @@ if (-not $capacity) {
 $capacityId = $capacity.id
 Write-Host "Fabric Capacity ID (GUID): $capacityId"
 
+$spObjectId    = "a6efe236-83c5-472b-a068-65006e369ad7"
+$spDisplayName = "sp-demo-01"
+$sqlDbDisplayName = "fabricdb"
+$workspaceIds  = @{}
+
 function New-FabricWorkspace {
     param([string]$Name, [string]$CapacityId)
     $existing = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces" -Headers $headers).value |
@@ -50,107 +55,97 @@ function New-FabricWorkspace {
     }
     $body = @{ displayName = $Name; capacityId = $CapacityId } | ConvertTo-Json
     $resp = Invoke-RestMethod -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces" -Headers $headers -Body $body
-    Write-Host "Created workspace '$Name' (id=$($resp.id)) with capacity '$CapacityId'."
+    Write-Host "Created workspace '$Name' (id=$($resp.id))."
     return $resp.id
 }
 
-$devWorkspaceName  = "fabric-workspace-dev"
-$qaWorkspaceName   = "fabric-workspace-qa"
-$prodWorkspaceName = "fabric-workspace-prod"
+function Deploy-FabricEnvironment {
+    param([string]$EnvName)
 
-$devWorkspaceId  = New-FabricWorkspace -Name $devWorkspaceName  -CapacityId $capacityId
-$qaWorkspaceId   = New-FabricWorkspace -Name $qaWorkspaceName   -CapacityId $capacityId
-$prodWorkspaceId = New-FabricWorkspace -Name $prodWorkspaceName -CapacityId $capacityId
+    # ── Create workspace ──────────────────────────────────────────────────────
+    $workspaceName = "fabric-workspace-$($EnvName.ToLower())"
+    $workspaceId   = New-FabricWorkspace -Name $workspaceName -CapacityId $capacityId
+    $script:workspaceIds[$EnvName] = $workspaceId
 
-Write-Host "Workspace IDs:"
-Write-Host "  DEV  = $devWorkspaceId"
-Write-Host "  QA   = $qaWorkspaceId"
-Write-Host "  PROD = $prodWorkspaceId"
+    # ── Update variable.json ──────────────────────────────────────────────────
+    $vars = Get-Content $variableFile -Raw | ConvertFrom-Json
+    $vars.$EnvName | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $workspaceId -Force
+    $vars | ConvertTo-Json -Depth 3 | Set-Content $variableFile
 
-# ── Update config/variable.json with workspace IDs ───────────────────────────
-$variables.DEV  | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $devWorkspaceId  -Force
-$variables.QA   | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $qaWorkspaceId   -Force
-$variables.PROD | Add-Member -NotePropertyName "workspaceId" -NotePropertyValue $prodWorkspaceId -Force
-$variables | ConvertTo-Json -Depth 3 | Set-Content $variableFile
-Write-Host "config/variable.json updated with workspace IDs."
+    # ── Add service principal as Member ───────────────────────────────────────
+    $spBody = @{ principal = @{ id = $spObjectId; type = "ServicePrincipal" }; role = "Member" } | ConvertTo-Json
+    try {
+        Invoke-RestMethod -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces/$workspaceId/roleAssignments" -Headers $headers -Body $spBody | Out-Null
+        Write-Host "[$EnvName] SP '$spDisplayName' added to workspace."
+    } catch {
+        Write-Host "[$EnvName] SP role assignment: $($_.Exception.Message)"
+    }
 
-# ── Update config/parameter.yml with real workspace IDs ──────────────────────
-$PlaceholderDevId  = "00000000-0000-0000-0000-000000000001"
-$PlaceholderQaId   = "00000000-0000-0000-0000-000000000002"
-$PlaceholderProdId = "00000000-0000-0000-0000-000000000003"
+    # ── Create SQL Database (DEV only) ────────────────────────────────────────
+    if ($EnvName -eq "DEV") {
+        $existingSql = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$workspaceId/items" -Headers $headers).value |
+            Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }
 
-if ($devWorkspaceId -and $qaWorkspaceId -and $prodWorkspaceId) {
-    Write-Host "Updating config/parameter.yml with deployed workspace IDs..."
-    $paramFile = "config/parameter.yml"
-    $content = Get-Content $paramFile -Raw
-
-    $content = $content -replace $PlaceholderDevId, $devWorkspaceId
-    $content = $content -replace $PlaceholderQaId, $qaWorkspaceId
-    $content = $content -replace $PlaceholderProdId, $prodWorkspaceId
-
-    Set-Content $paramFile $content
-    Write-Host "parameter.yml updated."
-}
-
-# ── Set TARGET_WORKSPACE_ID for the Python deployer ───────────────────────────
-$targetEnv = if ($env:TARGET_ENVIRONMENT) { $env:TARGET_ENVIRONMENT } else { "DEV" }
-$targetWorkspaceId = switch ($targetEnv.ToUpper()) {
-    "QA"   { $qaWorkspaceId }
-    "PROD" { $prodWorkspaceId }
-    default { $devWorkspaceId }
-}
-
-if ($targetWorkspaceId) {
-    [System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $targetWorkspaceId)
-    Write-Host "TARGET_WORKSPACE_ID set to $targetWorkspaceId (env=$targetEnv)"
-}
-
-# ── Create Fabric SQL Database in DEV workspace ──────────────────────────────
-$sqlDbDisplayName = "fabricdb"
-
-$existingItems = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers).value
-$existingSql = $existingItems | Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }
-
-if ($existingSql) {
-    Write-Host "SQL Database '$sqlDbDisplayName' already exists in DEV workspace (id=$($existingSql.id))."
-    $sqlDbId = $existingSql.id
-} else {
-    Write-Host "Creating Fabric SQL Database '$sqlDbDisplayName' in DEV workspace..."
-    $sqlBody = @{
-        displayName = $sqlDbDisplayName
-        type = "SQLDatabase"
-    } | ConvertTo-Json
-    $response = Invoke-WebRequest -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers -Body $sqlBody
-    if ($response.StatusCode -in 200,201) {
-        $item = $response.Content | ConvertFrom-Json
-        Write-Host "Created Fabric SQL Database '$sqlDbDisplayName' (id=$($item.id))."
-        $sqlDbId = $item.id
-    } elseif ($response.StatusCode -eq 202) {
-        Write-Host "SQL Database creation accepted (async). Waiting for provisioning..."
-        $opUrl = $response.Headers["Location"]
-        if ($opUrl) {
-            for ($i = 0; $i -lt 30; $i++) {
-                Start-Sleep -Seconds 5
-                $opResp = Invoke-RestMethod -Uri $opUrl -Headers $headers -ErrorAction SilentlyContinue
-                if ($opResp.status -eq "Succeeded") {
-                    Write-Host "Fabric SQL Database '$sqlDbDisplayName' provisioned."
-                    break
+        if ($existingSql) {
+            Write-Host "[$EnvName] SQL Database '$sqlDbDisplayName' already exists (id=$($existingSql.id))."
+            $sqlDbId = $existingSql.id
+        } else {
+            $sqlBody = @{ displayName = $sqlDbDisplayName; type = "SQLDatabase" } | ConvertTo-Json
+            $response = Invoke-WebRequest -Method Post -Uri "https://api.fabric.microsoft.com/v1/workspaces/$workspaceId/items" -Headers $headers -Body $sqlBody
+            if ($response.StatusCode -in 200, 201) {
+                $sqlDbId = ($response.Content | ConvertFrom-Json).id
+                Write-Host "[$EnvName] Created SQL Database '$sqlDbDisplayName' (id=$sqlDbId)."
+            } elseif ($response.StatusCode -eq 202) {
+                Write-Host "[$EnvName] SQL Database creation accepted (async). Waiting..."
+                $opUrl = $response.Headers["Location"]
+                if ($opUrl) {
+                    for ($i = 0; $i -lt 30; $i++) {
+                        Start-Sleep -Seconds 5
+                        $opResp = Invoke-RestMethod -Uri $opUrl -Headers $headers -ErrorAction SilentlyContinue
+                        if ($opResp.status -eq "Succeeded") { Write-Host "[$EnvName] SQL Database provisioned."; break }
+                        Write-Host "[$EnvName] Status: $($opResp.status)..."
+                    }
                 }
-                Write-Host "  Status: $($opResp.status)..."
+                $sqlDbId = ((Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$workspaceId/items" -Headers $headers).value |
+                    Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }).id
             }
         }
-        $created = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$devWorkspaceId/items" -Headers $headers).value |
-            Where-Object { $_.displayName -eq $sqlDbDisplayName -and $_.type -eq "SQLDatabase" }
-        $sqlDbId = $created.id
+
+        # Write sqlDatabaseId to all envs in variable.json
+        if ($sqlDbId) {
+            $vars = Get-Content $variableFile -Raw | ConvertFrom-Json
+            foreach ($e in @("DEV", "QA", "PROD")) {
+                $vars.$e | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
+            }
+            $vars | ConvertTo-Json -Depth 3 | Set-Content $variableFile
+            Write-Host "[$EnvName] variable.json updated with sqlDatabaseId=$sqlDbId"
+        }
     }
 }
 
-# ── Write SQL Database ID to variable.json ────────────────────────────────────
-if ($sqlDbId) {
-    $variables = Get-Content $variableFile -Raw | ConvertFrom-Json
-    $variables.DEV  | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
-    $variables.QA   | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
-    $variables.PROD | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
-    $variables | ConvertTo-Json -Depth 3 | Set-Content $variableFile
-    Write-Host "config/variable.json updated with sqlDatabaseId=$sqlDbId"
+# ── Deploy each environment ───────────────────────────────────────────────────
+foreach ($envName in @("DEV", "QA", "PROD")) {
+    Write-Host "=== Deploying $envName ==="
+    Deploy-FabricEnvironment -EnvName $envName
 }
+
+# ── Update config/parameter.yml with all workspace IDs ───────────────────────
+$placeholders = @{
+    "00000000-0000-0000-0000-000000000001" = $workspaceIds["DEV"]
+    "00000000-0000-0000-0000-000000000002" = $workspaceIds["QA"]
+    "00000000-0000-0000-0000-000000000003" = $workspaceIds["PROD"]
+}
+$paramFile = "config/parameter.yml"
+$content = Get-Content $paramFile -Raw
+foreach ($placeholder in $placeholders.GetEnumerator()) {
+    $content = $content -replace $placeholder.Key, $placeholder.Value
+}
+Set-Content $paramFile $content
+Write-Host "parameter.yml updated with workspace IDs."
+
+# ── Set TARGET_WORKSPACE_ID for the Python deployer ──────────────────────────
+$targetEnv = if ($env:TARGET_ENVIRONMENT) { $env:TARGET_ENVIRONMENT } else { "DEV" }
+$targetWorkspaceId = $workspaceIds[$targetEnv.ToUpper()]
+if (-not $targetWorkspaceId) { $targetWorkspaceId = $workspaceIds["DEV"] }
+[System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $targetWorkspaceId)
+Write-Host "TARGET_WORKSPACE_ID set to $targetWorkspaceId (env=$targetEnv)"

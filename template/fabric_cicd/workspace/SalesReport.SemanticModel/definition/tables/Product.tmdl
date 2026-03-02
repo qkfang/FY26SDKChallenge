@@ -1,0 +1,91 @@
+table Product
+	lineageTag: d3e4f5a6-b7c8-9012-def0-234567890123
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		lineageTag: aabb1122-3344-5566-7788-99aabbccddee
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: bbcc2233-4455-6677-8899-aabbccddeeff
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductNumber
+		dataType: string
+		lineageTag: ccdd3344-5566-7788-99aa-bbccddeeff00
+		summarizeBy: none
+		sourceColumn: ProductNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column Color
+		dataType: string
+		lineageTag: ddee4455-6677-8899-aabb-ccddeeff0011
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column ListPrice
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: eeff5566-7788-99aa-bbcc-ddeeff001122
+		summarizeBy: sum
+		sourceColumn: ListPrice
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column StandardCost
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: ff006677-8899-aabb-ccdd-eeff00112233
+		summarizeBy: sum
+		sourceColumn: StandardCost
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column ProductCategoryID
+		dataType: int64
+		formatString: 0
+		lineageTag: 00117788-99aa-bbcc-ddee-ff0011223344
+		summarizeBy: none
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Product = m
+		mode: import
+		source =
+			let
+			    Source = Table.FromRows(
+			        {
+			            {709, "Mountain Bike Socks, M",    "SO-B909-M",  "White",  3.3963,   9.50, 27},
+			            {714, "Long-Sleeve Logo Jersey, L", "LJ-0192-L",  "Multi", 38.4923,  49.99, 21},
+			            {716, "Road Frame - Red, 48",       "FR-R92R-48", "Red",  352.1544, 1431.50, 18}
+			        },
+			        type table [
+			            ProductID         = Int64.Type,
+			            Name              = text,
+			            ProductNumber     = text,
+			            Color             = text,
+			            StandardCost      = Currency.Type,
+			            ListPrice         = Currency.Type,
+			            ProductCategoryID = Int64.Type
+			        ]
+			    )
+			in
+			    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

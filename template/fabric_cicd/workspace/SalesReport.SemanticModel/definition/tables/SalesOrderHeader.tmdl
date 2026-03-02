@@ -1,0 +1,106 @@
+table SalesOrderHeader
+	lineageTag: b1c2d3e4-f5a6-7890-bcde-f12345678901
+
+	column SalesOrderID
+		dataType: int64
+		formatString: 0
+		lineageTag: e1f2a3b4-c5d6-7890-ef01-234567890abc
+		summarizeBy: none
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f2a3b4c5-d6e7-8901-f012-34567890abcd
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: a3b4c5d6-e7f8-9012-0123-4567890abcde
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubTotal
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: b4c5d6e7-f8a9-0123-1234-567890abcdef
+		summarizeBy: sum
+		sourceColumn: SubTotal
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column TaxAmt
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: c5d6e7f8-a9b0-1234-2345-67890abcdef0
+		summarizeBy: sum
+		sourceColumn: TaxAmt
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Freight
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: d6e7f8a9-b0c1-2345-3456-7890abcdef01
+		summarizeBy: sum
+		sourceColumn: Freight
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Status
+		dataType: int64
+		formatString: 0
+		lineageTag: e7f8a9b0-c1d2-3456-4567-890abcdef012
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	measure TotalRevenue = SUM(SalesOrderHeader[SubTotal]) + SUM(SalesOrderHeader[TaxAmt]) + SUM(SalesOrderHeader[Freight])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: f8a9b0c1-d2e3-4567-5678-90abcdef0123
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure OrderCount = COUNTROWS(SalesOrderHeader)
+		formatString: 0
+		lineageTag: a9b0c1d2-e3f4-5678-6789-0abcdef01234
+
+	partition SalesOrderHeader = m
+		mode: import
+		source =
+			let
+			    Source = Table.FromRows(
+			        {
+			            {1, DateTime.From("2024-01-15"), 101, 1500.00, 120.00, 50.00, 5},
+			            {2, DateTime.From("2024-02-20"), 102, 2500.00, 200.00, 80.00, 5},
+			            {3, DateTime.From("2024-03-10"), 103,  800.00,  64.00, 25.00, 5},
+			            {4, DateTime.From("2024-04-05"), 104, 3200.00, 256.00, 90.00, 5}
+			        },
+			        type table [
+			            SalesOrderID = Int64.Type,
+			            OrderDate    = datetime,
+			            CustomerID   = Int64.Type,
+			            SubTotal     = Currency.Type,
+			            TaxAmt       = Currency.Type,
+			            Freight      = Currency.Type,
+			            Status       = Int64.Type
+			        ]
+			    )
+			in
+			    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

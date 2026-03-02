@@ -25,7 +25,7 @@ find_replace:
     # Lakehouse ID in DEV
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000A"
     # SQL connection string (DEV)
-    "dev-sql-server.database.windows.net": "dev-sql-server.database.windows.net"
+    "dev-sql-server.database.windows.net": "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
 
   QA:
     # Map DEV workspace ID → QA workspace ID
@@ -33,7 +33,7 @@ find_replace:
     # Map DEV lakehouse ID → QA lakehouse ID
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000B"
     # SQL connection string (QA)
-    "dev-sql-server.database.windows.net": "qa-sql-server.database.windows.net"
+    "dev-sql-server.database.windows.net": "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
 
   PROD:
     # Map DEV workspace ID → PROD workspace ID
@@ -42,6 +42,11 @@ find_replace:
     "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000C"
     # SQL connection string (PROD)
     "dev-sql-server.database.windows.net": "prod-sql-server.database.windows.net"
+
+
+
+
+
 
 
 

@@ -1,0 +1,91 @@
+table SalesOrderDetail
+	lineageTag: c2d3e4f5-a6b7-8901-cdef-123456789012
+
+	column SalesOrderID
+		dataType: int64
+		formatString: 0
+		lineageTag: 11223344-5566-7788-99aa-bbccddeeff00
+		summarizeBy: none
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderDetailID
+		dataType: int64
+		formatString: 0
+		lineageTag: 22334455-6677-8899-aabb-ccddeeff0011
+		summarizeBy: none
+		sourceColumn: SalesOrderDetailID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		lineageTag: 33445566-7788-99aa-bbcc-ddeeff001122
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQty
+		dataType: int64
+		formatString: 0
+		lineageTag: 44556677-8899-aabb-ccdd-eeff00112233
+		summarizeBy: sum
+		sourceColumn: OrderQty
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 55667788-99aa-bbcc-ddee-ff0011223344
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column UnitPriceDiscount
+		dataType: decimal
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 66778899-aabb-ccdd-eeff-001122334455
+		summarizeBy: none
+		sourceColumn: UnitPriceDiscount
+
+		annotation SummarizationSetBy = Automatic
+
+	measure TotalLineAmount = SUMX(SalesOrderDetail, SalesOrderDetail[OrderQty] * SalesOrderDetail[UnitPrice] * (1 - SalesOrderDetail[UnitPriceDiscount]))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 7788aabb-ccdd-eeff-0011-223344556677
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	partition SalesOrderDetail = m
+		mode: import
+		source =
+			let
+			    Source = Table.FromRows(
+			        {
+			            {1, 1, 2, 709,  9.50, 0.00},
+			            {1, 2, 3, 714, 49.99, 0.00},
+			            {2, 3, 1, 716, 1431.50, 0.00},
+			            {3, 4, 2, 709,  9.50, 0.10},
+			            {4, 5, 4, 714, 49.99, 0.05}
+			        },
+			        type table [
+			            SalesOrderID       = Int64.Type,
+			            SalesOrderDetailID = Int64.Type,
+			            OrderQty           = Int64.Type,
+			            ProductID          = Int64.Type,
+			            UnitPrice          = Currency.Type,
+			            UnitPriceDiscount  = Currency.Type
+			        ]
+			    )
+			in
+			    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

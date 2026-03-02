@@ -1,0 +1,9 @@
+relationship SalesOrderDetail_to_SalesOrderHeader
+	fromCardinality: many
+	fromColumn: SalesOrderDetail.SalesOrderID
+	toColumn: SalesOrderHeader.SalesOrderID
+
+relationship SalesOrderDetail_to_Product
+	fromCardinality: many
+	fromColumn: SalesOrderDetail.ProductID
+	toColumn: Product.ProductID
