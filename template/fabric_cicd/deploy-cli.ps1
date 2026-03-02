@@ -1,6 +1,6 @@
 
 param(
-    [string]$TargetEnvironment = ""
+    [string]$Environment = "DEV"
 )
 
 Set-StrictMode -Version Latest
@@ -121,31 +121,24 @@ function Deploy-FabricEnvironment {
             Write-Host "[$EnvName] variable.json updated with sqlDatabaseId=$sqlDbId"
         }
     }
+
+    # ── Update config/parameter.yml with workspace ID ────────────────────────
+    $envPlaceholders = @{
+        "DEV"  = "00000000-0000-0000-0000-000000000001"
+        "QA"   = "00000000-0000-0000-0000-000000000002"
+        "PROD" = "00000000-0000-0000-0000-000000000003"
+    }
+    $paramFile = "config/parameter.yml"
+    $content = Get-Content $paramFile -Raw
+    $content = $content -replace $envPlaceholders[$EnvName], $workspaceId
+    Set-Content $paramFile $content
+    Write-Host "[$EnvName] parameter.yml updated with workspaceId=$workspaceId"
+
+    # ── Set TARGET_WORKSPACE_ID for the Python deployer ──────────────────────
+    [System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $workspaceId)
+    Write-Host "[$EnvName] TARGET_WORKSPACE_ID set to $workspaceId"
 }
 
-# ── Deploy each environment ───────────────────────────────────────────────────
-foreach ($envName in @("DEV", "QA", "PROD")) {
-    Write-Host "=== Deploying $envName ==="
-    Deploy-FabricEnvironment -EnvName $envName
-}
-
-# ── Update config/parameter.yml with all workspace IDs ───────────────────────
-$placeholders = @{
-    "00000000-0000-0000-0000-000000000001" = $workspaceIds["DEV"]
-    "00000000-0000-0000-0000-000000000002" = $workspaceIds["QA"]
-    "00000000-0000-0000-0000-000000000003" = $workspaceIds["PROD"]
-}
-$paramFile = "config/parameter.yml"
-$content = Get-Content $paramFile -Raw
-foreach ($placeholder in $placeholders.GetEnumerator()) {
-    $content = $content -replace $placeholder.Key, $placeholder.Value
-}
-Set-Content $paramFile $content
-Write-Host "parameter.yml updated with workspace IDs."
-
-# ── Set TARGET_WORKSPACE_ID for the Python deployer ──────────────────────────
-$targetEnv = if ($env:TARGET_ENVIRONMENT) { $env:TARGET_ENVIRONMENT } else { "DEV" }
-$targetWorkspaceId = $workspaceIds[$targetEnv.ToUpper()]
-if (-not $targetWorkspaceId) { $targetWorkspaceId = $workspaceIds["DEV"] }
-[System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $targetWorkspaceId)
-Write-Host "TARGET_WORKSPACE_ID set to $targetWorkspaceId (env=$targetEnv)"
+# ── Deploy environment ────────────────────────────────────────────────────────
+Write-Host "=== Deploying $Environment ==="
+Deploy-FabricEnvironment -EnvName $Environment

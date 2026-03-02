@@ -41,6 +41,8 @@ DEFAULT_ITEM_TYPES = [
     "SemanticModel",
     "Report",
     "Environment",
+    "Lakehouse",
+    "SQLDatabase",
 ]
 
 # DataPipeline is only supported with User Identity (UPN) authentication.
@@ -119,6 +121,7 @@ def deploy(
     repo_dir: str,
     item_types: list[str],
     clean_orphans: bool,
+    parameter_file_path: str | None = None,
 ) -> None:
     """Run a full deterministic deployment to the target workspace."""
 
@@ -129,6 +132,7 @@ def deploy(
     logger.info("  Repo directory: %s", os.path.abspath(repo_dir))
     logger.info("  Item types    : %s", ", ".join(item_types))
     logger.info("  Clean orphans : %s", clean_orphans)
+    logger.info("  Parameter file: %s", parameter_file_path or "(default)")
     logger.info("  Git commit    : %s", os.environ.get("GITHUB_SHA", "local"))
     logger.info("=" * 60)
 
@@ -138,13 +142,16 @@ def deploy(
     # Use an absolute path so that os.scandir inside the library produces
     # absolute directory.path entries, which match the .resolve()-d path used
     # in _convert_path_to_id when looking up the SemanticModel for a Report.
-    workspace = FabricWorkspace(
+    workspace_kwargs = dict(
         workspace_id=workspace_id,
         environment=environment,
         repository_directory=os.path.abspath(repo_dir),
         item_type_in_scope=item_types,
         token_credential=credential,
     )
+    if parameter_file_path:
+        workspace_kwargs["parameter_file_path"] = os.path.abspath(parameter_file_path)
+    workspace = FabricWorkspace(**workspace_kwargs)
 
     # Publish all items
     logger.info("Publishing items…")
@@ -181,6 +188,7 @@ def main() -> None:
     repo_dir = _env("REPO_DIR", required=False, default=DEFAULT_REPO_DIR)
     items_in_scope = _parse_items_in_scope(_env("ITEMS_IN_SCOPE", required=False))
     clean_orphans = _parse_bool(_env("CLEAN_ORPHANS", required=False, default="false"))
+    parameter_file_path = _env("PARAMETER_FILE_PATH", required=False, default="./config/parameter.yml")
 
     try:
         deploy(
@@ -189,6 +197,7 @@ def main() -> None:
             repo_dir=repo_dir,
             item_types=items_in_scope,
             clean_orphans=clean_orphans,
+            parameter_file_path=parameter_file_path,
         )
     except Exception:
         logger.exception("Deployment failed.")

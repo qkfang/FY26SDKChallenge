@@ -5,6 +5,7 @@
 #   .\deploy-bicep.ps1 -ResourceGroup "my-rg" -Location "westus"
 
 param(
+    [string]$Environment = "DEV",
     [string]$ResourceGroup = "rg-fabricsdk",
     [string]$Location = "australiaeast",
     [string]$TemplateFile = "bicep/main.bicep",
@@ -67,14 +68,13 @@ if ($LASTEXITCODE -ne 0) {
 $deployOutput = $jsonLines | Out-String | ConvertFrom-Json
 $outputs = $deployOutput.properties.outputs
 
-# ── Write outputs to config/variable.json per environment ─────────────────────
-$variableConfig = @{}
-foreach ($env in @("DEV", "QA", "PROD")) {
-    $variableConfig[$env] = @{
-        capacityId      = $outputs.capacityId.value
-        capacityName    = $outputs.capacityName.value
-    }
+# ── Write outputs to config/variable.json for the target environment ─────────
+$variableFile = "config/variable.json"
+$variableConfig = if (Test-Path $variableFile) { Get-Content $variableFile -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+if (-not $variableConfig.$Environment) {
+    $variableConfig | Add-Member -NotePropertyName $Environment -NotePropertyValue ([pscustomobject]@{}) -Force
 }
-
-$variableConfig | ConvertTo-Json -Depth 3 | Set-Content "config/variable.json"
-Write-Host "config/variable.json updated."
+$variableConfig.$Environment | Add-Member -NotePropertyName "capacityId"   -NotePropertyValue $outputs.capacityId.value   -Force
+$variableConfig.$Environment | Add-Member -NotePropertyName "capacityName" -NotePropertyValue $outputs.capacityName.value -Force
+$variableConfig | ConvertTo-Json -Depth 3 | Set-Content $variableFile
+Write-Host "config/variable.json updated for $Environment."

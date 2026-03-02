@@ -17,31 +17,26 @@
 
 # ── find_replace ─────────────────────────────────────────────────────
 # Performs literal string replacement across all item definition files.
-# Use this for workspace IDs, lakehouse IDs, connection IDs, etc.
+# Each entry has a find_value and a replace_value dict keyed by environment.
 find_replace:
-  DEV:
-    # Workspace ID for the DEV environment (source / baseline)
-    "4b5fb93b-484d-4485-8bfd-34210a853a54": "4b5fb93b-484d-4485-8bfd-34210a853a54"
-    # Lakehouse ID in DEV
-    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000A"
-    # SQL connection string (DEV)
-    "dev-sql-server.database.windows.net": "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
+  - find_value: "4b5fb93b-484d-4485-8bfd-34210a853a54"
+    replace_value:
+      DEV: "4b5fb93b-484d-4485-8bfd-34210a853a54"
+      QA: "461ed1ca-16e5-4374-bf04-0c8942525205"
+      PROD: "a9fbd7ca-47c4-4c58-9ebe-d9f32fe98386"
 
-  QA:
-    # Map DEV workspace ID → QA workspace ID
-    "4b5fb93b-484d-4485-8bfd-34210a853a54": "461ed1ca-16e5-4374-bf04-0c8942525205"
-    # Map DEV lakehouse ID → QA lakehouse ID
-    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000B"
-    # SQL connection string (QA)
-    "dev-sql-server.database.windows.net": "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
+  - find_value: "00000000-0000-0000-0000-00000000000A"
+    replace_value:
+      DEV: "00000000-0000-0000-0000-00000000000A"
+      QA: "00000000-0000-0000-0000-00000000000B"
+      PROD: "00000000-0000-0000-0000-00000000000C"
 
-  PROD:
-    # Map DEV workspace ID → PROD workspace ID
-    "4b5fb93b-484d-4485-8bfd-34210a853a54": "a9fbd7ca-47c4-4c58-9ebe-d9f32fe98386"
-    # Map DEV lakehouse ID → PROD lakehouse ID
-    "00000000-0000-0000-0000-00000000000A": "00000000-0000-0000-0000-00000000000C"
-    # SQL connection string (PROD)
-    "dev-sql-server.database.windows.net": "prod-sql-server.database.windows.net"
+  - find_value: "dev-sql-server.database.windows.net"
+    replace_value:
+      DEV: "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
+      QA: "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
+      PROD: "prod-sql-server.database.windows.net"
+
 
 
 
