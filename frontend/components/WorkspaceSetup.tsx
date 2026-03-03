@@ -5,9 +5,11 @@ import './WorkspaceSetup.css';
 interface WorkspaceSetupProps {
   status: DeploymentStatus | null;
   onReady: (workspaceDir: string, sessionId?: string) => void;
+  sessionId: string;
+  workspaceDir: string;
 }
 
-const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady }) => {
+const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady, sessionId, workspaceDir }) => {
   const [notified, setNotified] = useState(false);
   const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -51,26 +53,6 @@ const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady }) => {
         </div>
         <span className="ws-progress-pct">{status.progress}%</span>
       </div>
-
-      {(status.workspaceDir || status.copilotSessionId) && (
-        <div className="ws-info-box">
-          {status.copilotSessionId && (
-            <div className="ws-info-row">
-              <span className="ws-info-label">Copilot Session ID</span>
-              <code className="ws-info-value">{status.copilotSessionId}</code>
-            </div>
-          )}
-          {status.workspaceDir && (
-            <div className="ws-info-row">
-              <span className="ws-info-label">Workspace Folder</span>
-              <code className="ws-info-value">{status.workspaceDir}</code>
-              <button className="btn-open-folder" title="Open in Explorer" onClick={() => api.openFolder(status.workspaceDir!)}>
-                📂
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="ws-log" ref={messagesRef}>
         {status.messages.map((msg, i) => (

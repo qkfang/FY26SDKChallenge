@@ -42,13 +42,13 @@ deploymentRouter.post('/init', deploymentLimiter, async (_req, res) => {
 // Setup workspace (Tab 2)
 deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
   try {
-    const { requirement, resourceConfig } = req.body;
+    const { requirement, resourceConfig, workspaceDir, sessionId } = req.body;
 
     if (!requirement) {
       return res.status(400).json({ error: 'Requirement is required' });
     }
 
-    const deploymentId = await deploymentService.setupWorkspace(requirement, resourceConfig);
+    const deploymentId = await deploymentService.setupWorkspace(requirement, resourceConfig, workspaceDir, sessionId);
     res.json({ deploymentId });
   } catch (error: any) {
     console.error('Error setting up workspace:', error);

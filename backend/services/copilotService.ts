@@ -87,6 +87,10 @@ export class CopilotService {
     }
   }
 
+  hasSession(sessionId: string): boolean {
+    return this.sessions.has(sessionId);
+  }
+
   getSessionInfo(sessionId: string): CopilotSessionInfo {
     const session = this.sessions.get(sessionId);
     return {

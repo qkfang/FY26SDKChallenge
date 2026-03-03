@@ -61,7 +61,7 @@ export class DeploymentService {
   }
 
   // ── Setup workspace (Tab 2) ────────────────────────────────────────────────
-  async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig): Promise<string> {
+  async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig, existingWorkspaceDir?: string, existingSessionId?: string): Promise<string> {
     const deploymentId = randomUUID();
 
     const initialStatus: DeploymentStatus = {
@@ -72,14 +72,14 @@ export class DeploymentService {
         {
           timestamp: new Date(),
           type: 'info',
-          message: 'Setting up new workspace...'
+          message: existingWorkspaceDir ? 'Setting up existing workspace...' : 'Setting up new workspace...'
         }
       ]
     };
 
     this.deployments.set(deploymentId, initialStatus);
 
-    this.executeSetup(deploymentId, requirement, resourceConfig).catch(error => {
+    this.executeSetup(deploymentId, requirement, resourceConfig, existingWorkspaceDir, existingSessionId).catch(error => {
       this.updateDeploymentStatus(deploymentId, { status: 'failed', error: error.message });
     });
 
@@ -89,31 +89,56 @@ export class DeploymentService {
   private async executeSetup(
     deploymentId: string,
     requirement: string,
-    resourceConfig?: ResourceConfig
+    resourceConfig?: ResourceConfig,
+    existingWorkspaceDir?: string,
+    existingSessionId?: string
   ): Promise<void> {
     try {
       this.updateDeploymentStatus(deploymentId, { status: 'in-progress', progress: 10 });
 
-      // Create timestamped workspace dir and copy template
-      const now = new Date();
-      const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
-      const workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
+      let workspaceDir: string;
+      let copilotSessionKey: string;
 
-      this.addMessage(deploymentId, 'info', `Creating workspace directory: ${workspaceDir}`);
-      fs.mkdirSync(workspaceDir, { recursive: true });
+      if (existingWorkspaceDir) {
+        // Reuse workspace from init step
+        workspaceDir = existingWorkspaceDir;
+        copilotSessionKey = existingSessionId || deploymentId;
+        this.addMessage(deploymentId, 'info', `Using existing workspace: ${workspaceDir}`);
 
-      this.addMessage(deploymentId, 'info', `Copying template from: ${TEMPLATE_DIR}`);
-      await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
-      this.addMessage(deploymentId, 'success', 'Template copied successfully.');
+        // Ensure template files are present
+        if (!fs.existsSync(workspaceDir)) {
+          fs.mkdirSync(workspaceDir, { recursive: true });
+          await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
+          this.addMessage(deploymentId, 'success', 'Template copied successfully.');
+        }
+      } else {
+        // Create timestamped workspace dir and copy template
+        const now = new Date();
+        const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+        workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
+        copilotSessionKey = deploymentId;
+
+        this.addMessage(deploymentId, 'info', `Creating workspace directory: ${workspaceDir}`);
+        fs.mkdirSync(workspaceDir, { recursive: true });
+
+        this.addMessage(deploymentId, 'info', `Copying template from: ${TEMPLATE_DIR}`);
+        await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
+        this.addMessage(deploymentId, 'success', 'Template copied successfully.');
+      }
 
       this.updateDeploymentStatus(deploymentId, { progress: 40, workspaceDir });
 
       // Initialize Copilot session
       this.addMessage(deploymentId, 'info', 'Initializing Copilot SDK...');
       await copilotService.initialize();
-      await copilotService.createSession(deploymentId, workspaceDir);
 
-      const sessionInfo = copilotService.getSessionInfo(deploymentId);
+      // Reuse existing session if available, otherwise create new
+      const hasExistingSession = existingSessionId && copilotService.hasSession(existingSessionId);
+      if (!hasExistingSession) {
+        await copilotService.createSession(copilotSessionKey, workspaceDir);
+      }
+
+      const sessionInfo = copilotService.getSessionInfo(hasExistingSession ? existingSessionId! : copilotSessionKey);
       if (sessionInfo.sdkSessionId) {
         this.addMessage(deploymentId, 'info', `Copilot SDK connected (v${sessionInfo.clientVersion || '?'})`);
         this.updateDeploymentStatus(deploymentId, { copilotSessionId: sessionInfo.sdkSessionId });
@@ -125,8 +150,9 @@ export class DeploymentService {
 
       // Process requirement with Copilot
       this.addMessage(deploymentId, 'info', 'Analyzing requirement with Copilot...');
+      const activeSessionKey = existingSessionId && copilotService.hasSession(existingSessionId) ? existingSessionId : copilotSessionKey;
       await copilotService.processRequirement(
-        deploymentId,
+        activeSessionKey,
         requirement,
         workspaceDir,
         (message) => { this.addMessage(deploymentId, message.type, message.message); }

@@ -69,7 +69,7 @@ function App() {
     setSetupDeploymentId(null);
 
     try {
-      const { deploymentId } = await api.setupWorkspace(requirement, resourceConfig);
+      const { deploymentId } = await api.setupWorkspace(requirement, resourceConfig, workspaceDir || undefined, sessionId || undefined);
       setSetupDeploymentId(deploymentId);
     } catch (error: any) {
       alert(`Failed to start workspace setup: ${error.response?.data?.error || error.message}`);
@@ -151,7 +151,7 @@ function App() {
 
         <div className="panel">
           <h2 className="panel-title">2 · Workspace</h2>
-          <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} />
+          <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} sessionId={sessionId} workspaceDir={workspaceDir} />
         </div>
 
         <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>

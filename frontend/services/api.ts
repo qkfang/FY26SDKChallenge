@@ -50,8 +50,8 @@ export const api = {
     return response.data;
   },
 
-  async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig): Promise<{ deploymentId: string }> {
-    const response = await axios.post(`${API_BASE_URL}/deployment/setup`, { requirement, resourceConfig });
+  async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig, workspaceDir?: string, sessionId?: string): Promise<{ deploymentId: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/setup`, { requirement, resourceConfig, workspaceDir, sessionId });
     return response.data;
   },
 
