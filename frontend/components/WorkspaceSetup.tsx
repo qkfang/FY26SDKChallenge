@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { DeploymentStatus } from '../services/api';
+import { api, DeploymentStatus } from '../services/api';
 import './WorkspaceSetup.css';
 
 interface WorkspaceSetupProps {
@@ -64,6 +64,9 @@ const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady }) => {
             <div className="ws-info-row">
               <span className="ws-info-label">Workspace Folder</span>
               <code className="ws-info-value">{status.workspaceDir}</code>
+              <button className="btn-open-folder" title="Open in Explorer" onClick={() => api.openFolder(status.workspaceDir!)}>
+                📂
+              </button>
             </div>
           )}
         </div>

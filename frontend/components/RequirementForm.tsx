@@ -12,6 +12,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
   const [notebookName, setNotebookName] = useState('');
   const [sqlServerName, setSqlServerName] = useState('');
   const [workspaceSuffix, setWorkspaceSuffix] = useState('fabric-workspace');
+  const [fabricCapacity, setFabricCapacity] = useState('fabriccapacitycicd');
   const [envDev, setEnvDev] = useState(true);
   const [envQa, setEnvQa] = useState(true);
   const [envProd, setEnvProd] = useState(true);
@@ -35,6 +36,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
       const resourceConfig: ResourceConfig = {
         notebookName: notebookName.trim() || undefined,
         sqlServerName: sqlServerName.trim() || undefined,
+        fabricCapacity: fabricCapacity.trim() || undefined,
         workspaces: {
           dev: envDev && suffix ? `${suffix}-dev` : undefined,
           qa: envQa && suffix ? `${suffix}-qa` : undefined,
@@ -72,27 +74,40 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
 
         <div className="form-section">
           <h3 className="form-section-title">Workspace Configuration</h3>
-          <div className="form-group">
-            <label htmlFor="workspaceSuffix">Workspace Name Prefix</label>
-            <input type="text" id="workspaceSuffix" value={workspaceSuffix}
-              onChange={(e) => setWorkspaceSuffix(e.target.value)}
-              placeholder="fabric-workspace" disabled={isLoading} />
-            <p className="form-section-hint" style={{ marginTop: 6 }}>Environments will be appended as suffix (e.g. {workspaceSuffix}-dev)</p>
+          <div className="form-section-columns">
+            <div className="form-group">
+              <label htmlFor="workspaceSuffix">Workspace Name Prefix</label>
+              <input type="text" id="workspaceSuffix" value={workspaceSuffix}
+                onChange={(e) => setWorkspaceSuffix(e.target.value)}
+                placeholder="fabric-workspace" disabled={isLoading} />
+              <p className="form-section-hint" style={{ marginTop: 6 }}>Environments will be appended as suffix (e.g. {workspaceSuffix}-dev)</p>
+            </div>
+            <div className="form-group">
+              <label className="env-label">Environments</label>
+              <div className="env-checkboxes">
+                <label className="env-checkbox">
+                  <input type="checkbox" checked={envDev} onChange={(e) => setEnvDev(e.target.checked)} disabled={isLoading} />
+                  <span>DEV</span>
+                </label>
+                <label className="env-checkbox">
+                  <input type="checkbox" checked={envQa} onChange={(e) => setEnvQa(e.target.checked)} disabled={isLoading} />
+                  <span>QA</span>
+                </label>
+                <label className="env-checkbox">
+                  <input type="checkbox" checked={envProd} onChange={(e) => setEnvProd(e.target.checked)} disabled={isLoading} />
+                  <span>PROD</span>
+                </label>
+              </div>
+            </div>
           </div>
-          <label className="env-label">Environments</label>
-          <div className="env-checkboxes">
-            <label className="env-checkbox">
-              <input type="checkbox" checked={envDev} onChange={(e) => setEnvDev(e.target.checked)} disabled={isLoading} />
-              <span>DEV</span>
-            </label>
-            <label className="env-checkbox">
-              <input type="checkbox" checked={envQa} onChange={(e) => setEnvQa(e.target.checked)} disabled={isLoading} />
-              <span>QA</span>
-            </label>
-            <label className="env-checkbox">
-              <input type="checkbox" checked={envProd} onChange={(e) => setEnvProd(e.target.checked)} disabled={isLoading} />
-              <span>PROD</span>
-            </label>
+          <div className="form-section-columns">
+            <div className="form-group">
+              <label htmlFor="fabricCapacity">Fabric Capacity</label>
+              <input type="text" id="fabricCapacity" value={fabricCapacity}
+                onChange={(e) => setFabricCapacity(e.target.value)}
+                placeholder="fabriccapacitycicd" disabled={isLoading} />
+            </div>
+            <div />
           </div>
         </div>
 

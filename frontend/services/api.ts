@@ -5,6 +5,7 @@ const API_BASE_URL = '/api';
 export interface ResourceConfig {
   notebookName?: string;
   sqlServerName?: string;
+  fabricCapacity?: string;
   workspaces: {
     dev?: string;
     qa?: string;
@@ -62,6 +63,10 @@ export const api = {
   async getDeploymentStatus(deploymentId: string): Promise<DeploymentStatus> {
     const response = await axios.get(`${API_BASE_URL}/deployment/status/${deploymentId}`);
     return response.data;
+  },
+
+  async openFolder(folderPath: string): Promise<void> {
+    await axios.post(`${API_BASE_URL}/deployment/open-folder`, { folderPath });
   },
 
   async checkHealth(): Promise<{ status: string; message: string }> {

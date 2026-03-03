@@ -1,6 +1,7 @@
 export interface ResourceConfig {
   notebookName?: string;
   sqlServerName?: string;
+  fabricCapacity?: string;
   workspaces: {
     dev?: string;
     qa?: string;

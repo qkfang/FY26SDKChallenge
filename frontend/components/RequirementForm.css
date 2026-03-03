@@ -20,6 +20,13 @@
   margin-bottom: 20px;
 }
 
+.form-section-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
 .form-section-title {
   margin: 0 0 12px 0;
   color: #444;

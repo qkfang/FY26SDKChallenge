@@ -75,11 +75,20 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir
             <div className="init-step__info-row">
               <span className="init-step__info-label">Copilot Session:</span>
               <code className="init-step__info-value">{currentSessionId}</code>
+              <button className="btn-open-folder" title="Open session folder" onClick={() => {
+                const base = currentWorkspaceDir.replace(/[/\\]temp[/\\]ws[/\\].*$/, '');
+                api.openFolder(`${base}\\temp\\ghcsdk\\session-state`);
+              }}>
+                📂
+              </button>
             </div>
           )}
           <div className="init-step__info-row">
             <span className="init-step__info-label">Workspace:</span>
             <code className="init-step__info-value">{currentWorkspaceDir}</code>
+            <button className="btn-open-folder" title="Open in Explorer" onClick={() => api.openFolder(currentWorkspaceDir)}>
+              📂
+            </button>
           </div>
         </div>
       )}

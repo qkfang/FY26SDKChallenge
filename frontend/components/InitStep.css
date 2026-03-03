@@ -35,6 +35,22 @@
   padding: 2px 8px;
   border-radius: 4px;
   word-break: break-all;
+  flex: 1;
+}
+
+.btn-open-folder {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+.btn-open-folder:hover {
+  opacity: 1;
+  background: #ede9fe;
 }
 
 .init-step__options {

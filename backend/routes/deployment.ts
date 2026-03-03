@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { exec } from 'child_process';
 import { deploymentService } from '../services/deploymentService.js';
 import { fabricService } from '../services/fabricService.js';
 
@@ -85,6 +86,18 @@ deploymentRouter.get('/status/:deploymentId', (req, res) => {
     res.json(status);
   } catch (error: any) {
     console.error('Error fetching deployment status:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Open a local folder in the file explorer
+deploymentRouter.post('/open-folder', configLimiter, (req, res) => {
+  try {
+    const { folderPath } = req.body;
+    if (!folderPath) return res.status(400).json({ error: 'folderPath is required' });
+    exec(`explorer.exe "${folderPath}"`);
+    res.json({ message: 'Opened folder' });
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
