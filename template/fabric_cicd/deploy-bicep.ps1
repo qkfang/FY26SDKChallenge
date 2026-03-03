@@ -49,23 +49,21 @@ Write-Host "  Capacity Admin: $capacityAdmin"
 
 # ── Deploy Bicep template ─────────────────────────────────────────────────────
 Write-Host "Deploying Bicep template '$TemplateFile' to '$ResourceGroup'..."
-$adminArray = "[\""$capacityAdmin\""]"
-$rawOutput = az deployment group create `
+$adminArray = ConvertTo-Json @($capacityAdmin) -Compress
+$rawJson = az deployment group create `
     --resource-group $ResourceGroup `
     --template-file $TemplateFile `
     --parameters $ParameterFile `
-    --parameters capacityAdminMembers="$adminArray" `
+    --parameters "capacityAdminMembers=$adminArray" `
     --only-show-errors `
-    --output json 2>&1
-
-$jsonLines = $rawOutput | Where-Object { $_ -notmatch '^\s*(WARNING|INFO|VERBOSE|Bicep CLI)' }
+    --output json
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep deployment failed."
     exit 1
 }
 
-$deployOutput = $jsonLines | Out-String | ConvertFrom-Json
+$deployOutput = $rawJson | ConvertFrom-Json
 $outputs = $deployOutput.properties.outputs
 
 # ── Write outputs to config/variable.json for the target environment ─────────
