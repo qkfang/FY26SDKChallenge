@@ -8,12 +8,12 @@
     "sqlDatabaseName": "fabricdb-5c363344-3267-4c4e-b699-21b70e1cb5c0"
   },
   "DEV": {
-    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
-    "capacityName": "fabriccapacitycicd",
     "workspaceId": "334687d9-c5a3-4af6-a9b1-9c02bad79934",
     "sqlDatabaseId": "5c363344-3267-4c4e-b699-21b70e1cb5c0",
     "sqlServerEndpoint": "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com,1433",
-    "sqlDatabaseName": "fabricdb-5c363344-3267-4c4e-b699-21b70e1cb5c0"
+    "sqlDatabaseName": "fabricdb-5c363344-3267-4c4e-b699-21b70e1cb5c0",
+    "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",
+    "capacityName": "fabriccapacitycicd"
   },
   "QA": {
     "capacityId": "/subscriptions/873a4995-e21b-47e2-953e-f2e88e2fa4f9/resourceGroups/rg-fabricsdk/providers/Microsoft.Fabric/capacities/fabriccapacitycicd",

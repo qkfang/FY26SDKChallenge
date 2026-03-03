@@ -40,12 +40,12 @@ logger = logging.getLogger("fabric-cicd-deploy")
 # ---------------------------------------------------------------------------
 DEFAULT_REPO_DIR = "./workspace"
 DEFAULT_ITEM_TYPES = [
-    # "Notebook",
-    "SemanticModel",
+    "Notebook",
+    # "SemanticModel",
     # "Report",
     # "Environment",
-    # "Lakehouse",
-    # "SQLDatabase",
+    "Lakehouse",
+    "SQLDatabase",
 ]
 
 # DataPipeline is only supported with User Identity (UPN) authentication.
