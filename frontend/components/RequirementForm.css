@@ -145,6 +145,37 @@
   cursor: not-allowed;
 }
 
+.env-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.env-checkboxes {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 10px;
+}
+
+.env-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+}
+
+.env-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .form-row,
   .form-row-3 {

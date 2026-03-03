@@ -5,7 +5,7 @@ import DeploySteps from './components/DeploySteps';
 import { api, DeploymentStatus, ResourceConfig } from './services/api';
 import './App.css';
 
-type Tab = 'requirement' | 'workspace' | 'deploy';
+
 
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
@@ -23,7 +23,6 @@ function clearCookies() {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('requirement');
   const [isConnected, setIsConnected] = useState(false);
 
   // Setup state
@@ -98,11 +97,7 @@ function App() {
     setActiveTab('requirement');
   };
 
-  const tabs: { id: Tab; label: string; locked: boolean }[] = [
-    { id: 'requirement', label: '1 · Requirement', locked: false },
-    { id: 'workspace', label: '2 · Workspace', locked: false },
-    { id: 'deploy', label: '3 · Deploy', locked: !workspaceDir },
-  ];
+
 
   return (
     <div className="app">
@@ -131,33 +126,22 @@ function App() {
           </div>
         )}
 
-        {/* Tab bar */}
-        <div className="tab-bar">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className={`tab-btn ${activeTab === tab.id ? 'tab-btn--active' : ''} ${tab.locked ? 'tab-btn--locked' : ''}`}
-              onClick={() => !tab.locked && setActiveTab(tab.id)}
-              disabled={tab.locked}
-            >
-              {tab.label}
-              {tab.id === 'deploy' && tab.locked && ' 🔒'}
-            </button>
-          ))}
+        <div className="panel">
+          <h2 className="panel-title">1 · Requirement</h2>
+          <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} />
         </div>
 
-        {/* Tab content */}
-        <div className="tab-content">
-          {activeTab === 'requirement' && (
-            <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} />
-          )}
+        <div className="panel">
+          <h2 className="panel-title">2 · Workspace</h2>
+          <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} />
+        </div>
 
-          {activeTab === 'workspace' && (
-            <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} />
-          )}
-
-          {activeTab === 'deploy' && workspaceDir && (
+        <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
+          <h2 className="panel-title">3 · Deploy {!workspaceDir && '🔒'}</h2>
+          {workspaceDir ? (
             <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
+          ) : (
+            <p className="panel-locked-msg">Complete workspace setup to unlock deployment.</p>
           )}
         </div>
       </main>

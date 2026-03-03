@@ -85,52 +85,32 @@
   background: rgba(255,255,255,0.25);
 }
 
-/* ── Tab bar ────────────────────────────────────────────────────────────────── */
+/* ── Panels ─────────────────────────────────────────────────────────────────── */
 
-.tab-bar {
-  display: flex;
-  gap: 4px;
+.panel {
   background: white;
-  border-radius: 12px 12px 0 0;
-  padding: 8px 8px 0 8px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
-  margin-bottom: 0;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px 8px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: #f3f4f6;
-  color: #6b7280;
-  transition: background 0.2s, color 0.2s;
-}
-
-.tab-btn:hover:not(:disabled):not(.tab-btn--active) {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.tab-btn--active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.tab-btn--locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.tab-content {
-  background: white;
-  border-radius: 0 0 12px 12px;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.panel--locked {
+  opacity: 0.5;
+}
+
+.panel-locked-msg {
+  color: #9ca3af;
+  font-style: italic;
 }
 
 /* ── App main ───────────────────────────────────────────────────────────────── */
@@ -186,6 +166,6 @@
 @media (max-width: 768px) {
   .app-header h1 { font-size: 36px; }
   .app-header p  { font-size: 16px; }
-  .tab-btn       { font-size: 12px; padding: 10px 8px; }
+
 }
 

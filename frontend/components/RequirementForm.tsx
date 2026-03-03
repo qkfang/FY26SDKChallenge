@@ -11,20 +11,22 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
   const [requirement, setRequirement] = useState('create hello world notebook');
   const [notebookName, setNotebookName] = useState('');
   const [sqlServerName, setSqlServerName] = useState('');
-  const [devWorkspace, setDevWorkspace] = useState('fabric-workspace-dev');
-  const [qaWorkspace, setQaWorkspace] = useState('fabric-workspace-qa');
-  const [prodWorkspace, setProdWorkspace] = useState('fabric-workspace-prod');
+  const [workspaceSuffix, setWorkspaceSuffix] = useState('fabric-workspace');
+  const [envDev, setEnvDev] = useState(true);
+  const [envQa, setEnvQa] = useState(true);
+  const [envProd, setEnvProd] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (requirement.trim()) {
+      const suffix = workspaceSuffix.trim();
       const resourceConfig: ResourceConfig = {
         notebookName: notebookName.trim() || undefined,
         sqlServerName: sqlServerName.trim() || undefined,
         workspaces: {
-          dev: devWorkspace.trim() || undefined,
-          qa: qaWorkspace.trim() || undefined,
-          prod: prodWorkspace.trim() || undefined,
+          dev: envDev && suffix ? `${suffix}-dev` : undefined,
+          qa: envQa && suffix ? `${suffix}-qa` : undefined,
+          prod: envProd && suffix ? `${suffix}-prod` : undefined,
         },
       };
       onSubmit(requirement, resourceConfig);
@@ -57,27 +59,28 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
         {/* Fabric Artifacts section hidden */}
 
         <div className="form-section">
-          <h3 className="form-section-title">Workspace Names per Environment</h3>
-          <p className="form-section-hint">Leave empty to skip creating that environment's workspace.</p>
-          <div className="form-row form-row-3">
-            <div className="form-group">
-              <label htmlFor="devWorkspace">DEV Workspace</label>
-              <input type="text" id="devWorkspace" value={devWorkspace}
-                onChange={(e) => setDevWorkspace(e.target.value)}
-                placeholder="fabric-workspace-dev" disabled={isLoading} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="qaWorkspace">QA Workspace</label>
-              <input type="text" id="qaWorkspace" value={qaWorkspace}
-                onChange={(e) => setQaWorkspace(e.target.value)}
-                placeholder="fabric-workspace-qa" disabled={isLoading} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="prodWorkspace">PROD Workspace</label>
-              <input type="text" id="prodWorkspace" value={prodWorkspace}
-                onChange={(e) => setProdWorkspace(e.target.value)}
-                placeholder="fabric-workspace-prod" disabled={isLoading} />
-            </div>
+          <h3 className="form-section-title">Workspace Configuration</h3>
+          <div className="form-group">
+            <label htmlFor="workspaceSuffix">Workspace Name Prefix</label>
+            <input type="text" id="workspaceSuffix" value={workspaceSuffix}
+              onChange={(e) => setWorkspaceSuffix(e.target.value)}
+              placeholder="fabric-workspace" disabled={isLoading} />
+            <p className="form-section-hint" style={{ marginTop: 6 }}>Environments will be appended as suffix (e.g. {workspaceSuffix}-dev)</p>
+          </div>
+          <label className="env-label">Environments</label>
+          <div className="env-checkboxes">
+            <label className="env-checkbox">
+              <input type="checkbox" checked={envDev} onChange={(e) => setEnvDev(e.target.checked)} disabled={isLoading} />
+              <span>DEV</span>
+            </label>
+            <label className="env-checkbox">
+              <input type="checkbox" checked={envQa} onChange={(e) => setEnvQa(e.target.checked)} disabled={isLoading} />
+              <span>QA</span>
+            </label>
+            <label className="env-checkbox">
+              <input type="checkbox" checked={envProd} onChange={(e) => setEnvProd(e.target.checked)} disabled={isLoading} />
+              <span>PROD</span>
+            </label>
           </div>
         </div>
 

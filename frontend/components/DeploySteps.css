@@ -37,7 +37,7 @@
 
 .deploy-steps__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -177,7 +177,7 @@
 
 .step-log__line--info     .step-log__text { color: #c9d1d9; }
 .step-log__line--success  .step-log__text { color: #56d364; }
-.step-log__line--error    .step-log__text { color: #f85149; }
+.step-log__line--error    .step-log__text { color: #79c0ff; }
 .step-log__line--progress .step-log__text { color: #79c0ff; }
 
 /* ── Error message ───────────────────────────────────────────────────────────── */
