@@ -17,6 +17,9 @@ export interface DeploymentRequest {
   workspaceName?: string;
   lakehouseName?: string;
   resourceConfig?: ResourceConfig;
+  selectedSteps?: string[];
+  sessionId?: string;
+  tempFolder?: string;
 }
 
 export interface DeploymentStatus {
@@ -35,6 +38,8 @@ export interface DeploymentStatus {
     summary: string;
   };
   error?: string;
+  copilotSessionId?: string;
+  tempFolder?: string;
 }
 
 export const api = {

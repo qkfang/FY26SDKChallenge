@@ -10,9 +10,15 @@ export class DeploymentService {
     requirement: string,
     workspaceName?: string,
     lakehouseName?: string,
-    resourceConfig?: ResourceConfig
+    resourceConfig?: ResourceConfig,
+    selectedSteps?: string[],
+    sessionId?: string,
+    tempFolder?: string
   ): Promise<string> {
     const deploymentId = randomUUID();
+    const steps = (selectedSteps && selectedSteps.length > 0)
+      ? selectedSteps
+      : ['bicep', 'resource', 'fabric'];
     
     const initialStatus: DeploymentStatus = {
       id: deploymentId,
@@ -22,15 +28,17 @@ export class DeploymentService {
         {
           timestamp: new Date(),
           type: 'info',
-          message: 'Deployment initiated. Analyzing requirements...'
+          message: `Deployment initiated. Steps selected: ${steps.join(', ')}. Analyzing requirements...`
         }
-      ]
+      ],
+      copilotSessionId: sessionId,
+      tempFolder: tempFolder
     };
 
     this.deployments.set(deploymentId, initialStatus);
 
     // Start the deployment process asynchronously
-    this.executeDeployment(deploymentId, requirement, workspaceName, lakehouseName, resourceConfig)
+    this.executeDeployment(deploymentId, requirement, workspaceName, lakehouseName, resourceConfig, steps)
       .catch(error => {
         this.updateDeploymentStatus(deploymentId, {
           status: 'failed',
@@ -46,58 +54,88 @@ export class DeploymentService {
     requirement: string,
     workspaceName?: string,
     lakehouseName?: string,
-    resourceConfig?: ResourceConfig
+    resourceConfig?: ResourceConfig,
+    steps: string[] = ['bicep', 'resource', 'fabric']
   ): Promise<void> {
     try {
       this.updateDeploymentStatus(deploymentId, { status: 'in-progress', progress: 5 });
 
-      // ── Phase 1: Azure Resource Provisioning ───────────────────────────────
-      this.addMessage(deploymentId, 'info', 'Phase 1: Azure Resource Provisioning');
-      await this.runPhase1(deploymentId, resourceConfig);
+      const runBicep = steps.includes('bicep');
+      const runResource = steps.includes('resource');
+      const runFabric = steps.includes('fabric');
+
+      // ── Phase 1: Azure Resource Provisioning (bicep) ───────────────────────
+      if (runBicep) {
+        this.addMessage(deploymentId, 'info', 'Phase 1: Azure Resource Provisioning (deploy-bicep.ps1)');
+        await this.runPhase1(deploymentId, resourceConfig);
+      } else {
+        this.addMessage(deploymentId, 'info', 'Phase 1 (bicep): skipped');
+      }
 
       this.updateDeploymentStatus(deploymentId, { progress: 35 });
 
-      // ── Phase 2: Fabric Artifact Deployment ───────────────────────────────
-      this.addMessage(deploymentId, 'info', 'Phase 2: Fabric Artifact Deployment');
+      // ── Phase 2: Fabric Artifact Deployment (fabric / deploy.ps1) ──────────
+      if (runFabric) {
+        this.addMessage(deploymentId, 'info', 'Phase 2: Fabric Artifact Deployment (deploy.ps1)');
 
-      await copilotService.initialize();
-      await copilotService.createSession(deploymentId);
+        await copilotService.initialize();
+        await copilotService.createSession(deploymentId);
 
-      const sessionInfo = copilotService.getSessionInfo(deploymentId);
-      if (sessionInfo.sdkSessionId) {
-        this.addMessage(deploymentId, 'info', `Copilot SDK connected (v${sessionInfo.clientVersion || '?'})`);
+        const sessionInfo = copilotService.getSessionInfo(deploymentId);
+        if (sessionInfo.sdkSessionId) {
+          this.addMessage(deploymentId, 'info', `Copilot SDK connected (v${sessionInfo.clientVersion || '?'})`);
+          this.updateDeploymentStatus(deploymentId, {
+            copilotSessionId: sessionInfo.sdkSessionId,
+            tempFolder: sessionInfo.tempFolder
+          });
+        } else {
+          this.addMessage(deploymentId, 'info', 'Copilot SDK not available — using built-in plan generation');
+        }
+
+        this.addMessage(deploymentId, 'info', 'Analyzing requirements with Copilot...');
+        const deploymentPlan = await copilotService.processRequirement(
+          deploymentId,
+          requirement,
+          (message) => { this.addMessage(deploymentId, message.type, message.message); }
+        );
+
+        this.updateDeploymentStatus(deploymentId, { progress: 65 });
+        await this.runPhase2(deploymentId, resourceConfig);
       } else {
-        this.addMessage(deploymentId, 'info', 'Copilot SDK not available — using built-in plan generation');
+        this.addMessage(deploymentId, 'info', 'Phase 2 (fabric): skipped');
+        this.updateDeploymentStatus(deploymentId, { progress: 65 });
       }
-
-      this.addMessage(deploymentId, 'info', 'Analyzing requirements with Copilot...');
-      const deploymentPlan = await copilotService.processRequirement(
-        deploymentId,
-        requirement,
-        (message) => { this.addMessage(deploymentId, message.type, message.message); }
-      );
-
-      this.updateDeploymentStatus(deploymentId, { progress: 65 });
-
-      await this.runPhase2(deploymentId, resourceConfig);
 
       this.updateDeploymentStatus(deploymentId, { progress: 80 });
 
-      // ── Phase 3: Validation ────────────────────────────────────────────────
-      this.addMessage(deploymentId, 'info', 'Phase 3: Validation');
-      const validatedResources = await this.runPhase3(deploymentId, resourceConfig);
+      // ── Phase 3: Resource Deployment (resource / deploy-cli.ps1) ──────────
+      if (runResource) {
+        this.addMessage(deploymentId, 'info', 'Phase 3: Resource Deployment (deploy-cli.ps1)');
+        const validatedResources = await this.runPhase3(deploymentId, resourceConfig);
+        this.updateDeploymentStatus(deploymentId, {
+          status: 'completed',
+          progress: 100,
+          result: {
+            resources: validatedResources,
+            summary: `Steps executed: ${steps.join(', ')}`
+          }
+        });
+      } else {
+        this.addMessage(deploymentId, 'info', 'Phase 3 (resource): skipped');
+        this.updateDeploymentStatus(deploymentId, {
+          status: 'completed',
+          progress: 100,
+          result: {
+            resources: [],
+            summary: `Steps executed: ${steps.join(', ')}`
+          }
+        });
+      }
 
-      this.updateDeploymentStatus(deploymentId, {
-        status: 'completed',
-        progress: 100,
-        result: {
-          resources: validatedResources,
-          summary: deploymentPlan
-        }
-      });
-
-      this.addMessage(deploymentId, 'success', 'All 3 deployment phases completed successfully!');
-      await copilotService.destroySession(deploymentId);
+      this.addMessage(deploymentId, 'success', `Deployment completed! Steps executed: ${steps.join(', ')}`);
+      if (runFabric) {
+        await copilotService.destroySession(deploymentId);
+      }
 
     } catch (error: any) {
       console.error('Deployment error:', error);

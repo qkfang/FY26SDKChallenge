@@ -26,6 +26,7 @@ interface CopilotSessionInfo {
     login?: string;
   };
   model?: string;
+  tempFolder?: string;
 }
 
 export class CopilotService {
@@ -97,7 +98,8 @@ export class CopilotService {
         isAuthenticated: this.authInfo.isAuthenticated ?? false,
         authType: this.authInfo.authType,
         login: this.authInfo.login
-      }
+      },
+      tempFolder: SESSION_DIR
     };
   }
 

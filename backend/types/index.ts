@@ -13,6 +13,9 @@ export interface DeploymentRequest {
   workspaceName?: string;
   lakehouseName?: string;
   resourceConfig?: ResourceConfig;
+  selectedSteps?: string[];
+  sessionId?: string;
+  tempFolder?: string;
 }
 
 export interface DeploymentStatus {
@@ -22,6 +25,8 @@ export interface DeploymentStatus {
   messages: DeploymentMessage[];
   result?: DeploymentResult;
   error?: string;
+  copilotSessionId?: string;
+  tempFolder?: string;
 }
 
 export interface DeploymentMessage {

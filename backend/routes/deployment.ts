@@ -21,7 +21,7 @@ const configLimiter = rateLimit({
 // Start a new deployment
 deploymentRouter.post('/start', deploymentLimiter, async (req, res) => {
   try {
-    const { requirement, workspaceName, lakehouseName, resourceConfig } = req.body;
+    const { requirement, workspaceName, lakehouseName, resourceConfig, selectedSteps, sessionId, tempFolder } = req.body;
 
     if (!requirement) {
       return res.status(400).json({ error: 'Requirement is required' });
@@ -31,7 +31,10 @@ deploymentRouter.post('/start', deploymentLimiter, async (req, res) => {
       requirement,
       workspaceName,
       lakehouseName,
-      resourceConfig
+      resourceConfig,
+      selectedSteps,
+      sessionId,
+      tempFolder
     );
 
     res.json({ deploymentId });

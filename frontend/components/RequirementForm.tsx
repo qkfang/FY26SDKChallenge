@@ -3,21 +3,43 @@ import { ResourceConfig } from '../services/api';
 import './RequirementForm.css';
 
 interface RequirementFormProps {
-  onSubmit: (requirement: string, resourceConfig: ResourceConfig) => void;
+  onSubmit: (requirement: string, resourceConfig: ResourceConfig, selectedSteps: string[]) => void;
   isLoading: boolean;
+  savedSessionId?: string;
+  savedTempFolder?: string;
+  onNewSession?: () => void;
 }
 
-const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }) => {
+const STEPS = [
+  { id: 'bicep', label: 'Bicep', description: 'deploy-bicep.ps1 — Azure resource provisioning' },
+  { id: 'resource', label: 'Resource', description: 'deploy-cli.ps1 — Fabric workspace & resources' },
+  { id: 'fabric', label: 'Fabric', description: 'deploy.ps1 — Fabric artifact deployment' },
+];
+
+const RequirementForm: React.FC<RequirementFormProps> = ({
+  onSubmit,
+  isLoading,
+  savedSessionId,
+  savedTempFolder,
+  onNewSession,
+}) => {
   const [requirement, setRequirement] = useState('create hello world notebook');
   const [notebookName, setNotebookName] = useState('');
   const [sqlServerName, setSqlServerName] = useState('');
   const [devWorkspace, setDevWorkspace] = useState('fabric-workspace-dev');
   const [qaWorkspace, setQaWorkspace] = useState('fabric-workspace-qa');
   const [prodWorkspace, setProdWorkspace] = useState('fabric-workspace-prod');
+  const [selectedSteps, setSelectedSteps] = useState<string[]>(['bicep', 'resource', 'fabric']);
+
+  const toggleStep = (stepId: string) => {
+    setSelectedSteps(prev =>
+      prev.includes(stepId) ? prev.filter(s => s !== stepId) : [...prev, stepId]
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (requirement.trim()) {
+    if (requirement.trim() && selectedSteps.length > 0) {
       const resourceConfig: ResourceConfig = {
         notebookName: notebookName.trim() || undefined,
         sqlServerName: sqlServerName.trim() || undefined,
@@ -27,7 +49,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
           prod: prodWorkspace.trim() || undefined,
         },
       };
-      onSubmit(requirement, resourceConfig);
+      onSubmit(requirement, resourceConfig, selectedSteps);
     }
   };
 
@@ -53,6 +75,50 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
             disabled={isLoading}
           />
         </div>
+
+        <div className="form-section">
+          <h3 className="form-section-title">Deployment Steps</h3>
+          <p className="form-section-hint">Select which steps to execute. You can rerun individual steps.</p>
+          <div className="steps-grid">
+            {STEPS.map(step => (
+              <label key={step.id} className={`step-option ${selectedSteps.includes(step.id) ? 'step-selected' : ''} ${isLoading ? 'step-disabled' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={selectedSteps.includes(step.id)}
+                  onChange={() => toggleStep(step.id)}
+                  disabled={isLoading}
+                />
+                <div className="step-info">
+                  <span className="step-label">{step.label}</span>
+                  <span className="step-desc">{step.description}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {(savedSessionId || savedTempFolder) && (
+          <div className="form-section session-info">
+            <h3 className="form-section-title">📎 Saved Session</h3>
+            {savedSessionId && (
+              <div className="session-field">
+                <span className="session-field-label">Session ID:</span>
+                <code className="session-field-value">{savedSessionId}</code>
+              </div>
+            )}
+            {savedTempFolder && (
+              <div className="session-field">
+                <span className="session-field-label">Temp Folder:</span>
+                <code className="session-field-value">{savedTempFolder}</code>
+              </div>
+            )}
+            {onNewSession && (
+              <button type="button" className="btn-new-session" onClick={onNewSession} disabled={isLoading}>
+                🔄 New Session
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="form-section">
           <h3 className="form-section-title">Fabric Artifacts</h3>
@@ -122,7 +188,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
           </div>
         </div>
 
-        <button type="submit" disabled={!requirement.trim() || isLoading}>
+        <button type="submit" disabled={!requirement.trim() || selectedSteps.length === 0 || isLoading}>
           {isLoading ? 'Deploying...' : 'Start Deployment'}
         </button>
       </form>
@@ -148,3 +214,4 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
 };
 
 export default RequirementForm;
+
