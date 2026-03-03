@@ -21,7 +21,7 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "productcategory"
+                          "Entity": "ProductCategory"
                         }
                       },
                       "Property": "ProductCategoryID"
@@ -30,7 +30,7 @@
                   "Function": 5
                 }
               },
-              "queryRef": "CountNonNull(productcategory.ProductCategoryID)",
+              "queryRef": "CountNonNull(ProductCategory.ProductCategoryID)",
               "nativeQueryRef": "Count of ProductCategoryID"
             }
           ]
@@ -49,7 +49,7 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "productcategory"
+                    "Entity": "ProductCategory"
                   }
                 },
                 "Property": "ProductCategoryID"

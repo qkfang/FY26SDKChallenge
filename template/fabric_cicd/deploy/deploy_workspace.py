@@ -41,11 +41,11 @@ logger = logging.getLogger("fabric-cicd-deploy")
 # ---------------------------------------------------------------------------
 DEFAULT_REPO_DIR = "./workspace"
 DEFAULT_ITEM_TYPES = [
-    # "Notebook",
+    "Lakehouse",
+    "Notebook",
     "SemanticModel",
-    # "Report",
+    "Report",
     # "Environment",
-    # "Lakehouse",
     # "SQLDatabase",
 ]
 

@@ -19,12 +19,11 @@
 # Performs literal string replacement across all item definition files.
 # Each entry has a find_value and a replace_value dict keyed by environment.
 find_replace:
-  - find_value: "49f3e9cc-39cc-49b9-8807-0d33674b04b5"
+  - find_value: "20114644-bfa6-41f3-9981-2c30e0cf62eb"
     replace_value:
-      DEV: "49f3e9cc-39cc-49b9-8807-0d33674b04b5"
+      DEV: "20114644-bfa6-41f3-9981-2c30e0cf62eb"
       QA: "461ed1ca-16e5-4374-bf04-0c8942525205"
       PROD: "a9fbd7ca-47c4-4c58-9ebe-d9f32fe98386"
-
   - find_value: "dev-sql-server.database.windows.net"
     replace_value:
       DEV: "zylcdhpgv7uezc6dy7d3ngcwyi-3gdumm5dyx3evknrtqblvv4zgq.database.fabric.microsoft.com"
@@ -37,19 +36,6 @@ find_replace:
       DEV: "334687d9-c5a3-4af6-a9b1-9c02bad79934"
       QA: "9b6c012c-1c20-4807-9feb-a7703a7671bd"
       PROD: "7d836180-43af-494d-80e9-de50ed5f8529"
-
-# ── semantic_model_binding ───────────────────────────────────────────────────
-# Binds Direct Lake SemanticModels to their lakehouse connection after publish.
-# Replace the placeholder connection IDs with the real Fabric connection IDs
-# for the SalesLakehouse SQL Analytics Endpoint in each environment.
-# Find connection IDs via: GET https://api.fabric.microsoft.com/v1/connections
-# Uncomment when SemanticModel is added to ITEMS_IN_SCOPE.
-#semantic_model_binding:
-#  default:
-#    connection_id:
-#      DEV: "<DEV-lakehouse-connection-id>"
-#      QA: "<QA-lakehouse-connection-id>"
-#      PROD: "<PROD-lakehouse-connection-id>"
 
 
 
