@@ -13,11 +13,28 @@ if (-not $envVars) {
     exit 1
 }
 
+$envFile = Join-Path $PSScriptRoot ".env"
+if (Test-Path $envFile) {
+    Get-Content $envFile | Where-Object { $_ -match '^\s*[^#].+=.' } | ForEach-Object {
+        $key, $value = $_ -split '=', 2
+        [System.Environment]::SetEnvironmentVariable($key.Trim(), $value.Trim())
+    }
+}
+
+# ── Read credentials from GitHub Copilot environment secrets ─────────────────
+$tenantId     = [System.Environment]::GetEnvironmentVariable("TENANTID")
+$clientId     = [System.Environment]::GetEnvironmentVariable("CLIENTID")
+$clientSecret = [System.Environment]::GetEnvironmentVariable("CLIENTSECRET")
+
+if (-not $tenantId)     { Write-Error "Secret '${Environment}_TENANT_ID' is not set.";     exit 1 }
+if (-not $clientId)     { Write-Error "Secret '${Environment}_CLIENT_ID' is not set.";     exit 1 }
+if (-not $clientSecret) { Write-Error "Secret '${Environment}_CLIENT_SECRET' is not set."; exit 1 }
+
 [System.Environment]::SetEnvironmentVariable("TARGET_ENVIRONMENT",  $Environment)
 [System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $envVars.workspaceId)
-[System.Environment]::SetEnvironmentVariable("${Environment}_TENANT_ID",     $envVars.tenantId)
-[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_ID",     $envVars.clientId)
-[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_SECRET", $envVars.clientSecret)
+[System.Environment]::SetEnvironmentVariable("${Environment}_TENANT_ID",     $tenantId)
+[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_ID",     $clientId)
+[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_SECRET", $clientSecrett)
 [System.Environment]::SetEnvironmentVariable("FORCE_REPUBLISH", $ForceRepublish.IsPresent.ToString().ToLower())
 
 # ── Run fabric-cicd CLI deployment ───────────────────────────────────────────
@@ -38,7 +55,7 @@ if ($sqlEndpoint -and $sqlDatabase) {
 
     $connStr = "Server=$sqlEndpoint,1433;Initial Catalog=$sqlDatabase;" +
                "Authentication=Active Directory Service Principal;" +
-               "User Id=$($envVars.clientId);Password=$($envVars.clientSecret)"
+               "User Id=$clientId;Password=$clientSecret"
 
     # Ensure sqlpackage is available
     $sqlpkg = Get-Command sqlpackage -ErrorAction SilentlyContinue
