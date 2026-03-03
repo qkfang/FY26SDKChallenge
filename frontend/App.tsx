@@ -3,7 +3,7 @@ import InitStep from './components/InitStep';
 import RequirementForm from './components/RequirementForm';
 import WorkspaceSetup from './components/WorkspaceSetup';
 import DeploySteps from './components/DeploySteps';
-import { api, DeploymentStatus, ResourceConfig } from './services/api';
+import { api, DeploymentStatus, ResourceConfig, WorkspaceConfig } from './services/api';
 import './App.css';
 
 
@@ -34,6 +34,7 @@ function App() {
   // Workspace info (persisted as cookies)
   const [workspaceDir, setWorkspaceDir] = useState<string>(() => getCookie('workspaceDir'));
   const [sessionId, setSessionId] = useState<string>(() => getCookie('copilotSessionId'));
+  const [loadedConfig, setLoadedConfig] = useState<WorkspaceConfig | null>(null);
 
   useEffect(() => {
     api.checkHealth()
@@ -86,11 +87,12 @@ function App() {
     }
   }, []);
 
-  const handleInitReady = (dir: string, sid: string) => {
+  const handleInitReady = (dir: string, sid: string, config?: WorkspaceConfig | null) => {
     setWorkspaceDir(dir);
     setCookie('workspaceDir', dir);
     setSessionId(sid);
     setCookie('copilotSessionId', sid);
+    setLoadedConfig(config || null);
   };
 
   const handleNewSession = () => {
@@ -100,6 +102,7 @@ function App() {
     setSetupDeploymentId(null);
     setSetupStatus(null);
     setIsSettingUp(false);
+    setLoadedConfig(null);
   };
 
 
@@ -132,7 +135,7 @@ function App() {
         )}
 
         <div className="panel">
-          <h2 className="panel-title">0 · Init</h2>
+          <h2 className="panel-title">Step 1: Init Session</h2>
           <InitStep
             onSessionReady={handleInitReady}
             currentWorkspaceDir={workspaceDir}
@@ -141,21 +144,21 @@ function App() {
         </div>
 
         <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
-          <h2 className="panel-title">1 · Requirement {!workspaceDir && '🔒'}</h2>
+          <h2 className="panel-title">Step 2: Requirements {!workspaceDir && '🔒'}</h2>
           {workspaceDir ? (
-            <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} />
+            <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} initialConfig={loadedConfig} />
           ) : (
             <p className="panel-locked-msg">Complete init step to unlock.</p>
           )}
         </div>
 
         <div className="panel">
-          <h2 className="panel-title">2 · Workspace</h2>
+          <h2 className="panel-title">Step 3: Prepare Fabric Workspace</h2>
           <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} sessionId={sessionId} workspaceDir={workspaceDir} />
         </div>
 
         <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
-          <h2 className="panel-title">3 · Deploy {!workspaceDir && '🔒'}</h2>
+          <h2 className="panel-title">Step 4: Deployment {!workspaceDir && '🔒'}</h2>
           {workspaceDir ? (
             <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
           ) : (

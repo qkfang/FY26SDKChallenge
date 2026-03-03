@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ResourceConfig } from '../services/api';
+import { ResourceConfig, WorkspaceConfig } from '../services/api';
 import './RequirementForm.css';
 
 interface RequirementFormProps {
   onSubmit: (requirement: string, resourceConfig: ResourceConfig) => void;
   isLoading: boolean;
+  initialConfig?: WorkspaceConfig | null;
 }
 
-const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }) => {
+const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading, initialConfig }) => {
   const [requirement, setRequirement] = useState('create hello world notebook');
   const [notebookName, setNotebookName] = useState('');
   const [sqlServerName, setSqlServerName] = useState('');
@@ -18,6 +19,17 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
   const [envProd, setEnvProd] = useState(true);
   const [showExamples, setShowExamples] = useState(false);
   const examplesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialConfig) {
+      setRequirement(initialConfig.requirement || 'create hello world notebook');
+      setWorkspaceSuffix(initialConfig.workspaceSuffix || 'fabric-workspace');
+      setFabricCapacity(initialConfig.fabricCapacity || 'fabriccapacitycicd');
+      setEnvDev(initialConfig.envDev ?? true);
+      setEnvQa(initialConfig.envQa ?? true);
+      setEnvProd(initialConfig.envProd ?? true);
+    }
+  }, [initialConfig]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { api, SessionEntry } from '../services/api';
+import { api, SessionEntry, WorkspaceConfig } from '../services/api';
 import './InitStep.css';
 
 interface InitStepProps {
-  onSessionReady: (workspaceDir: string, copilotSessionId: string) => void;
+  onSessionReady: (workspaceDir: string, copilotSessionId: string, config?: WorkspaceConfig | null) => void;
   currentWorkspaceDir: string;
   currentSessionId: string;
 }
@@ -57,42 +57,19 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir
     }
   };
 
-  const handlePickExisting = () => {
+  const handlePickExisting = async () => {
     if (!selectedDir) return;
     const session = availableSessions.find(s => s.workspaceDir === selectedDir);
     const sid = session?.copilotSessionId || '';
     if (session) addToPastSessions(session);
-    onSessionReady(selectedDir, sid);
+    const config = await api.getWorkspaceConfig(selectedDir);
+    onSessionReady(selectedDir, config?.copilotSessionId || sid, config);
   };
 
   const dirLabel = (dir: string) => dir.split(/[/\\]/).pop() || dir;
 
   return (
     <div className="init-step">
-      {currentWorkspaceDir && (
-        <div className="init-step__current">
-          {currentSessionId && (
-            <div className="init-step__info-row">
-              <span className="init-step__info-label">Copilot Session:</span>
-              <code className="init-step__info-value">{currentSessionId}</code>
-              <button className="btn-open-folder" title="Open session folder" onClick={() => {
-                const base = currentWorkspaceDir.replace(/[/\\]temp[/\\]ws[/\\].*$/, '');
-                api.openFolder(`${base}\\temp\\ghcsdk\\session-state`);
-              }}>
-                📂
-              </button>
-            </div>
-          )}
-          <div className="init-step__info-row">
-            <span className="init-step__info-label">Workspace:</span>
-            <code className="init-step__info-value">{currentWorkspaceDir}</code>
-            <button className="btn-open-folder" title="Open in Explorer" onClick={() => api.openFolder(currentWorkspaceDir)}>
-              📂
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="init-step__options">
         <div className="init-step__option">
           <h3>Start New Project</h3>
@@ -129,6 +106,30 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir
           </div>
         </div>
       </div>
+
+      {currentWorkspaceDir && (
+        <div className="init-step__current">
+          {currentSessionId && (
+            <div className="init-step__info-row">
+              <span className="init-step__info-label">Copilot Session:</span>
+              <code className="init-step__info-value">{currentSessionId}</code>
+              <button className="btn-open-folder" title="Open session folder" onClick={() => {
+                const base = currentWorkspaceDir.replace(/[/\\]temp[/\\]ws[/\\].*$/, '');
+                api.openFolder(`${base}\\temp\\ghcsdk\\session-state`);
+              }}>
+                📂
+              </button>
+            </div>
+          )}
+          <div className="init-step__info-row">
+            <span className="init-step__info-label">Workspace:</span>
+            <code className="init-step__info-value">{currentWorkspaceDir}</code>
+            <button className="btn-open-folder" title="Open in Explorer" onClick={() => api.openFolder(currentWorkspaceDir)}>
+              📂
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

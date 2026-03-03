@@ -60,6 +60,18 @@ export class DeploymentService {
     return { workspaceDir, copilotSessionId: info.sdkSessionId || sessionId };
   }
 
+  // ── Config file helpers ─────────────────────────────────────────────────────
+  saveWorkspaceConfig(workspaceDir: string, config: Record<string, any>): void {
+    const configPath = path.join(workspaceDir, 'config.json');
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
+  }
+
+  getWorkspaceConfig(workspaceDir: string): Record<string, any> | null {
+    const configPath = path.join(workspaceDir, 'config.json');
+    if (!fs.existsSync(configPath)) return null;
+    return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  }
+
   // ── Setup workspace (Tab 2) ────────────────────────────────────────────────
   async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig, existingWorkspaceDir?: string, existingSessionId?: string): Promise<string> {
     const deploymentId = randomUUID();
@@ -167,6 +179,19 @@ export class DeploymentService {
         }
       });
       this.addMessage(deploymentId, 'success', `Workspace setup complete. Ready to deploy from: ${workspaceDir}`);
+
+      // Save config.json
+      const suffix = resourceConfig?.workspaces?.dev?.replace(/-dev$/, '') || '';
+      this.saveWorkspaceConfig(workspaceDir, {
+        workspaceDir,
+        copilotSessionId: existingSessionId || copilotSessionKey,
+        requirement,
+        workspaceSuffix: suffix,
+        fabricCapacity: resourceConfig?.fabricCapacity || '',
+        envDev: !!resourceConfig?.workspaces?.dev,
+        envQa: !!resourceConfig?.workspaces?.qa,
+        envProd: !!resourceConfig?.workspaces?.prod,
+      });
 
     } catch (error: any) {
       console.error('Setup error:', error);

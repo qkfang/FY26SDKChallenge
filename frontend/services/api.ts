@@ -39,6 +39,17 @@ export interface SessionEntry {
   createdAt: string;
 }
 
+export interface WorkspaceConfig {
+  workspaceDir: string;
+  copilotSessionId: string;
+  requirement: string;
+  workspaceSuffix: string;
+  fabricCapacity: string;
+  envDev: boolean;
+  envQa: boolean;
+  envProd: boolean;
+}
+
 export const api = {
   async listSessions(): Promise<SessionEntry[]> {
     const response = await axios.get(`${API_BASE_URL}/deployment/sessions`);
@@ -67,6 +78,13 @@ export const api = {
 
   async openFolder(folderPath: string): Promise<void> {
     await axios.post(`${API_BASE_URL}/deployment/open-folder`, { folderPath });
+  },
+
+  async getWorkspaceConfig(workspaceDir: string): Promise<WorkspaceConfig | null> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/deployment/config`, { params: { workspaceDir } });
+      return response.data;
+    } catch { return null; }
   },
 
   async checkHealth(): Promise<{ status: string; message: string }> {

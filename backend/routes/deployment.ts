@@ -90,6 +90,23 @@ deploymentRouter.get('/status/:deploymentId', (req, res) => {
   }
 });
 
+// Get workspace config.json
+deploymentRouter.get('/config', configLimiter, (req, res) => {
+  try {
+    const { workspaceDir } = req.query;
+    if (!workspaceDir || typeof workspaceDir !== 'string') {
+      return res.status(400).json({ error: 'workspaceDir query param is required' });
+    }
+    const config = deploymentService.getWorkspaceConfig(workspaceDir);
+    if (!config) {
+      return res.status(404).json({ error: 'config.json not found' });
+    }
+    res.json(config);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Open a local folder in the file explorer
 deploymentRouter.post('/open-folder', configLimiter, (req, res) => {
   try {
