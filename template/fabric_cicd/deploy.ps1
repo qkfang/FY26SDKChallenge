@@ -34,7 +34,7 @@ if (-not $clientSecret) { Write-Error "Secret '${Environment}_CLIENT_SECRET' is 
 [System.Environment]::SetEnvironmentVariable("TARGET_WORKSPACE_ID", $envVars.workspaceId)
 [System.Environment]::SetEnvironmentVariable("${Environment}_TENANT_ID",     $tenantId)
 [System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_ID",     $clientId)
-[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_SECRET", $clientSecrett)
+[System.Environment]::SetEnvironmentVariable("${Environment}_CLIENT_SECRET", $clientSecret)
 [System.Environment]::SetEnvironmentVariable("FORCE_REPUBLISH", $ForceRepublish.IsPresent.ToString().ToLower())
 
 # ── Run fabric-cicd CLI deployment ───────────────────────────────────────────

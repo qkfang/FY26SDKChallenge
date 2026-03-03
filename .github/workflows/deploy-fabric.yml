@@ -1,0 +1,57 @@
+name: Deploy Fabric CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'DEV'
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: template/fabric_cicd
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Provision Azure resources (Bicep)
+        shell: pwsh
+        run: ./deploy-bicep.ps1 -Environment ${{ github.event.inputs.environment }}
+
+      - name: Create Fabric workspaces (CLI)
+        shell: pwsh
+        run: ./deploy-cli.ps1 -Environment ${{ github.event.inputs.environment }}
+
+      - name: Deploy Fabric workspace items
+        shell: pwsh
+        env:
+          TENANTID: ${{ secrets.TENANTID }}
+          CLIENTID: ${{ secrets.CLIENTID }}
+          CLIENTSECRET: ${{ secrets.CLIENTSECRET }}
+        run: ./deploy.ps1 -Environment ${{ github.event.inputs.environment }}
