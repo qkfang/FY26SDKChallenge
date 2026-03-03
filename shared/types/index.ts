@@ -1,11 +1,21 @@
-export interface DeploymentRequest {
+export interface ResourceConfig {
+  notebookName?: string;
+  sqlServerName?: string;
+  workspaces: {
+    dev?: string;
+    qa?: string;
+    prod?: string;
+  };
+}
+
+export interface SetupRequest {
   requirement: string;
-  workspaceName?: string;
-  lakehouseName?: string;
   resourceConfig?: ResourceConfig;
-  selectedSteps?: string[];
-  sessionId?: string;
-  tempFolder?: string;
+}
+
+export interface DeployStepRequest {
+  step: 'bicep' | 'cli' | 'fabric';
+  workspaceDir: string;
 }
 
 export interface DeploymentStatus {
@@ -16,7 +26,7 @@ export interface DeploymentStatus {
   result?: DeploymentResult;
   error?: string;
   copilotSessionId?: string;
-  tempFolder?: string;
+  workspaceDir?: string;
 }
 
 export interface DeploymentMessage {

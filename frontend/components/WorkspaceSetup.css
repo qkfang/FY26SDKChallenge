@@ -1,0 +1,146 @@
+.workspace-setup {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.workspace-setup--empty {
+  color: #888;
+  font-size: 15px;
+  text-align: center;
+  padding: 40px;
+}
+
+/* ── Status row ─────────────────────────────────────────────────────────────── */
+
+.ws-status-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ws-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: white;
+}
+
+.ws-badge--pending   { background: #6b7280; }
+.ws-badge--in-progress { background: #3b82f6; }
+.ws-badge--completed { background: #10b981; }
+.ws-badge--failed    { background: #ef4444; }
+
+.ws-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ws-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.ws-progress-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Info box ───────────────────────────────────────────────────────────────── */
+
+.ws-info-box {
+  background: #f5f3ff;
+  border: 1px solid #a5b4fc;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ws-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ws-info-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #555;
+  min-width: 130px;
+}
+
+.ws-info-value {
+  font-size: 12px;
+  background: #ede9fe;
+  color: #3b0764;
+  padding: 2px 8px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+/* ── Activity log ───────────────────────────────────────────────────────────── */
+
+.ws-log {
+  background: #1e1e2e;
+  border-radius: 8px;
+  padding: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.ws-log-line {
+  display: flex;
+  gap: 10px;
+  padding: 2px 0;
+  line-height: 1.5;
+}
+
+.ws-log-time {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.ws-log-line--info     .ws-log-text { color: #c9d1d9; }
+.ws-log-line--success  .ws-log-text { color: #56d364; }
+.ws-log-line--error    .ws-log-text { color: #f85149; }
+.ws-log-line--progress .ws-log-text { color: #79c0ff; }
+.ws-log-line--progress { color: #79c0ff; }
+
+/* ── Banners ────────────────────────────────────────────────────────────────── */
+
+.ws-ready-banner {
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #065f46;
+  font-size: 14px;
+}
+
+.ws-error-banner {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #7f1d1d;
+  font-size: 14px;
+}

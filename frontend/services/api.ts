@@ -12,16 +12,6 @@ export interface ResourceConfig {
   };
 }
 
-export interface DeploymentRequest {
-  requirement: string;
-  workspaceName?: string;
-  lakehouseName?: string;
-  resourceConfig?: ResourceConfig;
-  selectedSteps?: string[];
-  sessionId?: string;
-  tempFolder?: string;
-}
-
 export interface DeploymentStatus {
   id: string;
   status: 'pending' | 'in-progress' | 'completed' | 'failed';
@@ -39,22 +29,23 @@ export interface DeploymentStatus {
   };
   error?: string;
   copilotSessionId?: string;
-  tempFolder?: string;
+  workspaceDir?: string;
 }
 
 export const api = {
-  async startDeployment(request: DeploymentRequest): Promise<{ deploymentId: string }> {
-    const response = await axios.post(`${API_BASE_URL}/deployment/start`, request);
+  async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig): Promise<{ deploymentId: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/setup`, { requirement, resourceConfig });
+    return response.data;
+  },
+
+  async runDeployStep(step: string, workspaceDir: string): Promise<{ deploymentId: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/run-step`, { step, workspaceDir });
     return response.data;
   },
 
   async getDeploymentStatus(deploymentId: string): Promise<DeploymentStatus> {
     const response = await axios.get(`${API_BASE_URL}/deployment/status/${deploymentId}`);
     return response.data;
-  },
-
-  async configureFabricApi(accessToken: string): Promise<void> {
-    await axios.post(`${API_BASE_URL}/deployment/configure`, { accessToken });
   },
 
   async checkHealth(): Promise<{ status: string; message: string }> {

@@ -7,8 +7,8 @@ export const deploymentRouter = Router();
 
 // Rate limiting for deployment endpoints
 const deploymentLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 deployments per window
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   message: 'Too many deployment requests, please try again later.'
 });
 
@@ -18,33 +18,41 @@ const configLimiter = rateLimit({
   message: 'Too many configuration requests, please try again later.'
 });
 
-// Start a new deployment
-deploymentRouter.post('/start', deploymentLimiter, async (req, res) => {
+// Setup workspace (Tab 2)
+deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
   try {
-    const { requirement, workspaceName, lakehouseName, resourceConfig, selectedSteps, sessionId, tempFolder } = req.body;
+    const { requirement, resourceConfig } = req.body;
 
     if (!requirement) {
       return res.status(400).json({ error: 'Requirement is required' });
     }
 
-    const deploymentId = await deploymentService.startDeployment(
-      requirement,
-      workspaceName,
-      lakehouseName,
-      resourceConfig,
-      selectedSteps,
-      sessionId,
-      tempFolder
-    );
-
+    const deploymentId = await deploymentService.setupWorkspace(requirement, resourceConfig);
     res.json({ deploymentId });
   } catch (error: any) {
-    console.error('Error starting deployment:', error);
+    console.error('Error setting up workspace:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get deployment status
+// Run a single deploy step (Tab 3 buttons)
+deploymentRouter.post('/run-step', deploymentLimiter, async (req, res) => {
+  try {
+    const { step, workspaceDir } = req.body;
+
+    if (!step || !workspaceDir) {
+      return res.status(400).json({ error: 'step and workspaceDir are required' });
+    }
+
+    const deploymentId = await deploymentService.runDeployStep(step, workspaceDir);
+    res.json({ deploymentId });
+  } catch (error: any) {
+    console.error('Error running deploy step:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get deployment/step status
 deploymentRouter.get('/status/:deploymentId', (req, res) => {
   try {
     const { deploymentId } = req.params;
