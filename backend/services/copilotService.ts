@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 // Resolve temp directories relative to the project root
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'ghcsdk');
 const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'ws');
 

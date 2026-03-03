@@ -54,33 +54,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
           />
         </div>
 
-        <div className="form-section">
-          <h3 className="form-section-title">Fabric Artifacts</h3>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="notebookName">Notebook Name</label>
-              <input
-                type="text"
-                id="notebookName"
-                value={notebookName}
-                onChange={(e) => setNotebookName(e.target.value)}
-                placeholder="e.g., Notebook_Sales"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="sqlServerName">SQL Server Name</label>
-              <input
-                type="text"
-                id="sqlServerName"
-                value={sqlServerName}
-                onChange={(e) => setSqlServerName(e.target.value)}
-                placeholder="e.g., dev-sql-server"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-        </div>
+        {/* Fabric Artifacts section hidden */}
 
         <div className="form-section">
           <h3 className="form-section-title">Workspace Names per Environment</h3>
