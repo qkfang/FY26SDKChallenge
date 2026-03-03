@@ -8,11 +8,14 @@ export interface ResourceConfig {
   };
 }
 
-export interface DeploymentRequest {
+export interface SetupRequest {
   requirement: string;
-  workspaceName?: string;
-  lakehouseName?: string;
   resourceConfig?: ResourceConfig;
+}
+
+export interface DeployStepRequest {
+  step: 'bicep' | 'cli' | 'fabric';
+  workspaceDir: string;
 }
 
 export interface DeploymentStatus {
@@ -22,6 +25,8 @@ export interface DeploymentStatus {
   messages: DeploymentMessage[];
   result?: DeploymentResult;
   error?: string;
+  copilotSessionId?: string;
+  workspaceDir?: string;
 }
 
 export interface DeploymentMessage {

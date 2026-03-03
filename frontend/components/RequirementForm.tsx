@@ -31,7 +31,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
     }
   };
 
-  const exampleRequirements = [
+  const examples = [
     'Create a new lakehouse for sales data analytics',
     'Set up a data pipeline that ingests CSV files from Azure Blob Storage into a lakehouse',
     'Create a workspace and lakehouse for marketing analytics with sample notebooks',
@@ -88,55 +88,36 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
           <div className="form-row form-row-3">
             <div className="form-group">
               <label htmlFor="devWorkspace">DEV Workspace</label>
-              <input
-                type="text"
-                id="devWorkspace"
-                value={devWorkspace}
+              <input type="text" id="devWorkspace" value={devWorkspace}
                 onChange={(e) => setDevWorkspace(e.target.value)}
-                placeholder="fabric-workspace-dev"
-                disabled={isLoading}
-              />
+                placeholder="fabric-workspace-dev" disabled={isLoading} />
             </div>
             <div className="form-group">
               <label htmlFor="qaWorkspace">QA Workspace</label>
-              <input
-                type="text"
-                id="qaWorkspace"
-                value={qaWorkspace}
+              <input type="text" id="qaWorkspace" value={qaWorkspace}
                 onChange={(e) => setQaWorkspace(e.target.value)}
-                placeholder="fabric-workspace-qa"
-                disabled={isLoading}
-              />
+                placeholder="fabric-workspace-qa" disabled={isLoading} />
             </div>
             <div className="form-group">
               <label htmlFor="prodWorkspace">PROD Workspace</label>
-              <input
-                type="text"
-                id="prodWorkspace"
-                value={prodWorkspace}
+              <input type="text" id="prodWorkspace" value={prodWorkspace}
                 onChange={(e) => setProdWorkspace(e.target.value)}
-                placeholder="fabric-workspace-prod"
-                disabled={isLoading}
-              />
+                placeholder="fabric-workspace-prod" disabled={isLoading} />
             </div>
           </div>
         </div>
 
         <button type="submit" disabled={!requirement.trim() || isLoading}>
-          {isLoading ? 'Deploying...' : 'Start Deployment'}
+          {isLoading ? 'Setting up workspace...' : 'Setup Workspace →'}
         </button>
       </form>
 
       <div className="examples">
         <h3>Example Requirements:</h3>
         <ul>
-          {exampleRequirements.map((example, index) => (
+          {examples.map((example, index) => (
             <li key={index}>
-              <button
-                type="button"
-                onClick={() => setRequirement(example)}
-                disabled={isLoading}
-              >
+              <button type="button" onClick={() => setRequirement(example)} disabled={isLoading}>
                 {example}
               </button>
             </li>

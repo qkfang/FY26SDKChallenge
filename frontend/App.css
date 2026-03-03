@@ -20,11 +20,19 @@
   opacity: 0.95;
 }
 
+.header-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
 .connection-status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 15px;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 14px;
@@ -57,13 +65,75 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
+
+.btn-new-session {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 20px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-new-session:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────────── */
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  padding: 8px 8px 0 8px;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: #6b7280;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-btn:hover:not(:disabled):not(.tab-btn--active) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.tab-btn--active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.tab-btn--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab-content {
+  background: white;
+  border-radius: 0 0 12px 12px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+}
+
+/* ── App main ───────────────────────────────────────────────────────────────── */
 
 .app-main {
   margin-bottom: 40px;
@@ -79,13 +149,6 @@
 
 .alert-warning {
   border-left: 4px solid #f59e0b;
-}
-
-.alert-info {
-  border-left: 4px solid #3b82f6;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .alert strong {
@@ -108,59 +171,6 @@
   font-size: 14px;
 }
 
-.btn-secondary {
-  padding: 10px 20px;
-  background: #6366f1;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-  background: #4f46e5;
-  transform: translateY(-2px);
-}
-
-.info-section {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  margin-top: 30px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.info-section h3 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.info-content p {
-  color: #555;
-  line-height: 1.8;
-  margin-bottom: 20px;
-}
-
-.info-content h4 {
-  color: #333;
-  font-size: 18px;
-  margin: 20px 0 10px 0;
-}
-
-.info-content ul,
-.info-content ol {
-  margin-left: 20px;
-  color: #555;
-  line-height: 1.8;
-}
-
-.info-content li {
-  margin-bottom: 8px;
-}
-
 .app-footer {
   text-align: center;
   color: white;
@@ -174,16 +184,8 @@
 }
 
 @media (max-width: 768px) {
-  .app-header h1 {
-    font-size: 36px;
-  }
-
-  .app-header p {
-    font-size: 16px;
-  }
-
-  .alert-info {
-    flex-direction: column;
-    gap: 15px;
-  }
+  .app-header h1 { font-size: 36px; }
+  .app-header p  { font-size: 16px; }
+  .tab-btn       { font-size: 12px; padding: 10px 8px; }
 }
+

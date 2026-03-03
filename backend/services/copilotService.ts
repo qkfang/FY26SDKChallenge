@@ -26,6 +26,7 @@ interface CopilotSessionInfo {
     login?: string;
   };
   model?: string;
+  tempFolder?: string;
 }
 
 export class CopilotService {
@@ -97,25 +98,27 @@ export class CopilotService {
         isAuthenticated: this.authInfo.isAuthenticated ?? false,
         authType: this.authInfo.authType,
         login: this.authInfo.login
-      }
+      },
+      tempFolder: SESSION_DIR
     };
   }
 
-  async createSession(sessionId: string): Promise<void> {
+  async createSession(sessionId: string, workspaceDir?: string): Promise<void> {
     if (!this.isAvailable || !this.client) {
       console.log(`Session ${sessionId}: Copilot SDK not available, will use fallback plan generation`);
       return;
     }
 
+    const cwd = workspaceDir || SESSION_DIR;
     try {
       const session = await this.client.createSession({
         onPermissionRequest: approveAll,
         configDir: SESSION_DIR,
-        workingDirectory: SESSION_DIR,
+        workingDirectory: cwd,
         model: 'claude-sonnet-4.6'
       });
       this.sessions.set(sessionId, session);
-      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}`);
+      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}`);
     } catch (error: any) {
       console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
     }
@@ -124,6 +127,7 @@ export class CopilotService {
   async processRequirement(
     sessionId: string,
     requirement: string,
+    workspaceDir: string,
     onMessage?: (message: CopilotMessage) => void
   ): Promise<string> {
     const session = this.sessions.get(sessionId);
@@ -139,21 +143,17 @@ export class CopilotService {
     }
 
     try {
-      const prompt = `# Deployment Plan for: ${requirement}
+      const prompt = `# Workspace Setup for: ${requirement}
 
-## Overview
-This is an automated deployment plan for Microsoft Fabric resources based on your requirement.
+## Context
+A new workspace has been created at: '${workspaceDir}'
+It is a copy of the fabric_cicd template.
 
-## Prerequisites
-the template project is here '${path.resolve(PROJECT_ROOT, 'template', 'fabric_cicd')}'
-never change it directly, make a copy of the project folder and create new folder with timestamp inside '${WORKSPACE_DIR}'
-create additional new fabric resources in the new folder
-
-## Deployment Steps
-use 'validate.ps1' script to deploy the resource
-use 'deploy.ps1' script to deploy the resource
-you must try to deploy the project and make sure no error happens
-check the output of the 'fabric_cicd.error.log' log file for any error and troubleshooting
+## Task
+Review the workspace structure and customize it for the requirement: "${requirement}"
+- Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
+- Do NOT run any deployment scripts — they will be triggered separately
+- Check the workspace looks correct for the requirement
 
 `;
 
