@@ -71,16 +71,16 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir
     <div className="init-step">
       {currentWorkspaceDir && (
         <div className="init-step__current">
-          <div className="init-step__info-row">
-            <span className="init-step__info-label">Workspace:</span>
-            <code className="init-step__info-value">{currentWorkspaceDir}</code>
-          </div>
           {currentSessionId && (
             <div className="init-step__info-row">
               <span className="init-step__info-label">Copilot Session:</span>
               <code className="init-step__info-value">{currentSessionId}</code>
             </div>
           )}
+          <div className="init-step__info-row">
+            <span className="init-step__info-label">Workspace:</span>
+            <code className="init-step__info-value">{currentWorkspaceDir}</code>
+          </div>
         </div>
       )}
 

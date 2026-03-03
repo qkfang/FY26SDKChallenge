@@ -46,8 +46,9 @@ export class DeploymentService {
 
   // ── Init: create workspace folder + copilot session (no requirement) ───────
   async initSession(): Promise<{ workspaceDir: string; copilotSessionId: string }> {
-    const timestampStr = new Date().toISOString().replace(/[:.]/g, '-');
-    const workspaceDir = path.join(WORKSPACE_BASE, `ws-${timestampStr}`);
+    const now = new Date();
+    const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+    const workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
     fs.mkdirSync(workspaceDir, { recursive: true });
     await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
 
@@ -94,8 +95,9 @@ export class DeploymentService {
       this.updateDeploymentStatus(deploymentId, { status: 'in-progress', progress: 10 });
 
       // Create timestamped workspace dir and copy template
-      const timestampStr = new Date().toISOString().replace(/[:.]/g, '-');
-      const workspaceDir = path.join(WORKSPACE_BASE, `ws-${timestampStr}`);
+      const now = new Date();
+      const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+      const workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
 
       this.addMessage(deploymentId, 'info', `Creating workspace directory: ${workspaceDir}`);
       fs.mkdirSync(workspaceDir, { recursive: true });

@@ -67,7 +67,6 @@ function App() {
     setIsSettingUp(true);
     setSetupStatus(null);
     setSetupDeploymentId(null);
-    setActiveTab('workspace');
 
     try {
       const { deploymentId } = await api.setupWorkspace(requirement, resourceConfig);
@@ -75,7 +74,6 @@ function App() {
     } catch (error: any) {
       alert(`Failed to start workspace setup: ${error.response?.data?.error || error.message}`);
       setIsSettingUp(false);
-      setActiveTab('requirement');
     }
   };
 
@@ -102,7 +100,6 @@ function App() {
     setSetupDeploymentId(null);
     setSetupStatus(null);
     setIsSettingUp(false);
-    setActiveTab('requirement');
   };
 
 
