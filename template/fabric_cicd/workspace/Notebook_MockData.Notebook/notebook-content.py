@@ -35,7 +35,7 @@ rows_category = [
 ]
 
 df_category = spark.createDataFrame(rows_category, schema_category)
-df_category.write.format("delta").mode("overwrite").saveAsTable("ProductCategory")
+df_category.write.format("delta").mode("overwrite").saveAsTable("productcategory")
 print(f"ProductCategory: {df_category.count()} rows written")
 
 # METADATA ********************
@@ -82,7 +82,7 @@ rows_product = [
 ]
 
 df_product = spark.createDataFrame(rows_product, schema_product)
-df_product.write.format("delta").mode("overwrite").saveAsTable("Product")
+df_product.write.format("delta").mode("overwrite").saveAsTable("product")
 print(f"Product: {df_product.count()} rows written")
 
 # METADATA ********************
@@ -128,7 +128,7 @@ rows_customer = [
 ]
 
 df_customer = spark.createDataFrame(rows_customer, schema_customer)
-df_customer.write.format("delta").mode("overwrite").saveAsTable("Customer")
+df_customer.write.format("delta").mode("overwrite").saveAsTable("customer")
 print(f"Customer: {df_customer.count()} rows written")
 
 # METADATA ********************
@@ -196,7 +196,7 @@ rows_header = [
 ]
 
 df_header = spark.createDataFrame(rows_header, schema_header)
-df_header.write.format("delta").mode("overwrite").saveAsTable("SalesOrderHeader")
+df_header.write.format("delta").mode("overwrite").saveAsTable("salesorderheader")
 print(f"SalesOrderHeader: {df_header.count()} rows written")
 
 # METADATA ********************
@@ -317,7 +317,7 @@ rows_detail = [
 ]
 
 df_detail = spark.createDataFrame(rows_detail, schema_detail)
-df_detail.write.format("delta").mode("overwrite").saveAsTable("SalesOrderDetail")
+df_detail.write.format("delta").mode("overwrite").saveAsTable("salesorderdetail")
 print(f"SalesOrderDetail: {df_detail.count()} rows written")
 
 # METADATA ********************
