@@ -18,13 +18,13 @@ if (Test-Path ".env") {
 # ── Read workspace IDs from config/variable.json ─────────────────────────────
 $variableFile = "config/variable.json"
 if (-not (Test-Path $variableFile)) {
-    Write-Error "Missing $variableFile. Run deploy.ps1 first."
+    Write-Error "Missing $variableFile. Run deploy-bicep.ps1 first."
     exit 1
 }
 
 $variables = Get-Content $variableFile -Raw | ConvertFrom-Json
 
-$capacityName = $variables.DEV.capacityName
+$capacityName = $variables.$Environment.capacityName
 Write-Host "Fabric Capacity: $capacityName"
 
 # ── Resolve capacity GUID from name via Fabric REST API ──────────────────────
@@ -40,8 +40,8 @@ if (-not $capacity) {
 $capacityId = $capacity.id
 Write-Host "Fabric Capacity ID (GUID): $capacityId"
 
-$spObjectId    = "a6efe236-83c5-472b-a068-65006e369ad7"
-$spDisplayName = "sp-demo-01"
+$spObjectId    = if ($env:SP_OBJECT_ID)    { $env:SP_OBJECT_ID }    else { "a6efe236-83c5-472b-a068-65006e369ad7" }
+$spDisplayName = if ($env:SP_DISPLAY_NAME) { $env:SP_DISPLAY_NAME } else { "sp-demo-01" }
 $sqlDbDisplayName = "fabricdb"
 $workspaceIds  = @{}
 
