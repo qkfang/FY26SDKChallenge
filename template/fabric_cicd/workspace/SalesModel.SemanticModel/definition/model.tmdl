@@ -1,0 +1,31 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["ProductCategory","Product","Customer","SalesOrderHeader","SalesOrderDetail"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation DatabaseQuery = {"version":"0.0","connection":{"entityId":"49f3e9cc-39cc-49b9-8807-0d33674b04b5","workspaceId":"334687d9-c5a3-4af6-a9b1-9c02bad79934"}}
+ref table SalesOrderDetail
+
+ref expression DatabaseQuery
+
+ref cultureInfo en-US
+
+expression DatabaseQuery
+	kind: m
+	expression =
+			let
+			    Source = Lakehouse.Database("49f3e9cc-39cc-49b9-8807-0d33674b04b5", null, [WorkspaceId = "334687d9-c5a3-4af6-a9b1-9c02bad79934"])
+			in
+			    Source
+
+	annotation PBI_NavigationStepName = Navigation
+	annotation PBI_ResultType = Exception

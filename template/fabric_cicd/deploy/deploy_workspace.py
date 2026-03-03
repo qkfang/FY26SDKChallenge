@@ -32,6 +32,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S%z",
     stream=sys.stdout,
+    force=True,
 )
 logger = logging.getLogger("fabric-cicd-deploy")
 
@@ -40,12 +41,12 @@ logger = logging.getLogger("fabric-cicd-deploy")
 # ---------------------------------------------------------------------------
 DEFAULT_REPO_DIR = "./workspace"
 DEFAULT_ITEM_TYPES = [
-    "Notebook",
-    # "SemanticModel",
+    # "Notebook",
+    "SemanticModel",
     # "Report",
     # "Environment",
-    "Lakehouse",
-    "SQLDatabase",
+    # "Lakehouse",
+    # "SQLDatabase",
 ]
 
 # DataPipeline is only supported with User Identity (UPN) authentication.
@@ -326,6 +327,7 @@ def main() -> None:
     environment = environment.upper()
     repo_dir = _env("REPO_DIR", required=False, default=DEFAULT_REPO_DIR)
     items_in_scope = _parse_items_in_scope(_env("ITEMS_IN_SCOPE", required=False))
+    logger.info("Items in scope: %s", items_in_scope)
     clean_orphans = _parse_bool(_env("CLEAN_ORPHANS", required=False, default="false"))
     force_republish = _parse_bool(_env("FORCE_REPUBLISH", required=False, default="false"))
     parameter_file_path = _env("PARAMETER_FILE_PATH", required=False, default="./config/parameter.yml")

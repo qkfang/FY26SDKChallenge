@@ -1,10 +1,10 @@
 table Customer
-	lineageTag: e4f5a6b7-c8d9-0123-ef01-234567890123
+	lineageTag: 33333333-3333-3333-3333-333333333301
 
 	column CustomerID
 		dataType: int64
 		formatString: 0
-		lineageTag: 1a2b3c4d-5e6f-7890-ab01-234567890abc
+		lineageTag: 33333333-3333-3333-3333-333333333311
 		summarizeBy: none
 		sourceColumn: CustomerID
 
@@ -12,7 +12,7 @@ table Customer
 
 	column FirstName
 		dataType: string
-		lineageTag: 2b3c4d5e-6f7a-8901-bc12-34567890abcd
+		lineageTag: 33333333-3333-3333-3333-333333333312
 		summarizeBy: none
 		sourceColumn: FirstName
 
@@ -20,7 +20,7 @@ table Customer
 
 	column LastName
 		dataType: string
-		lineageTag: 3c4d5e6f-7a8b-9012-cd23-4567890abcde
+		lineageTag: 33333333-3333-3333-3333-333333333313
 		summarizeBy: none
 		sourceColumn: LastName
 
@@ -28,7 +28,7 @@ table Customer
 
 	column CompanyName
 		dataType: string
-		lineageTag: 4d5e6f7a-8b9c-0123-de34-567890abcdef
+		lineageTag: 33333333-3333-3333-3333-333333333314
 		summarizeBy: none
 		sourceColumn: CompanyName
 
@@ -36,7 +36,7 @@ table Customer
 
 	column EmailAddress
 		dataType: string
-		lineageTag: 5e6f7a8b-9c0d-1234-ef45-67890abcdef0
+		lineageTag: 33333333-3333-3333-3333-333333333315
 		summarizeBy: none
 		sourceColumn: EmailAddress
 
@@ -44,7 +44,7 @@ table Customer
 
 	column Phone
 		dataType: string
-		lineageTag: 6f7a8b9c-0d1e-2345-f056-7890abcdef01
+		lineageTag: 33333333-3333-3333-3333-333333333316
 		summarizeBy: none
 		sourceColumn: Phone
 
@@ -52,7 +52,7 @@ table Customer
 
 	column City
 		dataType: string
-		lineageTag: 7a8b9c0d-1e2f-3456-0167-890abcdef012
+		lineageTag: 33333333-3333-3333-3333-333333333317
 		summarizeBy: none
 		sourceColumn: City
 
@@ -60,7 +60,7 @@ table Customer
 
 	column StateProvince
 		dataType: string
-		lineageTag: 8b9c0d1e-2f3a-4567-1278-90abcdef0123
+		lineageTag: 33333333-3333-3333-3333-333333333318
 		summarizeBy: none
 		sourceColumn: StateProvince
 
@@ -68,23 +68,17 @@ table Customer
 
 	column CountryRegion
 		dataType: string
-		lineageTag: 9c0d1e2f-3a4b-5678-2389-0abcdef01234
+		lineageTag: 33333333-3333-3333-3333-333333333319
 		summarizeBy: none
 		sourceColumn: CountryRegion
 
 		annotation SummarizationSetBy = Automatic
 
-	measure CustomerCount = DISTINCTCOUNT(Customer[CustomerID])
-		formatString: 0
-		lineageTag: ad1e2f3a-4b5c-6789-34ab-cdef01234567
-
-	partition Customer = entity
+	partition Customer = directLake
 		mode: directLake
 		source
-			entityName: 'Customer'
-			schemaName: 'dbo'
+			entityName: Customer
+			schemaName: dbo
 			expressionSource: DatabaseQuery
-
-	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table

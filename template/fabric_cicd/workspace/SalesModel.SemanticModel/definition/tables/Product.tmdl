@@ -1,10 +1,10 @@
 table Product
-	lineageTag: d3e4f5a6-b7c8-9012-def0-234567890123
+	lineageTag: 22222222-2222-2222-2222-222222222201
 
 	column ProductID
 		dataType: int64
 		formatString: 0
-		lineageTag: aabb1122-3344-5566-7788-99aabbccddee
+		lineageTag: 22222222-2222-2222-2222-222222222211
 		summarizeBy: none
 		sourceColumn: ProductID
 
@@ -12,7 +12,7 @@ table Product
 
 	column Name
 		dataType: string
-		lineageTag: bbcc2233-4455-6677-8899-aabbccddeeff
+		lineageTag: 22222222-2222-2222-2222-222222222212
 		summarizeBy: none
 		sourceColumn: Name
 
@@ -20,7 +20,7 @@ table Product
 
 	column ProductNumber
 		dataType: string
-		lineageTag: ccdd3344-5566-7788-99aa-bbccddeeff00
+		lineageTag: 22222222-2222-2222-2222-222222222213
 		summarizeBy: none
 		sourceColumn: ProductNumber
 
@@ -28,48 +28,44 @@ table Product
 
 	column Color
 		dataType: string
-		lineageTag: ddee4455-6677-8899-aabb-ccddeeff0011
+		lineageTag: 22222222-2222-2222-2222-222222222214
 		summarizeBy: none
 		sourceColumn: Color
 
 		annotation SummarizationSetBy = Automatic
 
-	column ListPrice
-		dataType: decimal
-		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-		lineageTag: eeff5566-7788-99aa-bbcc-ddeeff001122
-		summarizeBy: sum
-		sourceColumn: ListPrice
-
-		annotation SummarizationSetBy = Automatic
-		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
-
 	column StandardCost
 		dataType: decimal
-		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-		lineageTag: ff006677-8899-aabb-ccdd-eeff00112233
+		formatString: #,0.0000
+		lineageTag: 22222222-2222-2222-2222-222222222215
 		summarizeBy: sum
 		sourceColumn: StandardCost
 
 		annotation SummarizationSetBy = Automatic
-		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column ListPrice
+		dataType: decimal
+		formatString: #,0.00
+		lineageTag: 22222222-2222-2222-2222-222222222216
+		summarizeBy: sum
+		sourceColumn: ListPrice
+
+		annotation SummarizationSetBy = Automatic
 
 	column ProductCategoryID
 		dataType: int64
 		formatString: 0
-		lineageTag: 00117788-99aa-bbcc-ddee-ff0011223344
+		lineageTag: 22222222-2222-2222-2222-222222222217
 		summarizeBy: none
 		sourceColumn: ProductCategoryID
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Product = entity
+	partition Product = directLake
 		mode: directLake
 		source
-			entityName: 'Product'
-			schemaName: 'dbo'
+			entityName: Product
+			schemaName: dbo
 			expressionSource: DatabaseQuery
-
-	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table

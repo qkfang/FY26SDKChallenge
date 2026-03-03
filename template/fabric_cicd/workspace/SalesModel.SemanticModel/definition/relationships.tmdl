@@ -1,0 +1,15 @@
+relationship Product_ProductCategory
+	fromColumn: Product.ProductCategoryID
+	toColumn: ProductCategory.ProductCategoryID
+
+relationship SalesOrderHeader_Customer
+	fromColumn: SalesOrderHeader.CustomerID
+	toColumn: Customer.CustomerID
+
+relationship SalesOrderDetail_SalesOrderHeader
+	fromColumn: SalesOrderDetail.SalesOrderID
+	toColumn: SalesOrderHeader.SalesOrderID
+
+relationship SalesOrderDetail_Product
+	fromColumn: SalesOrderDetail.ProductID
+	toColumn: Product.ProductID

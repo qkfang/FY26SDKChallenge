@@ -38,6 +38,19 @@ find_replace:
       QA: "9b6c012c-1c20-4807-9feb-a7703a7671bd"
       PROD: "7d836180-43af-494d-80e9-de50ed5f8529"
 
+# ── semantic_model_binding ───────────────────────────────────────────────────
+# Binds Direct Lake SemanticModels to their lakehouse connection after publish.
+# Replace the placeholder connection IDs with the real Fabric connection IDs
+# for the SalesLakehouse SQL Analytics Endpoint in each environment.
+# Find connection IDs via: GET https://api.fabric.microsoft.com/v1/connections
+# Uncomment when SemanticModel is added to ITEMS_IN_SCOPE.
+#semantic_model_binding:
+#  default:
+#    connection_id:
+#      DEV: "<DEV-lakehouse-connection-id>"
+#      QA: "<QA-lakehouse-connection-id>"
+#      PROD: "<PROD-lakehouse-connection-id>"
+
 
 
 

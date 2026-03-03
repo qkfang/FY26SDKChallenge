@@ -1,10 +1,10 @@
 table SalesOrderDetail
-	lineageTag: c2d3e4f5-a6b7-8901-cdef-123456789012
+	lineageTag: 55555555-5555-5555-5555-555555555501
 
 	column SalesOrderID
 		dataType: int64
 		formatString: 0
-		lineageTag: 11223344-5566-7788-99aa-bbccddeeff00
+		lineageTag: 55555555-5555-5555-5555-555555555511
 		summarizeBy: none
 		sourceColumn: SalesOrderID
 
@@ -13,7 +13,7 @@ table SalesOrderDetail
 	column SalesOrderDetailID
 		dataType: int64
 		formatString: 0
-		lineageTag: 22334455-6677-8899-aabb-ccddeeff0011
+		lineageTag: 55555555-5555-5555-5555-555555555512
 		summarizeBy: none
 		sourceColumn: SalesOrderDetailID
 
@@ -22,7 +22,7 @@ table SalesOrderDetail
 	column ProductID
 		dataType: int64
 		formatString: 0
-		lineageTag: 33445566-7788-99aa-bbcc-ddeeff001122
+		lineageTag: 55555555-5555-5555-5555-555555555513
 		summarizeBy: none
 		sourceColumn: ProductID
 
@@ -31,7 +31,7 @@ table SalesOrderDetail
 	column OrderQty
 		dataType: int64
 		formatString: 0
-		lineageTag: 44556677-8899-aabb-ccdd-eeff00112233
+		lineageTag: 55555555-5555-5555-5555-555555555514
 		summarizeBy: sum
 		sourceColumn: OrderQty
 
@@ -39,18 +39,17 @@ table SalesOrderDetail
 
 	column UnitPrice
 		dataType: decimal
-		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-		lineageTag: 55667788-99aa-bbcc-ddee-ff0011223344
+		formatString: #,0.00
+		lineageTag: 55555555-5555-5555-5555-555555555515
 		summarizeBy: sum
 		sourceColumn: UnitPrice
 
 		annotation SummarizationSetBy = Automatic
-		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
 
 	column UnitPriceDiscount
 		dataType: decimal
-		formatString: 0.00%;-0.00%;0.00%
-		lineageTag: 66778899-aabb-ccdd-eeff-001122334455
+		formatString: #,0.00
+		lineageTag: 55555555-5555-5555-5555-555555555516
 		summarizeBy: none
 		sourceColumn: UnitPriceDiscount
 
@@ -58,27 +57,18 @@ table SalesOrderDetail
 
 	column LineTotal
 		dataType: decimal
-		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-		lineageTag: 7799bbcc-ddee-ff00-1122-334455667788
+		formatString: #,0.00
+		lineageTag: 55555555-5555-5555-5555-555555555517
 		summarizeBy: sum
 		sourceColumn: LineTotal
 
 		annotation SummarizationSetBy = Automatic
-		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
 
-	measure TotalLineAmount = SUMX(SalesOrderDetail, SalesOrderDetail[OrderQty] * SalesOrderDetail[UnitPrice] * (1 - SalesOrderDetail[UnitPriceDiscount]))
-		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-		lineageTag: 7788aabb-ccdd-eeff-0011-223344556677
-
-		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
-
-	partition SalesOrderDetail = entity
+	partition SalesOrderDetail = directLake
 		mode: directLake
 		source
-			entityName: 'SalesOrderDetail'
-			schemaName: 'dbo'
+			entityName: SalesOrderDetail
+			schemaName: dbo
 			expressionSource: DatabaseQuery
-
-	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
