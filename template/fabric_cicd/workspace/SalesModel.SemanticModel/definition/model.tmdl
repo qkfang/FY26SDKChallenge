@@ -6,26 +6,18 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["ProductCategory","Product","Customer","SalesOrderHeader","SalesOrderDetail"]
+annotation PBI_QueryOrder = ["DirectLake - SalesLakehouse"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DirectLakeOnOneLakeInWeb"]
 
-annotation DatabaseQuery = {"version":"0.0","connection":{"entityId":"49f3e9cc-39cc-49b9-8807-0d33674b04b5","workspaceId":"334687d9-c5a3-4af6-a9b1-9c02bad79934"}}
+ref table ProductCategory
+
+ref table Product
+
+ref table Customer
+
+ref table SalesOrderHeader
+
 ref table SalesOrderDetail
-
-ref expression DatabaseQuery
-
-ref cultureInfo en-US
-
-expression DatabaseQuery
-	kind: m
-	expression =
-			let
-			    Source = Lakehouse.Database("49f3e9cc-39cc-49b9-8807-0d33674b04b5", null, [WorkspaceId = "334687d9-c5a3-4af6-a9b1-9c02bad79934"])
-			in
-			    Source
-
-	annotation PBI_NavigationStepName = Navigation
-	annotation PBI_ResultType = Exception

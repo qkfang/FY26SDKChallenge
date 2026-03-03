@@ -1,11 +1,13 @@
 table Customer
 	lineageTag: 33333333-3333-3333-3333-333333333301
+	sourceLineageTag: [dbo].[customer]
 
 	column CustomerID
 		dataType: int64
 		formatString: 0
 		lineageTag: 33333333-3333-3333-3333-333333333311
-		summarizeBy: none
+		sourceLineageTag: CustomerID
+		summarizeBy: count
 		sourceColumn: CustomerID
 
 		annotation SummarizationSetBy = Automatic
@@ -13,6 +15,7 @@ table Customer
 	column FirstName
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333312
+		sourceLineageTag: FirstName
 		summarizeBy: none
 		sourceColumn: FirstName
 
@@ -21,6 +24,7 @@ table Customer
 	column LastName
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333313
+		sourceLineageTag: LastName
 		summarizeBy: none
 		sourceColumn: LastName
 
@@ -29,6 +33,7 @@ table Customer
 	column CompanyName
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333314
+		sourceLineageTag: CompanyName
 		summarizeBy: none
 		sourceColumn: CompanyName
 
@@ -37,6 +42,7 @@ table Customer
 	column EmailAddress
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333315
+		sourceLineageTag: EmailAddress
 		summarizeBy: none
 		sourceColumn: EmailAddress
 
@@ -45,6 +51,7 @@ table Customer
 	column Phone
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333316
+		sourceLineageTag: Phone
 		summarizeBy: none
 		sourceColumn: Phone
 
@@ -53,6 +60,7 @@ table Customer
 	column City
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333317
+		sourceLineageTag: City
 		summarizeBy: none
 		sourceColumn: City
 
@@ -61,6 +69,7 @@ table Customer
 	column StateProvince
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333318
+		sourceLineageTag: StateProvince
 		summarizeBy: none
 		sourceColumn: StateProvince
 
@@ -69,16 +78,15 @@ table Customer
 	column CountryRegion
 		dataType: string
 		lineageTag: 33333333-3333-3333-3333-333333333319
+		sourceLineageTag: CountryRegion
 		summarizeBy: none
 		sourceColumn: CountryRegion
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Customer = directLake
+	partition Customer = entity
 		mode: directLake
 		source
-			entityName: Customer
+			entityName: customer
 			schemaName: dbo
-			expressionSource: DatabaseQuery
-
-	annotation PBI_ResultType = Table
+			expressionSource: 'DirectLake - SalesLakehouse'

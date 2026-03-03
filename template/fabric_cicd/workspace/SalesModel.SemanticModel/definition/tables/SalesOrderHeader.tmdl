@@ -1,11 +1,13 @@
 table SalesOrderHeader
 	lineageTag: 44444444-4444-4444-4444-444444444401
+	sourceLineageTag: [dbo].[salesorderheader]
 
 	column SalesOrderID
 		dataType: int64
 		formatString: 0
 		lineageTag: 44444444-4444-4444-4444-444444444411
-		summarizeBy: none
+		sourceLineageTag: SalesOrderID
+		summarizeBy: count
 		sourceColumn: SalesOrderID
 
 		annotation SummarizationSetBy = Automatic
@@ -14,6 +16,7 @@ table SalesOrderHeader
 		dataType: dateTime
 		formatString: Short Date
 		lineageTag: 44444444-4444-4444-4444-444444444412
+		sourceLineageTag: OrderDate
 		summarizeBy: none
 		sourceColumn: OrderDate
 
@@ -23,6 +26,7 @@ table SalesOrderHeader
 		dataType: dateTime
 		formatString: Short Date
 		lineageTag: 44444444-4444-4444-4444-444444444413
+		sourceLineageTag: DueDate
 		summarizeBy: none
 		sourceColumn: DueDate
 
@@ -32,7 +36,8 @@ table SalesOrderHeader
 		dataType: int64
 		formatString: 0
 		lineageTag: 44444444-4444-4444-4444-444444444414
-		summarizeBy: none
+		sourceLineageTag: CustomerID
+		summarizeBy: count
 		sourceColumn: CustomerID
 
 		annotation SummarizationSetBy = Automatic
@@ -41,6 +46,7 @@ table SalesOrderHeader
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 44444444-4444-4444-4444-444444444415
+		sourceLineageTag: SubTotal
 		summarizeBy: sum
 		sourceColumn: SubTotal
 
@@ -50,6 +56,7 @@ table SalesOrderHeader
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 44444444-4444-4444-4444-444444444416
+		sourceLineageTag: TaxAmt
 		summarizeBy: sum
 		sourceColumn: TaxAmt
 
@@ -59,6 +66,7 @@ table SalesOrderHeader
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 44444444-4444-4444-4444-444444444417
+		sourceLineageTag: Freight
 		summarizeBy: sum
 		sourceColumn: Freight
 
@@ -68,6 +76,7 @@ table SalesOrderHeader
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 44444444-4444-4444-4444-444444444418
+		sourceLineageTag: TotalDue
 		summarizeBy: sum
 		sourceColumn: TotalDue
 
@@ -77,7 +86,8 @@ table SalesOrderHeader
 		dataType: int64
 		formatString: 0
 		lineageTag: 44444444-4444-4444-4444-444444444419
-		summarizeBy: none
+		sourceLineageTag: Status
+		summarizeBy: count
 		sourceColumn: Status
 
 		annotation SummarizationSetBy = Automatic
@@ -85,16 +95,15 @@ table SalesOrderHeader
 	column SalesTerritory
 		dataType: string
 		lineageTag: 44444444-4444-4444-4444-44444444441a
+		sourceLineageTag: SalesTerritory
 		summarizeBy: none
 		sourceColumn: SalesTerritory
 
 		annotation SummarizationSetBy = Automatic
 
-	partition SalesOrderHeader = directLake
+	partition SalesOrderHeader = entity
 		mode: directLake
 		source
-			entityName: SalesOrderHeader
+			entityName: salesorderheader
 			schemaName: dbo
-			expressionSource: DatabaseQuery
-
-	annotation PBI_ResultType = Table
+			expressionSource: 'DirectLake - SalesLakehouse'

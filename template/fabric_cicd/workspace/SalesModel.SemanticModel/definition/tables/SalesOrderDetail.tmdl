@@ -1,11 +1,13 @@
 table SalesOrderDetail
 	lineageTag: 55555555-5555-5555-5555-555555555501
+	sourceLineageTag: [dbo].[salesorderdetail]
 
 	column SalesOrderID
 		dataType: int64
 		formatString: 0
 		lineageTag: 55555555-5555-5555-5555-555555555511
-		summarizeBy: none
+		sourceLineageTag: SalesOrderID
+		summarizeBy: count
 		sourceColumn: SalesOrderID
 
 		annotation SummarizationSetBy = Automatic
@@ -14,7 +16,8 @@ table SalesOrderDetail
 		dataType: int64
 		formatString: 0
 		lineageTag: 55555555-5555-5555-5555-555555555512
-		summarizeBy: none
+		sourceLineageTag: SalesOrderDetailID
+		summarizeBy: count
 		sourceColumn: SalesOrderDetailID
 
 		annotation SummarizationSetBy = Automatic
@@ -23,7 +26,8 @@ table SalesOrderDetail
 		dataType: int64
 		formatString: 0
 		lineageTag: 55555555-5555-5555-5555-555555555513
-		summarizeBy: none
+		sourceLineageTag: ProductID
+		summarizeBy: count
 		sourceColumn: ProductID
 
 		annotation SummarizationSetBy = Automatic
@@ -32,6 +36,7 @@ table SalesOrderDetail
 		dataType: int64
 		formatString: 0
 		lineageTag: 55555555-5555-5555-5555-555555555514
+		sourceLineageTag: OrderQty
 		summarizeBy: sum
 		sourceColumn: OrderQty
 
@@ -41,6 +46,7 @@ table SalesOrderDetail
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 55555555-5555-5555-5555-555555555515
+		sourceLineageTag: UnitPrice
 		summarizeBy: sum
 		sourceColumn: UnitPrice
 
@@ -50,6 +56,7 @@ table SalesOrderDetail
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 55555555-5555-5555-5555-555555555516
+		sourceLineageTag: UnitPriceDiscount
 		summarizeBy: none
 		sourceColumn: UnitPriceDiscount
 
@@ -59,16 +66,15 @@ table SalesOrderDetail
 		dataType: decimal
 		formatString: #,0.00
 		lineageTag: 55555555-5555-5555-5555-555555555517
+		sourceLineageTag: LineTotal
 		summarizeBy: sum
 		sourceColumn: LineTotal
 
 		annotation SummarizationSetBy = Automatic
 
-	partition SalesOrderDetail = directLake
+	partition SalesOrderDetail = entity
 		mode: directLake
 		source
-			entityName: SalesOrderDetail
+			entityName: salesorderdetail
 			schemaName: dbo
-			expressionSource: DatabaseQuery
-
-	annotation PBI_ResultType = Table
+			expressionSource: 'DirectLake - SalesLakehouse'
