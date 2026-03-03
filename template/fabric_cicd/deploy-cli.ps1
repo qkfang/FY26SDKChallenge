@@ -111,14 +111,29 @@ function Deploy-FabricEnvironment {
             }
         }
 
-        # Write sqlDatabaseId to all envs in variable.json
+        # Fetch SQL Database properties (server endpoint + database name) and write to variable.json
         if ($sqlDbId) {
+            $sqlProps = $null
+            for ($i = 0; $i -lt 12; $i++) {
+                try {
+                    $sqlProps = (Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/workspaces/$workspaceId/sqlDatabases/$sqlDbId" -Headers $headers).properties
+                    if ($sqlProps.serverFqdn) { break }
+                } catch {}
+                Write-Host "[$EnvName] Waiting for SQL Database properties..."
+                Start-Sleep -Seconds 5
+            }
+
+            $sqlServerEndpoint = $sqlProps.serverFqdn
+            $sqlDatabaseName   = $sqlProps.databaseName
+
             $vars = Get-Content $variableFile -Raw | ConvertFrom-Json
             foreach ($e in @("DEV", "QA", "PROD")) {
-                $vars.$e | Add-Member -NotePropertyName "sqlDatabaseId" -NotePropertyValue $sqlDbId -Force
+                $vars.$e | Add-Member -NotePropertyName "sqlDatabaseId"     -NotePropertyValue $sqlDbId           -Force
+                $vars.$e | Add-Member -NotePropertyName "sqlServerEndpoint" -NotePropertyValue $sqlServerEndpoint -Force
+                $vars.$e | Add-Member -NotePropertyName "sqlDatabaseName"   -NotePropertyValue $sqlDatabaseName   -Force
             }
             $vars | ConvertTo-Json -Depth 3 | Set-Content $variableFile
-            Write-Host "[$EnvName] variable.json updated with sqlDatabaseId=$sqlDbId"
+            Write-Host "[$EnvName] variable.json updated: sqlDatabaseId=$sqlDbId  endpoint=$sqlServerEndpoint  db=$sqlDatabaseName"
         }
     }
 

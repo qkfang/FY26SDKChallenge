@@ -1,0 +1,16 @@
+expression DatabaseQuery
+	kind: m
+	lineageTag: a1b2c3d4-e5f6-7890-abcd-ef1234567891
+	expression = ```
+		let
+		    database = Lakehouse.Contents(null){[workspaceId = "334687d9-c5a3-4af6-a9b1-9c02bad79934", databaseId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]}[Data]
+		in
+		    database
+		```
+
+	annotation IsParameterQuery = false
+
+	annotation NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

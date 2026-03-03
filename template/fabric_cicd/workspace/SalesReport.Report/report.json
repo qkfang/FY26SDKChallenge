@@ -28,10 +28,10 @@
       "ordinal": 0,
       "visualContainers": [
         {
-          "config": "{\"name\":\"b2c3d4e5f6a7b8c9d0e1\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":80,\"z\":0,\"width\":500,\"height\":300,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"SalesOrderHeader.SalesOrderID\"},{\"queryRef\":\"SalesOrderHeader.OrderDate\"},{\"queryRef\":\"SalesOrderHeader.CustomerID\"},{\"queryRef\":\"SalesOrderHeader.SubTotal\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"s\",\"Entity\":\"SalesOrderHeader\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"SalesOrderID\"},\"Name\":\"SalesOrderHeader.SalesOrderID\",\"NativeReferenceName\":\"SalesOrderID\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"OrderDate\"},\"Name\":\"SalesOrderHeader.OrderDate\",\"NativeReferenceName\":\"OrderDate\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"CustomerID\"},\"Name\":\"SalesOrderHeader.CustomerID\",\"NativeReferenceName\":\"CustomerID\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"SubTotal\"},\"Name\":\"SalesOrderHeader.SubTotal\",\"NativeReferenceName\":\"SubTotal\"}]},\"drillFilterOtherVisuals\":true}}",
+          "config": "{\"name\":\"b2c3d4e5f6a7b8c9d0e1\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":80,\"z\":0,\"width\":1200,\"height\":560,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"SalesOrderHeader.SalesOrderID\"},{\"queryRef\":\"SalesOrderHeader.OrderDate\"},{\"queryRef\":\"SalesOrderHeader.DueDate\"},{\"queryRef\":\"SalesOrderHeader.SalesTerritory\"},{\"queryRef\":\"SalesOrderHeader.CustomerID\"},{\"queryRef\":\"SalesOrderHeader.SubTotal\"},{\"queryRef\":\"SalesOrderHeader.TaxAmt\"},{\"queryRef\":\"SalesOrderHeader.TotalDue\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"s\",\"Entity\":\"SalesOrderHeader\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"SalesOrderID\"},\"Name\":\"SalesOrderHeader.SalesOrderID\",\"NativeReferenceName\":\"SalesOrderID\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"OrderDate\"},\"Name\":\"SalesOrderHeader.OrderDate\",\"NativeReferenceName\":\"OrderDate\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"DueDate\"},\"Name\":\"SalesOrderHeader.DueDate\",\"NativeReferenceName\":\"DueDate\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"SalesTerritory\"},\"Name\":\"SalesOrderHeader.SalesTerritory\",\"NativeReferenceName\":\"SalesTerritory\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"CustomerID\"},\"Name\":\"SalesOrderHeader.CustomerID\",\"NativeReferenceName\":\"CustomerID\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"SubTotal\"},\"Name\":\"SalesOrderHeader.SubTotal\",\"NativeReferenceName\":\"SubTotal\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"TaxAmt\"},\"Name\":\"SalesOrderHeader.TaxAmt\",\"NativeReferenceName\":\"TaxAmt\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"TotalDue\"},\"Name\":\"SalesOrderHeader.TotalDue\",\"NativeReferenceName\":\"TotalDue\"}]},\"drillFilterOtherVisuals\":true}}",
           "filters": "[]",
-          "height": 300.0,
-          "width": 500.0,
+          "height": 560.0,
+          "width": 1200.0,
           "x": 20.0,
           "y": 80.0,
           "z": 0.0
@@ -49,10 +49,31 @@
       "ordinal": 1,
       "visualContainers": [
         {
-          "config": "{\"name\":\"d4e5f6a7b8c9d0e1f2a3\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":80,\"z\":0,\"width\":500,\"height\":300,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"Product.Name\"},{\"queryRef\":\"Product.Color\"},{\"queryRef\":\"Product.ListPrice\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"p\",\"Entity\":\"Product\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"Name\"},\"Name\":\"Product.Name\",\"NativeReferenceName\":\"Name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"Color\"},\"Name\":\"Product.Color\",\"NativeReferenceName\":\"Color\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"ListPrice\"},\"Name\":\"Product.ListPrice\",\"NativeReferenceName\":\"ListPrice\"}]},\"drillFilterOtherVisuals\":true}}",
+          "config": "{\"name\":\"d4e5f6a7b8c9d0e1f2a3\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":80,\"z\":0,\"width\":1200,\"height\":560,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"ProductCategory.Name\"},{\"queryRef\":\"Product.Name\"},{\"queryRef\":\"Product.ProductNumber\"},{\"queryRef\":\"Product.Color\"},{\"queryRef\":\"Product.StandardCost\"},{\"queryRef\":\"Product.ListPrice\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"p\",\"Entity\":\"Product\",\"Type\":0},{\"Name\":\"c\",\"Entity\":\"ProductCategory\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Name\"},\"Name\":\"ProductCategory.Name\",\"NativeReferenceName\":\"Category\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"Name\"},\"Name\":\"Product.Name\",\"NativeReferenceName\":\"Product\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"ProductNumber\"},\"Name\":\"Product.ProductNumber\",\"NativeReferenceName\":\"ProductNumber\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"Color\"},\"Name\":\"Product.Color\",\"NativeReferenceName\":\"Color\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"StandardCost\"},\"Name\":\"Product.StandardCost\",\"NativeReferenceName\":\"StandardCost\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"ListPrice\"},\"Name\":\"Product.ListPrice\",\"NativeReferenceName\":\"ListPrice\"}]},\"drillFilterOtherVisuals\":true}}",
           "filters": "[]",
-          "height": 300.0,
-          "width": 500.0,
+          "height": 560.0,
+          "width": 1200.0,
+          "x": 20.0,
+          "y": 80.0,
+          "z": 0.0
+        }
+      ],
+      "width": 1280.0
+    },
+    {
+      "config": "{}",
+      "displayName": "Customer Summary",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.0,
+      "name": "e5f6a7b8c9d0e1f2a3b4",
+      "ordinal": 2,
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"f6a7b8c9d0e1f2a3b4c5\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20,\"y\":80,\"z\":0,\"width\":1200,\"height\":560,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"Customer.CustomerID\"},{\"queryRef\":\"Customer.FirstName\"},{\"queryRef\":\"Customer.LastName\"},{\"queryRef\":\"Customer.CompanyName\"},{\"queryRef\":\"Customer.City\"},{\"queryRef\":\"Customer.StateProvince\"},{\"queryRef\":\"Customer.CountryRegion\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Customer\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"CustomerID\"},\"Name\":\"Customer.CustomerID\",\"NativeReferenceName\":\"CustomerID\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"FirstName\"},\"Name\":\"Customer.FirstName\",\"NativeReferenceName\":\"FirstName\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"LastName\"},\"Name\":\"Customer.LastName\",\"NativeReferenceName\":\"LastName\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"CompanyName\"},\"Name\":\"Customer.CompanyName\",\"NativeReferenceName\":\"CompanyName\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"City\"},\"Name\":\"Customer.City\",\"NativeReferenceName\":\"City\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"StateProvince\"},\"Name\":\"Customer.StateProvince\",\"NativeReferenceName\":\"StateProvince\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"CountryRegion\"},\"Name\":\"Customer.CountryRegion\",\"NativeReferenceName\":\"CountryRegion\"}]},\"drillFilterOtherVisuals\":true}}",
+          "filters": "[]",
+          "height": 560.0,
+          "width": 1200.0,
           "x": 20.0,
           "y": 80.0,
           "z": 0.0

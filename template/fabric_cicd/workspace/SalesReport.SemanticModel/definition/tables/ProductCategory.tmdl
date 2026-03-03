@@ -18,24 +18,12 @@ table ProductCategory
 
 		annotation SummarizationSetBy = Automatic
 
-	partition ProductCategory = m
-		mode: import
-		source =
-			let
-			    Source = Table.FromRows(
-			        {
-			            {1, "Bikes"},
-			            {2, "Components"},
-			            {3, "Clothing"},
-			            {4, "Accessories"}
-			        },
-			        type table [
-			            ProductCategoryID = Int64.Type,
-			            Name              = text
-			        ]
-			    )
-			in
-			    Source
+	partition ProductCategory = entity
+		mode: directLake
+		source
+			entityName: 'ProductCategory'
+			schemaName: 'dbo'
+			expressionSource: DatabaseQuery
 
 	annotation PBI_NavigationStepName = Navigation
 

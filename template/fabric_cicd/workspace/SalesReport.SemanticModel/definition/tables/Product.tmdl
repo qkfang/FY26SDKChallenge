@@ -63,40 +63,12 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Product = m
-		mode: import
-		source =
-			let
-			    Source = Table.FromRows(
-			        {
-			            {680, "HL Road Frame - Black, 58",   "FR-R92B-58", "Black",  1059.3100, 1431.50, 2},
-			            {706, "HL Road Frame - Red, 58",     "FR-R92R-58", "Red",    1059.3100, 1431.50, 2},
-			            {707, "Sport-100 Helmet, Red",       "HL-U509-R",  "Red",      13.0863,   34.99, 4},
-			            {708, "Sport-100 Helmet, Black",     "HL-U509",    "Black",    13.0863,   34.99, 4},
-			            {709, "Mountain Bike Socks, M",      "SO-B909-M",  "White",     3.3963,    9.50, 3},
-			            {710, "Mountain Bike Socks, L",      "SO-B909-L",  "White",     3.3963,    9.50, 3},
-			            {711, "Sport-100 Helmet, Blue",      "HL-U509-B",  "Blue",     13.0863,   34.99, 4},
-			            {712, "AWC Logo Cap",                "CA-1098",    "Multi",     6.9223,    8.99, 3},
-			            {713, "Long-Sleeve Logo Jersey, S",  "LJ-0192-S",  "Multi",    38.4923,   49.99, 3},
-			            {714, "Long-Sleeve Logo Jersey, L",  "LJ-0192-L",  "Multi",    38.4923,   49.99, 3},
-			            {715, "Long-Sleeve Logo Jersey, XL", "LJ-0192-X",  "Multi",    38.4923,   49.99, 3},
-			            {716, "Road Frame - Red, 48",        "FR-R92R-48", "Red",     352.1544, 1431.50, 2},
-			            {717, "Road Frame - Red, 44",        "FR-R92R-44", "Red",     352.1544, 1431.50, 2},
-			            {718, "Mountain Frame - Black, 48",  "FR-M94B-48", "Black",   224.9501,  539.99, 1},
-			            {722, "Mountain-200 Black, 38",      "BK-M68B-38", "Black",  1251.0000, 2319.99, 1}
-			        },
-			        type table [
-			            ProductID         = Int64.Type,
-			            Name              = text,
-			            ProductNumber     = text,
-			            Color             = text,
-			            StandardCost      = Currency.Type,
-			            ListPrice         = Currency.Type,
-			            ProductCategoryID = Int64.Type
-			        ]
-			    )
-			in
-			    Source
+	partition Product = entity
+		mode: directLake
+		source
+			entityName: 'Product'
+			schemaName: 'dbo'
+			expressionSource: DatabaseQuery
 
 	annotation PBI_NavigationStepName = Navigation
 

@@ -78,42 +78,12 @@ table Customer
 		formatString: 0
 		lineageTag: ad1e2f3a-4b5c-6789-34ab-cdef01234567
 
-	partition Customer = m
-		mode: import
-		source =
-			let
-			    Source = Table.FromRows(
-			        {
-			            {1,  "Orlando",  "Gee",        "A Bike Store",              "orlando0@adventure-works.com",  "245-555-0173", "Seattle",       "WA", "US"},
-			            {2,  "Keith",    "Harris",     "Bike World",                "keith0@adventure-works.com",    "170-555-0127", "Portland",      "OR", "US"},
-			            {3,  "Donna",    "Carreras",   "Connected Bikes",           "donna0@adventure-works.com",    "279-555-0130", "San Francisco", "CA", "US"},
-			            {4,  "Janet",    "Gates",      "Futuristic Bikes",          "janet0@adventure-works.com",    "710-555-0173", "Los Angeles",   "CA", "US"},
-			            {5,  "Lucy",     "Harrington", "Metro Sports",              "lucy0@adventure-works.com",     "928-555-0109", "Phoenix",       "AZ", "US"},
-			            {6,  "Rosmarie", "Carroll",    "Online Bike Catalog",       "rosmarie0@adventure-works.com", "244-555-0166", "Chicago",       "IL", "US"},
-			            {7,  "Dominic",  "Gash",       "Pedal Pushers",             "dominic0@adventure-works.com",  "192-555-0175", "Houston",       "TX", "US"},
-			            {8,  "Kathleen", "Garza",      "Proxatier Inc",             "kathleen0@adventure-works.com", "150-555-0127", "Dallas",        "TX", "US"},
-			            {9,  "Katherine","Harding",    "Rural Cycle Emporium",      "katherine0@adventure-works.com","926-555-0159", "Denver",        "CO", "US"},
-			            {10, "Johnny",   "Caprio",     "Vigorous Exercise Company", "johnny0@adventure-works.com",   "112-555-0191", "Boston",        "MA", "US"},
-			            {11, "Alice",    "Chen",       "Tailspin Traders",          "alice.chen@tailspin.com",       "206-555-0201", "Seattle",       "WA", "US"},
-			            {12, "Bob",      "Patel",      "Northwind Traders",         "bob.patel@northwind.com",       "425-555-0202", "Redmond",       "WA", "US"},
-			            {13, "Carol",    "Smith",      "Fabrikam Inc",              "carol.smith@fabrikam.com",      "253-555-0203", "Tacoma",        "WA", "US"},
-			            {14, "David",    "Kim",        "Contoso Electronics",       "david.kim@contoso-elec.com",    "360-555-0204", "Bellevue",      "WA", "US"},
-			            {15, "Eva",      "Johnson",    "Adventure Works",           "eva.johnson@adventure.com",     "509-555-0205", "Spokane",       "WA", "US"}
-			        },
-			        type table [
-			            CustomerID    = Int64.Type,
-			            FirstName     = text,
-			            LastName      = text,
-			            CompanyName   = text,
-			            EmailAddress  = text,
-			            Phone         = text,
-			            City          = text,
-			            StateProvince = text,
-			            CountryRegion = text
-			        ]
-			    )
-			in
-			    Source
+	partition Customer = entity
+		mode: directLake
+		source
+			entityName: 'Customer'
+			schemaName: 'dbo'
+			expressionSource: DatabaseQuery
 
 	annotation PBI_NavigationStepName = Navigation
 
