@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ResourceConfig } from '../services/api';
 import './RequirementForm.css';
 
@@ -15,6 +15,18 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
   const [envDev, setEnvDev] = useState(true);
   const [envQa, setEnvQa] = useState(true);
   const [envProd, setEnvProd] = useState(true);
+  const [showExamples, setShowExamples] = useState(false);
+  const examplesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (examplesRef.current && !examplesRef.current.contains(e.target as Node)) {
+        setShowExamples(false);
+      }
+    };
+    if (showExamples) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showExamples]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,17 +101,24 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading }
         </button>
       </form>
 
-      <div className="examples">
-        <h3>Example Requirements:</h3>
-        <ul>
-          {examples.map((example, index) => (
-            <li key={index}>
-              <button type="button" onClick={() => setRequirement(example)} disabled={isLoading}>
+      <div className="examples-tip" ref={examplesRef}>
+        <button type="button" className="tip-icon" onClick={() => setShowExamples(!showExamples)} title="Example requirements">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>Examples</span>
+        </button>
+        {showExamples && (
+          <div className="examples-dropdown">
+            {examples.map((example, index) => (
+              <button key={index} type="button" onClick={() => { setRequirement(example); setShowExamples(false); }} disabled={isLoading}>
                 {example}
               </button>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

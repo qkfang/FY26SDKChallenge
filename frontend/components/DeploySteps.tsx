@@ -115,17 +115,6 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
 
   return (
     <div className="deploy-steps">
-      <div className="deploy-steps__workspace">
-        <span className="deploy-steps__workspace-label">Workspace:</span>
-        <code className="deploy-steps__workspace-path">{workspaceDir}</code>
-      </div>
-      {sessionId && (
-        <div className="deploy-steps__workspace">
-          <span className="deploy-steps__workspace-label">Copilot Session:</span>
-          <code className="deploy-steps__workspace-path">{sessionId}</code>
-        </div>
-      )}
-
       <div className="deploy-steps__grid">
         {STEPS.map(step => {
           const state = stepStates[step.id];

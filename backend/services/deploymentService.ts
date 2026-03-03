@@ -18,8 +18,46 @@ const STEP_SCRIPTS: Record<string, string> = {
   fabric: 'deploy.ps1',
 };
 
+export interface SessionEntry {
+  workspaceDir: string;
+  copilotSessionId: string;
+  createdAt: string;
+}
+
 export class DeploymentService {
   private deployments: Map<string, DeploymentStatus> = new Map();
+
+  // ── List existing workspace sessions ───────────────────────────────────────
+  listSessions(): SessionEntry[] {
+    if (!fs.existsSync(WORKSPACE_BASE)) return [];
+    return fs.readdirSync(WORKSPACE_BASE, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => {
+        const dir = path.join(WORKSPACE_BASE, d.name);
+        const stat = fs.statSync(dir);
+        return {
+          workspaceDir: dir,
+          copilotSessionId: '',
+          createdAt: stat.birthtime.toISOString(),
+        };
+      })
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  // ── Init: create workspace folder + copilot session (no requirement) ───────
+  async initSession(): Promise<{ workspaceDir: string; copilotSessionId: string }> {
+    const timestampStr = new Date().toISOString().replace(/[:.]/g, '-');
+    const workspaceDir = path.join(WORKSPACE_BASE, `ws-${timestampStr}`);
+    fs.mkdirSync(workspaceDir, { recursive: true });
+    await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
+
+    const sessionId = randomUUID();
+    await copilotService.initialize();
+    await copilotService.createSession(sessionId, workspaceDir);
+    const info = copilotService.getSessionInfo(sessionId);
+
+    return { workspaceDir, copilotSessionId: info.sdkSessionId || sessionId };
+  }
 
   // ── Setup workspace (Tab 2) ────────────────────────────────────────────────
   async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig): Promise<string> {

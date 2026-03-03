@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import InitStep from './components/InitStep';
 import RequirementForm from './components/RequirementForm';
 import WorkspaceSetup from './components/WorkspaceSetup';
 import DeploySteps from './components/DeploySteps';
@@ -87,6 +88,13 @@ function App() {
     }
   }, []);
 
+  const handleInitReady = (dir: string, sid: string) => {
+    setWorkspaceDir(dir);
+    setCookie('workspaceDir', dir);
+    setSessionId(sid);
+    setCookie('copilotSessionId', sid);
+  };
+
   const handleNewSession = () => {
     clearCookies();
     setWorkspaceDir('');
@@ -127,8 +135,21 @@ function App() {
         )}
 
         <div className="panel">
-          <h2 className="panel-title">1 · Requirement</h2>
-          <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} />
+          <h2 className="panel-title">0 · Init</h2>
+          <InitStep
+            onSessionReady={handleInitReady}
+            currentWorkspaceDir={workspaceDir}
+            currentSessionId={sessionId}
+          />
+        </div>
+
+        <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
+          <h2 className="panel-title">1 · Requirement {!workspaceDir && '🔒'}</h2>
+          {workspaceDir ? (
+            <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} />
+          ) : (
+            <p className="panel-locked-msg">Complete init step to unlock.</p>
+          )}
         </div>
 
         <div className="panel">

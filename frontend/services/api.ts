@@ -32,7 +32,23 @@ export interface DeploymentStatus {
   workspaceDir?: string;
 }
 
+export interface SessionEntry {
+  workspaceDir: string;
+  copilotSessionId: string;
+  createdAt: string;
+}
+
 export const api = {
+  async listSessions(): Promise<SessionEntry[]> {
+    const response = await axios.get(`${API_BASE_URL}/deployment/sessions`);
+    return response.data;
+  },
+
+  async initSession(): Promise<{ workspaceDir: string; copilotSessionId: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/init`);
+    return response.data;
+  },
+
   async setupWorkspace(requirement: string, resourceConfig?: ResourceConfig): Promise<{ deploymentId: string }> {
     const response = await axios.post(`${API_BASE_URL}/deployment/setup`, { requirement, resourceConfig });
     return response.data;

@@ -18,6 +18,26 @@ const configLimiter = rateLimit({
   message: 'Too many configuration requests, please try again later.'
 });
 
+// List existing sessions
+deploymentRouter.get('/sessions', configLimiter, (_req, res) => {
+  try {
+    const sessions = deploymentService.listSessions();
+    res.json(sessions);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Init session (create workspace + copilot session)
+deploymentRouter.post('/init', deploymentLimiter, async (_req, res) => {
+  try {
+    const result = await deploymentService.initSession();
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Setup workspace (Tab 2)
 deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
   try {
