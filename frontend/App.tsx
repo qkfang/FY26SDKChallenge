@@ -111,17 +111,10 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>🚀 Fabric Automation App</h1>
-        <p>Powered by GitHub Copilot SDK</p>
-        <div className="header-controls">
-          <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-            <span className="status-dot"></span>
-            {isConnected ? 'Backend Connected' : 'Backend Disconnected'}
-          </div>
-          {(workspaceDir || sessionId) && (
-            <button className="btn-new-session" onClick={handleNewSession} title="Clear saved session and start fresh">
-              🔄 New Session
-            </button>
-          )}
+        <span style={{ margin: '0 12px', opacity: 0.7 }}>Powered by GitHub Copilot SDK</span>
+        <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+          <span className="status-dot"></span>
+          {isConnected ? 'Backend Connected' : 'Backend Disconnected'}
         </div>
       </header>
 

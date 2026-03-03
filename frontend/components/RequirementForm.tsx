@@ -86,13 +86,19 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading, 
 
         <div className="form-section">
           <h3 className="form-section-title">Workspace Configuration</h3>
-          <div className="form-section-columns">
+          <div className="form-section-columns" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <div className="form-group">
               <label htmlFor="workspaceSuffix">Workspace Name Prefix</label>
               <input type="text" id="workspaceSuffix" value={workspaceSuffix}
                 onChange={(e) => setWorkspaceSuffix(e.target.value)}
                 placeholder="fabric-workspace" disabled={isLoading} />
               <p className="form-section-hint" style={{ marginTop: 6 }}>Environments will be appended as suffix (e.g. {workspaceSuffix}-dev)</p>
+            </div>
+            <div className="form-group">
+              <label htmlFor="fabricCapacity">Fabric Capacity</label>
+              <input type="text" id="fabricCapacity" value={fabricCapacity}
+                onChange={(e) => setFabricCapacity(e.target.value)}
+                placeholder="fabriccapacitycicd" disabled={isLoading} />
             </div>
             <div className="form-group">
               <label className="env-label">Environments</label>
@@ -111,15 +117,6 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading, 
                 </label>
               </div>
             </div>
-          </div>
-          <div className="form-section-columns">
-            <div className="form-group">
-              <label htmlFor="fabricCapacity">Fabric Capacity</label>
-              <input type="text" id="fabricCapacity" value={fabricCapacity}
-                onChange={(e) => setFabricCapacity(e.target.value)}
-                placeholder="fabriccapacitycicd" disabled={isLoading} />
-            </div>
-            <div />
           </div>
         </div>
 
