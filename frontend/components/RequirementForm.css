@@ -116,6 +116,20 @@
   margin-top: 16px;
 }
 
+.examples-tip-inline {
+  vertical-align: middle;
+}
+
+.examples-tip-inline .tip-icon {
+  font-size: 13px;
+  padding: 0;
+}
+
+.examples-tip-inline .examples-dropdown {
+  left: 0;
+  top: calc(100% + 4px);
+}
+
 .tip-icon {
   display: inline-flex;
   align-items: center;
