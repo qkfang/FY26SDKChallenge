@@ -1,256 +1,83 @@
 # Fabric Automation App
 
-A modern web application that automates Microsoft Fabric resource deployment using GitHub Copilot CLI SDK. Users can describe their deployment requirements in natural language, and the application leverages Copilot's AI capabilities to generate and execute deployment plans.
+Automates Microsoft Fabric resource deployment using GitHub Copilot CLI SDK. Describe deployment requirements in natural language and let Copilot generate and execute deployment plans.
 
-## 🚀 Features
+## The Challenge
 
-- **Natural Language Processing**: Describe your Fabric deployment needs in plain English
-- **AI-Powered Planning**: Uses GitHub Copilot CLI SDK to generate intelligent deployment plans
-- **Real-Time Progress Tracking**: Watch your deployment progress with live status updates
-- **Fabric API Integration**: Automated creation and management of:
-  - Workspaces
-  - Lakehouses
-  - Data pipelines
-  - Notebooks
-- **Modern React UI**: Clean, responsive interface for defining and monitoring deployments
+Getting a Microsoft Fabric analytics solution into production is harder than it should be. The platform spans Azure infrastructure, Fabric workspaces, and a growing catalog of data artifacts — but there is no single tool that ties them all together. Teams face a fragmented process:
 
-## 📋 Prerequisites
+- **Azure provisioning is disconnected from Fabric setup.** Capacity, resource groups, and networking are managed in the Azure portal or with Bicep/ARM templates, while workspaces and permissions live inside the Fabric admin experience. These two worlds use different APIs, different auth models, and different deployment patterns.
+- **Workspace configuration is manual and click-heavy.** Creating a workspace, linking it to a Git repo, assigning capacity, and enabling CI/CD pipelines all require navigating multiple Fabric portal screens. There is no declarative "desired state" file that captures the full workspace definition.
+- **Artifact creation happens in yet another context.** Lakehouses, data pipelines, notebooks, and semantic models are built inside the Fabric portal's item editors. Moving them from dev to test to production means exporting, re-importing, or relying on deployment pipelines that still require manual wiring.
+- **Reproducibility is low.** Because the process is spread across three tools and dozens of manual steps, re-creating an identical environment for a new project, a new region, or a disaster-recovery scenario is time-consuming and error-prone.
+- **Onboarding is slow.** A new data engineer must learn Azure resource management, Fabric administration, and artifact authoring before they can stand up their first workspace — a steep learning curve that delays productivity.
 
-Before running this application, ensure you have:
+The result: what should be a straightforward "give me a lakehouse with a pipeline" request turns into hours of portal navigation, script cobbling, and tribal knowledge.
 
-1. **Node.js** (v18 or higher)
-2. **GitHub Copilot CLI** installed and authenticated
-   ```bash
-   gh copilot --version
-   ```
-   If not installed, follow: https://docs.github.com/en/copilot/github-copilot-in-the-cli
-3. **Microsoft Fabric Access** (optional for actual deployment execution)
-   - Azure subscription with Fabric capacity
-   - Service principal with appropriate permissions
+## How This App Solves It
 
-## 🛠️ Installation
+1. **Create Azure resources** — provision Fabric capacity, resource groups, and supporting infrastructure via the Azure portal or CLI.
+2. **Create Fabric workspace structure** — set up workspaces, configure Git integration, and wire up CI/CD automation inside Fabric.
+3. **Create Fabric artifacts** — manually build lakehouses, pipelines, notebooks, and other items through the Fabric portal.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/qkfang/FY26SDKChallenge.git
-   cd FY26SDKChallenge
-   ```
+Each step uses different tools, different UIs, and different skill sets — making the end-to-end process slow, error-prone, and hard to reproduce.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+This app combines all three into a single-click workflow by unifying **Bicep** (Azure infrastructure), **Fabric CLI/API** (workspace and artifact creation), and **Fabric CI/CD automation** (Git-based version control and deployment pipelines). Describe what you need in a prompt, and the tool handles the rest:
 
-   This will install dependencies for both frontend and backend workspaces.
+- **Prompt-driven creation** — Fabric resources are generated directly from your natural-language description, no portal clicking required.
+- **Git-backed version control** — all generated code and configuration live in a Git repo, giving your team full history, branching, and pull-request reviews.
+- **Single-click streamline** — one action triggers Azure provisioning, workspace setup, and artifact deployment together, eliminating manual handoffs.
+- **Faster onboarding** — new team members describe what they need in plain English instead of learning three different toolchains.
+- **Consistent environments** — AI-generated deployment plans follow best practices, reducing configuration drift across workspaces.
+- **Repeatable workflows** — capture and replay deployment patterns so common setups (analytics lakehouse, ingestion pipeline, dev notebooks) are always one click away.
+- **Built-in intelligence** — powered by GitHub Copilot, the tool understands intent and adapts plans to your specific requirements without manual template editing.
 
-## 🏃‍♂️ Running the Application
+Whether your team manages two workspaces or two hundred, this app turns hours of fragmented manual provisioning into minutes of guided, end-to-end automation.
 
-### Development Mode
+## Prerequisites
 
-Run both frontend and backend concurrently:
+- Node.js v18+
+- GitHub Copilot CLI installed and authenticated (`gh copilot --version`)
+- Microsoft Fabric access (optional, for actual deployment)
+
+## Getting Started
 
 ```bash
+git clone https://github.com/qkfang/FY26SDKChallenge.git
+cd FY26SDKChallenge
+npm install
 npm run dev
 ```
 
-Or run them separately:
-
-```bash
-# Terminal 1 - Backend (port 3001)
-npm run dev:backend
-
-# Terminal 2 - Frontend (port 3000)
-npm run dev:frontend
-```
-
-The application will be available at:
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
+- Backend: http://localhost:3001
 
-### Production Build
+## Usage
 
-```bash
-npm run build
-npm start
-```
+1. Open http://localhost:3000
+2. Describe your Fabric deployment in natural language
+3. Click "Start Deployment"
+4. Monitor real-time progress
+5. Review the generated plan and deployed resources
 
-## 📖 Usage
+## Tech Stack
 
-### Basic Workflow
+- **Frontend**: React, TypeScript, Vite
+- **Backend**: Node.js, Express, TypeScript, GitHub Copilot CLI SDK
+- **Shared**: Common TypeScript types
 
-1. **Open the Application**: Navigate to http://localhost:3000
+## Screenshots
 
-2. **Define Your Requirement**: In the form, describe what you want to deploy:
-   ```
-   Example: "Create a new lakehouse for sales data analytics with a workspace called 'Sales Analytics'"
-   ```
+### Step 1 — Enter Requirements
+![Step 1](docs/step1.png)
 
-3. **Start Deployment**: Click "Start Deployment" to begin the process
+### Step 2 — Copilot Generates Plan
+![Step 2](docs/step2.png)
 
-4. **Monitor Progress**: Watch real-time updates as Copilot:
-   - Analyzes your requirement
-   - Generates a deployment plan
-   - Provides step-by-step instructions
+### Step 3 — Deployment Progress
+![Step 3](docs/step3.png)
 
-5. **Review Results**: Once complete, review the deployment plan and resources created
+![Step 3b](docs/step3b.png)
 
-### Example Requirements
-
-- "Create a new lakehouse for sales data analytics"
-- "Set up a data pipeline that ingests CSV files from Azure Blob Storage into a lakehouse"
-- "Create a workspace and lakehouse for marketing analytics with sample notebooks"
-
-## 🔧 Configuration
-
-### Fabric API Authentication (Optional)
-
-To enable actual deployment execution (not just planning), configure Fabric API credentials:
-
-1. **Service Principal Setup**:
-   - Create a service principal in Azure AD
-   - Grant necessary Fabric permissions
-   - Note the tenant ID, client ID, and client secret
-
-2. **Configure Access Token**:
-   You can set the access token via the API:
-   ```bash
-   curl -X POST http://localhost:3001/api/deployment/configure \
-     -H "Content-Type: application/json" \
-     -d '{"accessToken": "YOUR_ACCESS_TOKEN"}'
-   ```
-
-## 🏗️ Architecture
-
-```
-fabric-automation-app/
-├── frontend/              # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── services/     # API client
-│   │   └── App.tsx       # Main application
-│   └── package.json
-├── backend/              # Node.js + Express + TypeScript
-│   ├── src/
-│   │   ├── services/     # Business logic
-│   │   │   ├── copilotService.ts    # Copilot SDK integration
-│   │   │   ├── fabricService.ts     # Fabric API client
-│   │   │   └── deploymentService.ts # Orchestration
-│   │   ├── routes/       # API endpoints
-│   │   └── index.ts      # Server entry point
-│   └── package.json
-└── shared/               # Shared TypeScript types
-    └── types/
-```
-
-## 🔌 API Endpoints
-
-### POST /api/deployment/start
-Start a new deployment
-
-**Request:**
-```json
-{
-  "requirement": "Create a lakehouse for analytics",
-  "workspaceName": "Analytics Workspace",
-  "lakehouseName": "Data Lakehouse"
-}
-```
-
-**Response:**
-```json
-{
-  "deploymentId": "uuid"
-}
-```
-
-### GET /api/deployment/status/:deploymentId
-Get deployment status
-
-**Response:**
-```json
-{
-  "id": "uuid",
-  "status": "in-progress",
-  "progress": 50,
-  "messages": [...],
-  "result": {...}
-}
-```
-
-### POST /api/deployment/configure
-Configure Fabric API credentials
-
-**Request:**
-```json
-{
-  "accessToken": "your-access-token"
-}
-```
-
-### GET /api/health
-Health check endpoint
-
-## 🧪 Testing
-
-Currently, the application includes manual testing capabilities through the UI. To test:
-
-1. Start the development servers
-2. Navigate to the frontend
-3. Try the example requirements provided
-4. Monitor the console logs for detailed operation information
-
-## 📝 Technical Details
-
-### Technologies Used
-
-- **Frontend**:
-  - React 18
-  - TypeScript
-  - Vite
-  - Axios
-
-- **Backend**:
-  - Node.js
-  - Express
-  - TypeScript
-  - GitHub Copilot CLI SDK
-  - Axios (for Fabric API calls)
-
-### How It Works
-
-1. **User Input**: User describes deployment requirement in natural language
-2. **Copilot Processing**: Backend creates a Copilot session and sends the requirement
-3. **Plan Generation**: Copilot analyzes the requirement and generates a deployment plan
-4. **Execution** (when configured): Backend executes Fabric API calls based on the plan
-5. **Real-Time Updates**: Frontend polls backend for status and displays progress
-
-## 🔒 Security Notes
-
-- Never commit access tokens or credentials to version control
-- Use environment variables for sensitive configuration
-- The Copilot SDK requires local GitHub CLI authentication
-- Fabric API calls require proper Azure AD authentication
-
-## 🤝 Contributing
-
-This is a challenge project. For contributions:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-MIT
-
-## 🔗 Resources
-
-- [Microsoft Fabric Documentation](https://learn.microsoft.com/en-us/fabric/)
-- [GitHub Copilot CLI SDK](https://github.com/github/copilot-sdk)
-- [Fabric REST API Reference](https://learn.microsoft.com/en-us/rest/api/fabric/)
-- [Lakehouse Tutorial](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-lakehouse-introduction)
-
-## 📧 Support
-
-For issues and questions, please open an issue on GitHub.
+### Step 4 — Results
+![Step 4](docs/step4.png)
