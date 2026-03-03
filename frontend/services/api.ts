@@ -66,8 +66,8 @@ export const api = {
     return response.data;
   },
 
-  async runDeployStep(step: string, workspaceDir: string): Promise<{ deploymentId: string }> {
-    const response = await axios.post(`${API_BASE_URL}/deployment/run-step`, { step, workspaceDir });
+  async runDeployStep(step: string, workspaceDir: string, environment?: string): Promise<{ deploymentId: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/run-step`, { step, workspaceDir, environment });
     return response.data;
   },
 

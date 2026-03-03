@@ -37,7 +37,10 @@ const STEPS = [
   },
 ];
 
+const ENVIRONMENTS = ['DEV', 'QA', 'PROD'];
+
 const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) => {
+  const [selectedEnv, setSelectedEnv] = useState('DEV');
   const [stepStates, setStepStates] = useState<Record<string, StepState>>(() =>
     Object.fromEntries(STEPS.map(s => [s.id, { deploymentId: null, status: null, isRunning: false }]))
   );
@@ -89,7 +92,7 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
     }));
 
     try {
-      const { deploymentId } = await api.runDeployStep(stepId, workspaceDir);
+      const { deploymentId } = await api.runDeployStep(stepId, workspaceDir, selectedEnv);
       setStepStates(prev => ({
         ...prev,
         [stepId]: { ...prev[stepId], deploymentId }
@@ -115,6 +118,18 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
 
   return (
     <div className="deploy-steps">
+      <div className="deploy-steps__env-bar">
+        <label className="deploy-steps__env-label">Environment</label>
+        <select
+          className="deploy-steps__env-select"
+          value={selectedEnv}
+          onChange={e => setSelectedEnv(e.target.value)}
+        >
+          {ENVIRONMENTS.map(env => (
+            <option key={env} value={env}>{env}</option>
+          ))}
+        </select>
+      </div>
       <div className="deploy-steps__grid">
         {STEPS.map(step => {
           const state = stepStates[step.id];

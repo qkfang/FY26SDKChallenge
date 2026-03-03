@@ -201,9 +201,10 @@ export class DeploymentService {
   }
 
   // ── Run a single deploy step (Tab 3 buttons) ──────────────────────────────
-  async runDeployStep(step: string, workspaceDir: string): Promise<string> {
+  async runDeployStep(step: string, workspaceDir: string, environment?: string): Promise<string> {
     const deploymentId = randomUUID();
     const scriptFile = STEP_SCRIPTS[step];
+    const env = environment || 'DEV';
 
     if (!scriptFile) {
       throw new Error(`Unknown step: ${step}. Valid steps are: ${Object.keys(STEP_SCRIPTS).join(', ')}`);
@@ -219,7 +220,7 @@ export class DeploymentService {
         {
           timestamp: new Date(),
           type: 'info',
-          message: `Running step '${step}' via ${scriptFile} in ${workspaceDir}`
+          message: `Running step '${step}' (env=${env}) via ${scriptFile} in ${workspaceDir}`
         }
       ],
       workspaceDir
@@ -227,7 +228,7 @@ export class DeploymentService {
 
     this.deployments.set(deploymentId, initialStatus);
 
-    this.executeScript(deploymentId, step, scriptPath, workspaceDir).catch(error => {
+    this.executeScript(deploymentId, step, scriptPath, workspaceDir, env).catch(error => {
       this.updateDeploymentStatus(deploymentId, { status: 'failed', error: error.message });
     });
 
@@ -238,7 +239,8 @@ export class DeploymentService {
     deploymentId: string,
     step: string,
     scriptPath: string,
-    workspaceDir: string
+    workspaceDir: string,
+    environment: string = 'DEV'
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       this.updateDeploymentStatus(deploymentId, { status: 'in-progress', progress: 5 });
@@ -250,9 +252,9 @@ export class DeploymentService {
         return reject(new Error(msg));
       }
 
-      this.addMessage(deploymentId, 'info', `Spawning: pwsh -File ${scriptPath}`);
+      this.addMessage(deploymentId, 'info', `Spawning: pwsh -File ${scriptPath} -Environment ${environment}`);
 
-      const proc = spawn('pwsh', ['-File', scriptPath], {
+      const proc = spawn('pwsh', ['-File', scriptPath, '-Environment', environment], {
         cwd: workspaceDir,
         stdio: ['ignore', 'pipe', 'pipe']
       });

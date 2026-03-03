@@ -33,6 +33,41 @@
   word-break: break-all;
 }
 
+/* ── Environment selector ─────────────────────────────────────────────────────── */
+
+.deploy-steps__env-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f3ff;
+  border: 1px solid #a5b4fc;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.deploy-steps__env-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #555;
+}
+
+.deploy-steps__env-select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #a5b4fc;
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b0764;
+  cursor: pointer;
+  outline: none;
+}
+
+.deploy-steps__env-select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}
+
 /* ── Step grid ───────────────────────────────────────────────────────────────── */
 
 .deploy-steps__grid {

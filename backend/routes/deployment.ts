@@ -59,13 +59,13 @@ deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
 // Run a single deploy step (Tab 3 buttons)
 deploymentRouter.post('/run-step', deploymentLimiter, async (req, res) => {
   try {
-    const { step, workspaceDir } = req.body;
+    const { step, workspaceDir, environment } = req.body;
 
     if (!step || !workspaceDir) {
       return res.status(400).json({ error: 'step and workspaceDir are required' });
     }
 
-    const deploymentId = await deploymentService.runDeployStep(step, workspaceDir);
+    const deploymentId = await deploymentService.runDeployStep(step, workspaceDir, environment);
     res.json({ deploymentId });
   } catch (error: any) {
     console.error('Error running deploy step:', error);
