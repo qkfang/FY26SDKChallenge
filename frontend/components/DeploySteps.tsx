@@ -91,8 +91,9 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
       [stepId]: { deploymentId: null, status: null, isRunning: true }
     }));
 
+    const useEnv = (stepId === 'cli' || stepId === 'fabric') ? selectedEnv : undefined;
     try {
-      const { deploymentId } = await api.runDeployStep(stepId, workspaceDir, selectedEnv);
+      const { deploymentId } = await api.runDeployStep(stepId, workspaceDir, useEnv);
       setStepStates(prev => ({
         ...prev,
         [stepId]: { ...prev[stepId], deploymentId }
@@ -116,6 +117,8 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
     }
   };
 
+  const envSteps = new Set(['cli', 'fabric']);
+
   return (
     <div className="deploy-steps">
       <div className="deploy-steps__env-bar">
@@ -137,13 +140,14 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) =>
           const isDone = s?.status === 'completed';
           const isFailed = s?.status === 'failed';
           const isRunning = state.isRunning;
+          const showEnv = envSteps.has(step.id);
 
           return (
             <div key={step.id} className={`step-card ${isDone ? 'step-card--done' : ''} ${isFailed ? 'step-card--failed' : ''}`}>
               <div className="step-card__header">
                 <span className="step-card__icon">{step.icon}</span>
                 <div className="step-card__meta">
-                  <span className="step-card__label">{step.label}</span>
+                  <span className="step-card__label">{step.label}{showEnv ? ` (${selectedEnv})` : ''}</span>
                   <span className="step-card__desc">{step.description}</span>
                   <code className="step-card__script">{step.script}</code>
                 </div>
