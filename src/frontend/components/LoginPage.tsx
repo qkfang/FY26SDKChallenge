@@ -15,7 +15,7 @@ function LoginPage({ onSkip, hasConfig }: LoginPageProps) {
   const handleLogin = async () => {
     try {
       setError(null);
-      await instance.loginPopup(loginRequest);
+      await instance.loginRedirect(loginRequest);
     } catch (err: any) {
       if (err.errorCode !== 'user_cancelled') {
         setError(err.message || 'Login failed');
