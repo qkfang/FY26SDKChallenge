@@ -20,5 +20,5 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "main.tsx", "vite-env.d.ts", "components", "services", "App.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "vite-env.d.ts"]
 }
