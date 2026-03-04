@@ -6,27 +6,15 @@ on:
     paths:
       - "bicep/**"
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Deployment environment"
-        required: true
-        default: "dev"
-        type: choice
-        options:
-          - dev
-          - qa
-          - prod
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
-    env:
-      ENV: ${{ github.event.inputs.environment || 'dev' }}
+    environment: dev
     steps:
       - uses: actions/checkout@v4
 
@@ -38,27 +26,95 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        run: az group create --name "rg-ghcsdk-${{ env.ENV }}" --location "eastus2"
+        run: az group create --name "rg-ghcsdk-dev" --location "eastus2"
 
       - name: Deploy Bicep
         id: deploy
         working-directory: bicep
         run: |
           result=$(az deployment group create \
-            -g "rg-ghcsdk-${{ env.ENV }}" \
+            -g "rg-ghcsdk-dev" \
             --template-file main.bicep \
-            --parameters "main.${{ env.ENV }}.bicepparam" \
+            --parameters main.dev.bicepparam \
             --query "properties.outputs" \
             -o json)
           echo "STATIC_WEB_APP_HOSTNAME=$(echo $result | jq -r '.staticWebAppHostname.value')" >> $GITHUB_OUTPUT
           echo "APP_SERVICE_HOSTNAME=$(echo $result | jq -r '.appServiceHostname.value')" >> $GITHUB_OUTPUT
-          echo "KEY_VAULT_NAME=$(echo $result | jq -r '.keyVaultName.value')" >> $GITHUB_OUTPUT
-          echo "APP_INSIGHTS_NAME=$(echo $result | jq -r '.appInsightsName.value')" >> $GITHUB_OUTPUT
 
       - name: Print Resource Details
         run: |
-          echo "Environment:    ${{ env.ENV }}"
+          echo "Environment:    dev"
           echo "Static Web App: ${{ steps.deploy.outputs.STATIC_WEB_APP_HOSTNAME }}"
           echo "App Service:    ${{ steps.deploy.outputs.APP_SERVICE_HOSTNAME }}"
-          echo "Key Vault:      ${{ steps.deploy.outputs.KEY_VAULT_NAME }}"
-          echo "App Insights:   ${{ steps.deploy.outputs.APP_INSIGHTS_NAME }}"
+
+  deploy-qa:
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        run: az group create --name "rg-ghcsdk-qa" --location "eastus2"
+
+      - name: Deploy Bicep
+        id: deploy
+        working-directory: bicep
+        run: |
+          result=$(az deployment group create \
+            -g "rg-ghcsdk-qa" \
+            --template-file main.bicep \
+            --parameters main.qa.bicepparam \
+            --query "properties.outputs" \
+            -o json)
+          echo "STATIC_WEB_APP_HOSTNAME=$(echo $result | jq -r '.staticWebAppHostname.value')" >> $GITHUB_OUTPUT
+          echo "APP_SERVICE_HOSTNAME=$(echo $result | jq -r '.appServiceHostname.value')" >> $GITHUB_OUTPUT
+
+      - name: Print Resource Details
+        run: |
+          echo "Environment:    qa"
+          echo "Static Web App: ${{ steps.deploy.outputs.STATIC_WEB_APP_HOSTNAME }}"
+          echo "App Service:    ${{ steps.deploy.outputs.APP_SERVICE_HOSTNAME }}"
+
+  deploy-prod:
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        run: az group create --name "rg-ghcsdk-prod" --location "eastus2"
+
+      - name: Deploy Bicep
+        id: deploy
+        working-directory: bicep
+        run: |
+          result=$(az deployment group create \
+            -g "rg-ghcsdk-prod" \
+            --template-file main.bicep \
+            --parameters main.prod.bicepparam \
+            --query "properties.outputs" \
+            -o json)
+          echo "STATIC_WEB_APP_HOSTNAME=$(echo $result | jq -r '.staticWebAppHostname.value')" >> $GITHUB_OUTPUT
+          echo "APP_SERVICE_HOSTNAME=$(echo $result | jq -r '.appServiceHostname.value')" >> $GITHUB_OUTPUT
+
+      - name: Print Resource Details
+        run: |
+          echo "Environment:    prod"
+          echo "Static Web App: ${{ steps.deploy.outputs.STATIC_WEB_APP_HOSTNAME }}"
+          echo "App Service:    ${{ steps.deploy.outputs.APP_SERVICE_HOSTNAME }}"
