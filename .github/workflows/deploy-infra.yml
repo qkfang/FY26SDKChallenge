@@ -49,15 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: Azure CLI Login
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Create Resource Group
-        run: az group create --name "rg-ghcsdk-qa" --location "eastus2"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Bicep
         id: deploy
@@ -85,15 +80,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: Azure CLI Login
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Create Resource Group
-        run: az group create --name "rg-ghcsdk-prod" --location "eastus2"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Bicep
         id: deploy
