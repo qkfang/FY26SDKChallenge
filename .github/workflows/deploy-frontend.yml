@@ -7,10 +7,23 @@ on:
       - "src/frontend/**"
       - "src/shared/**"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    env:
+      ENV: ${{ github.event.inputs.environment || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 

@@ -6,12 +6,17 @@ param baseName string
 @description('Azure region for deployment')
 param location string = resourceGroup().location
 
-var logAnalyticsName = '${baseName}-log'
-var appInsightsName = '${baseName}-ai'
-var keyVaultName = '${baseName}-kv'
-var appServiceName = '${baseName}-api'
-var appServicePlanName = '${baseName}-plan'
-var staticWebAppName = '${baseName}-web'
+@description('Deployment environment')
+@allowed(['dev', 'qa', 'prod'])
+param environment string = 'dev'
+
+var suffix = '${baseName}-${environment}'
+var logAnalyticsName = '${suffix}-log'
+var appInsightsName = '${suffix}-ai'
+var keyVaultName = '${suffix}-kv'
+var appServiceName = '${suffix}-api'
+var appServicePlanName = '${suffix}-plan'
+var staticWebAppName = '${suffix}-web'
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsName

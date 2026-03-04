@@ -6,6 +6,16 @@ on:
     paths:
       - "bicep/**"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
 
 permissions:
   id-token: write
@@ -14,6 +24,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    env:
+      ENV: ${{ github.event.inputs.environment || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,16 +38,16 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        run: az group create --name "rg-ghcsdk" --location "eastus2"
+        run: az group create --name "rg-ghcsdk-${{ env.ENV }}" --location "eastus2"
 
       - name: Deploy Bicep
         id: deploy
         working-directory: bicep
         run: |
           result=$(az deployment group create \
-            -g "rg-ghcsdk" \
+            -g "rg-ghcsdk-${{ env.ENV }}" \
             --template-file main.bicep \
-            --parameters main.bicepparam \
+            --parameters "main.${{ env.ENV }}.bicepparam" \
             --query "properties.outputs" \
             -o json)
           echo "STATIC_WEB_APP_HOSTNAME=$(echo $result | jq -r '.staticWebAppHostname.value')" >> $GITHUB_OUTPUT
@@ -44,6 +57,7 @@ jobs:
 
       - name: Print Resource Details
         run: |
+          echo "Environment:    ${{ env.ENV }}"
           echo "Static Web App: ${{ steps.deploy.outputs.STATIC_WEB_APP_HOSTNAME }}"
           echo "App Service:    ${{ steps.deploy.outputs.APP_SERVICE_HOSTNAME }}"
           echo "Key Vault:      ${{ steps.deploy.outputs.KEY_VAULT_NAME }}"
