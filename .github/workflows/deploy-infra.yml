@@ -23,9 +23,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Create Resource Group
-        run: az group create --name "rg-ghcsdk-dev" --location "eastus2"
-
       - name: Deploy Bicep
         id: deploy
         working-directory: bicep
