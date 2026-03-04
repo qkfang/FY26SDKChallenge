@@ -10,8 +10,8 @@ interface RequirementFormProps {
 
 const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading, initialConfig }) => {
   const [requirement, setRequirement] = useState('create hello world notebook');
-  const [notebookName, setNotebookName] = useState('');
-  const [sqlServerName, setSqlServerName] = useState('');
+  const [notebookName, _setNotebookName] = useState('');
+  const [sqlServerName, _setSqlServerName] = useState('');
   const [workspaceSuffix, setWorkspaceSuffix] = useState('fabric-workspace');
   const [fabricCapacity, setFabricCapacity] = useState('fabriccapacitycicd');
   const [envDev, setEnvDev] = useState(true);

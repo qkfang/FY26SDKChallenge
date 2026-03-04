@@ -20,11 +20,6 @@ function setCookie(name: string, value: string) {
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict; Secure`;
 }
 
-function clearCookies() {
-  document.cookie = 'copilotSessionId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Strict; Secure';
-  document.cookie = 'workspaceDir=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Strict; Secure';
-}
-
 function App() {
   const isAuthenticated = useIsAuthenticated();
   const [loginSkipped, setLoginSkipped] = useState(false);
@@ -97,16 +92,6 @@ function App() {
     setSessionId(sid);
     setCookie('copilotSessionId', sid);
     setLoadedConfig(config || null);
-  };
-
-  const handleNewSession = () => {
-    clearCookies();
-    setWorkspaceDir('');
-    setSessionId('');
-    setSetupDeploymentId(null);
-    setSetupStatus(null);
-    setIsSettingUp(false);
-    setLoadedConfig(null);
   };
 
   const hasEntraConfig = Boolean(import.meta.env.VITE_AZURE_CLIENT_ID);

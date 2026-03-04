@@ -39,7 +39,7 @@ const STEPS = [
 
 const ENVIRONMENTS = ['DEV', 'QA', 'PROD'];
 
-const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId }) => {
+const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId: _sessionId }) => {
   const [selectedEnv, setSelectedEnv] = useState('DEV');
   const [stepStates, setStepStates] = useState<Record<string, StepState>>(() =>
     Object.fromEntries(STEPS.map(s => [s.id, { deploymentId: null, status: null, isRunning: false }]))

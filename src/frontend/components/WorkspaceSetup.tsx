@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { api, DeploymentStatus } from '../services/api';
+import { DeploymentStatus } from '../services/api';
 import './WorkspaceSetup.css';
 
 interface WorkspaceSetupProps {
@@ -9,7 +9,7 @@ interface WorkspaceSetupProps {
   workspaceDir: string;
 }
 
-const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady, sessionId, workspaceDir }) => {
+const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady, sessionId: _sessionId, workspaceDir: _workspaceDir }) => {
   const [notified, setNotified] = useState(false);
   const messagesRef = useRef<HTMLDivElement>(null);
 
