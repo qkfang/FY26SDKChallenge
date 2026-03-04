@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useIsAuthenticated } from '@azure/msal-react';
+import LoginPage from './components/LoginPage';
 import InitStep from './components/InitStep';
 import RequirementForm from './components/RequirementForm';
 import WorkspaceSetup from './components/WorkspaceSetup';
@@ -24,6 +26,8 @@ function clearCookies() {
 }
 
 function App() {
+  const isAuthenticated = useIsAuthenticated();
+  const [loginSkipped, setLoginSkipped] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
   // Setup state
@@ -105,7 +109,11 @@ function App() {
     setLoadedConfig(null);
   };
 
+  const hasEntraConfig = Boolean(import.meta.env.VITE_AZURE_CLIENT_ID);
 
+  if (!isAuthenticated && !loginSkipped) {
+    return <LoginPage onSkip={() => setLoginSkipped(true)} hasConfig={hasEntraConfig} />;
+  }
 
   return (
     <div className="app">
