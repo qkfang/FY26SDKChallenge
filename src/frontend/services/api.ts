@@ -107,4 +107,9 @@ export const api = {
     const response = await axios.post(`${API_BASE_URL}/deployment/workiq/query`, { question, sessionId });
     return response.data;
   },
+
+  async chat(message: string, sessionId: string): Promise<{ reply: string; logs: Array<{ type: string; message: string }> }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/chat`, { message, sessionId });
+    return response.data;
+  },
 };

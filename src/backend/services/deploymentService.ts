@@ -55,9 +55,8 @@ export class DeploymentService {
     const sessionId = randomUUID();
     await copilotService.initialize();
     await copilotService.createSession(sessionId, workspaceDir);
-    const info = copilotService.getSessionInfo(sessionId);
 
-    return { workspaceDir, copilotSessionId: info.sdkSessionId || sessionId };
+    return { workspaceDir, copilotSessionId: sessionId };
   }
 
   // ── Config file helpers ─────────────────────────────────────────────────────
@@ -153,7 +152,7 @@ export class DeploymentService {
       const sessionInfo = copilotService.getSessionInfo(hasExistingSession ? existingSessionId! : copilotSessionKey);
       if (sessionInfo.sdkSessionId) {
         this.addMessage(deploymentId, 'info', `Copilot SDK connected (v${sessionInfo.clientVersion || '?'})`);
-        this.updateDeploymentStatus(deploymentId, { copilotSessionId: sessionInfo.sdkSessionId });
+        this.updateDeploymentStatus(deploymentId, { copilotSessionId: hasExistingSession ? existingSessionId! : copilotSessionKey });
       } else {
         this.addMessage(deploymentId, 'info', 'Copilot SDK not available — workspace created without AI customization.');
       }

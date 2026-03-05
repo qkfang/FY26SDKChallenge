@@ -4,6 +4,7 @@ const TABS = [
   { key: 'init', label: 'Init Session' },
   { key: 'requirements', label: 'Requirements' },
   { key: 'workspace', label: 'Prepare Workspace' },
+  { key: 'chat', label: 'Copilot Chat' },
   { key: 'deploy', label: 'Deployment' },
 ] as const;
 type TabKey = typeof TABS[number]['key'];
@@ -13,6 +14,7 @@ import InitStep from './components/InitStep';
 import RequirementForm from './components/RequirementForm';
 import WorkspaceSetup from './components/WorkspaceSetup';
 import DeploySteps from './components/DeploySteps';
+import CopilotChat from './components/CopilotChat';
 import { api, DeploymentStatus, ResourceConfig, WorkspaceConfig } from './services/api';
 import './App.css';
 
@@ -164,6 +166,16 @@ function App() {
         {activeTab === 'workspace' && (
           <div className="panel">
             <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} sessionId={sessionId} workspaceDir={workspaceDir} />
+          </div>
+        )}
+
+        {activeTab === 'chat' && (
+          <div className="panel">
+            {sessionId ? (
+              <CopilotChat sessionId={sessionId} />
+            ) : (
+              <p className="panel-locked-msg">Complete Init Session to unlock chat.</p>
+            )}
           </div>
         )}
 

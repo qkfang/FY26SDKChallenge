@@ -366,6 +366,48 @@ Review the workspace structure and customize it for the requirement: "${requirem
     }
   }
 
+  async sendChat(
+    sessionId: string,
+    message: string,
+    onMessage?: (msg: CopilotMessage) => void
+  ): Promise<string> {
+    const session = this.sessions.get(sessionId);
+    if (!this.isAvailable || !session) {
+      throw new Error('No active Copilot session. Complete Init Session first.');
+    }
+
+    session.on((event) => {
+      if (!onMessage) return;
+      switch (event.type) {
+        case 'assistant.message_delta':
+          if ('deltaContent' in event.data && event.data.deltaContent) {
+            onMessage({ type: 'progress', message: event.data.deltaContent });
+          }
+          break;
+        case 'tool.execution_start': {
+          const args = event.data.arguments ? JSON.stringify(event.data.arguments) : '';
+          onMessage({ type: 'info', message: `[Tool] ${event.data.toolName} ${args}` });
+          break;
+        }
+        case 'tool.execution_complete': {
+          const result = event.data.result;
+          if (result?.content) {
+            onMessage({ type: 'info', message: `[Tool result] ${result.content.substring(0, 500)}` });
+          }
+          break;
+        }
+        case 'session.error':
+          onMessage({ type: 'error', message: event.data.message });
+          break;
+        default:
+          break;
+      }
+    });
+
+    const response = await session.sendAndWait({ prompt: message }, 300000);
+    return response?.data?.content || '';
+  }
+
   async destroySession(sessionId: string): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (session) {

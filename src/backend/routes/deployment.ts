@@ -205,3 +205,32 @@ deploymentRouter.post('/workiq/query', configLimiter, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// ── Copilot Chat ─────────────────────────────────────────────────────────────
+
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: 'Too many chat requests, please try again later.'
+});
+
+deploymentRouter.post('/chat', chatLimiter, async (req, res) => {
+  try {
+    const { message, sessionId } = req.body;
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ error: 'message is required' });
+    }
+    if (!sessionId || typeof sessionId !== 'string') {
+      return res.status(400).json({ error: 'sessionId is required' });
+    }
+
+    const logs: Array<{ type: string; message: string }> = [];
+    const reply = await copilotService.sendChat(sessionId, message, (msg) => {
+      logs.push(msg);
+    });
+    res.json({ reply, logs });
+  } catch (error: any) {
+    console.error('Chat error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
