@@ -118,6 +118,7 @@ export class CopilotService {
     const cwd = workspaceDir || SESSION_DIR;
     try {
       const mcpConfig = workiqService.getMcpServerConfig();
+      const githubToken = process.env.GITHUB_TOKEN || '';
       const session = await this.client.createSession({
         onPermissionRequest: approveAll,
         configDir: SESSION_DIR,
@@ -130,7 +131,11 @@ export class CopilotService {
             tools: ['*'],
           },
           github: {
+            type: 'http',
             url: 'https://api.githubcopilot.com/mcp/',
+            headers: {
+              'Authorization': `Bearer ${githubToken}`,
+            },
             tools: ['*'],
           },
         },
