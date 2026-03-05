@@ -1,7 +1,7 @@
 import { Configuration, LogLevel } from '@azure/msal-browser';
 
-const TENANT_ID = import.meta.env.VITE_AZURE_TENANT_ID || 'common';
-const CLIENT_ID = import.meta.env.VITE_AZURE_CLIENT_ID || '';
+const TENANT_ID = import.meta.env.AZURE_TENANT_ID || 'common';
+const CLIENT_ID = import.meta.env.AZURE_CLIENT_ID || '';
 
 export const msalConfig: Configuration = {
   auth: {

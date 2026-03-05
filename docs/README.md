@@ -98,8 +98,8 @@ npm install
 | Variable | Purpose |
 |----------|---------|
 | `PORT` | Backend port (default `3001`) |
-| `VITE_AZURE_CLIENT_ID` | Entra ID app client ID for MSAL login |
-| `VITE_AZURE_TENANT_ID` | Entra ID tenant (default `common`) |
+| `AZURE_CLIENT_ID` | Entra ID app client ID for MSAL login |
+| `AZURE_TENANT_ID` | Entra ID tenant (default `common`) |
 
 ## Running Locally
 

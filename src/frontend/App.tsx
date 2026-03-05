@@ -105,7 +105,7 @@ function App() {
     setLoadedConfig(config || null);
   };
 
-  const hasEntraConfig = Boolean(import.meta.env.VITE_AZURE_CLIENT_ID);
+  const hasEntraConfig = Boolean(import.meta.env.AZURE_CLIENT_ID);
 
   if (!isAuthenticated && !loginSkipped) {
     return <LoginPage onSkip={() => setLoginSkipped(true)} hasConfig={hasEntraConfig} />;

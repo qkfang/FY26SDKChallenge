@@ -40,7 +40,7 @@ function LoginPage({ onSkip, hasConfig }: LoginPageProps) {
           </>
         ) : (
           <p className="login-no-config">
-            Azure Entra ID not configured. Set VITE_AZURE_CLIENT_ID and VITE_AZURE_TENANT_ID to enable.
+            Azure Entra ID not configured. Set AZURE_CLIENT_ID and AZURE_TENANT_ID to enable.
           </p>
         )}
 
