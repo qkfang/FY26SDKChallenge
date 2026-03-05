@@ -1,6 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
 import { deploymentRouter } from './routes/deployment.js';
+
+for (const dir of ['copilot_session', 'template_repo', 'user_repo']) {
+  const dirPath = path.join(process.cwd(), 'temp', dir);
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
