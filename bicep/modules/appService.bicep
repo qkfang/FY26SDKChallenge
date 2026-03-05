@@ -31,7 +31,7 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'NODE|${nodeVersion}'
-      appCommandLine: 'node dist/index.js'
+      appCommandLine: 'node backend/index.js'
       appSettings: [
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
