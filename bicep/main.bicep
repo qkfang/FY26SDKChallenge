@@ -10,6 +10,12 @@ param location string = resourceGroup().location
 @allowed(['dev', 'qa', 'prod'])
 param environment string = 'dev'
 
+@description('Azure Entra ID tenant ID')
+param azureTenantId string
+
+@description('Azure Entra ID client ID')
+param azureClientId string
+
 var suffix = '${baseName}-${environment}'
 var logAnalyticsName = '${suffix}-log'
 var appInsightsName = '${suffix}-ai'
@@ -52,9 +58,13 @@ module appService 'modules/appService.bicep' = {
 
 module staticWebApp 'modules/staticWebApp.bicep' = {
   name: 'staticWebApp'
+  dependsOn: [appService]
   params: {
     name: staticWebAppName
     location: location
+    apiUrl: 'https://${appService.outputs.defaultHostname}/api'
+    azureTenantId: azureTenantId
+    azureClientId: azureClientId
   }
 }
 
