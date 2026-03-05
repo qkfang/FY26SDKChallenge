@@ -82,6 +82,11 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
           Send
         </button>
       </div>
+
+      <div className="chat-repo-links">
+        <a href="https://github.com/qkfang/FY26SDKChallenge_Template" target="_blank" rel="noopener noreferrer">Template Repo</a>
+        <a href="https://github.com/qkfang/FY26SDKChallenge_UserRepo" target="_blank" rel="noopener noreferrer">User Repo</a>
+      </div>
     </div>
   );
 };

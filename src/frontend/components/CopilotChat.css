@@ -20,6 +20,24 @@
   font-style: italic;
 }
 
+.chat-repo-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 16px;
+}
+
+.chat-repo-links a {
+  color: #667eea;
+  font-size: 13px;
+  text-decoration: none;
+  font-style: normal;
+}
+
+.chat-repo-links a:hover {
+  text-decoration: underline;
+}
+
 /* ── Bubbles ────────────────────────────────────────────────────────────────── */
 
 .chat-bubble {

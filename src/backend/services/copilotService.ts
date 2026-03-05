@@ -31,6 +31,18 @@ interface CopilotSessionInfo {
   tempFolder?: string;
 }
 
+const SYSTEM_PROMPT = `You are an expert Microsoft Fabric deployment assistant. You help users set up and customize Fabric workspaces including notebooks, lakehouses, semantic models, and reports.
+
+Only allowed to modify content inside this folder: '${WORKSPACE_DIR}'
+
+Key guidelines:
+- Be concise and action-oriented
+- When modifying workspace files, explain what you changed and why
+- Never run deployment scripts directly — they are triggered separately
+- Always commit and push changes to the user repo when done
+- Never modify the template repo
+`;
+
 export class CopilotService {
   private client: CopilotClient | null = null;
   private sessions: Map<string, CopilotSession> = new Map();
@@ -124,6 +136,7 @@ export class CopilotService {
         configDir: SESSION_DIR,
         workingDirectory: cwd,
         model: 'claude-sonnet-4.6',
+        systemMessage: { mode: 'append', content: SYSTEM_PROMPT },
         mcpServers: {
           workiq: {
             command: mcpConfig.command,
