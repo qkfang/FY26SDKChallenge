@@ -32,7 +32,9 @@ jobs:
         run: |
           cp package.json dist/
           cp package-lock.json dist/
-          cd dist && npm ci --omit=dev
+          cd dist
+          npm ci --omit=dev
+          node -e "const p=require('./package.json'); p.main='index.js'; p.scripts.start='node index.js'; require('fs').writeFileSync('package.json',JSON.stringify(p,null,2))"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
