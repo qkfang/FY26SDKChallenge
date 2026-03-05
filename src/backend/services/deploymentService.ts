@@ -8,9 +8,9 @@ import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'template', 'fabric_cicd');
-const WORKSPACE_BASE = path.join(PROJECT_ROOT, 'temp', 'ws');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
 
 const STEP_SCRIPTS: Record<string, string> = {
   bicep: 'deploy-bicep.ps1',
@@ -29,11 +29,11 @@ export class DeploymentService {
 
   // ── List existing workspace sessions ───────────────────────────────────────
   listSessions(): SessionEntry[] {
-    if (!fs.existsSync(WORKSPACE_BASE)) return [];
-    return fs.readdirSync(WORKSPACE_BASE, { withFileTypes: true })
+    if (!fs.existsSync(WORKSPACE_DIR)) return [];
+    return fs.readdirSync(WORKSPACE_DIR, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(d => {
-        const dir = path.join(WORKSPACE_BASE, d.name);
+        const dir = path.join(WORKSPACE_DIR, d.name);
         const stat = fs.statSync(dir);
         return {
           workspaceDir: dir,
@@ -48,7 +48,7 @@ export class DeploymentService {
   async initSession(): Promise<{ workspaceDir: string; copilotSessionId: string }> {
     const now = new Date();
     const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
-    const workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
+    const workspaceDir = path.join(WORKSPACE_DIR, `ws-${ts}`);
     fs.mkdirSync(workspaceDir, { recursive: true });
     await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
 
@@ -127,7 +127,7 @@ export class DeploymentService {
         // Create timestamped workspace dir and copy template
         const now = new Date();
         const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
-        workspaceDir = path.join(WORKSPACE_BASE, `ws-${ts}`);
+        workspaceDir = path.join(WORKSPACE_DIR, `ws-${ts}`);
         copilotSessionKey = deploymentId;
 
         this.addMessage(deploymentId, 'info', `Creating workspace directory: ${workspaceDir}`);

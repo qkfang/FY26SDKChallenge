@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
 const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
-const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo', 'copilot_session');
+const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -42,8 +42,8 @@ export class CopilotService {
     try {
       // Ensure temp directories exist
       fs.mkdirSync(SESSION_DIR, { recursive: true });
-      fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
       console.log(`Session directory: ${SESSION_DIR}`);
+      fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
       console.log(`Workspace directory: ${WORKSPACE_DIR}`);
 
       this.client = new CopilotClient({ logLevel: 'info', cwd: SESSION_DIR });
@@ -249,8 +249,9 @@ If user repo is empty, copy template repo content to user repo as starting point
 Review the workspace structure and customize it for the requirement: "${requirement}"
 - Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
 - Do NOT run any deployment scripts — they will be triggered separately
-- Check the workspace looks correct for the requirement
+- Check the workspace looks correct for the requirement (clean up the fabric resource in workspace if not needed, update README.md, etc.)
 - Once all done, commit and push user repo to remote
+- Never ever change or commit to template repo
 
 `;
 

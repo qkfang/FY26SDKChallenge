@@ -1,4 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+
+const TABS = [
+  { key: 'init', label: 'Init Session' },
+  { key: 'requirements', label: 'Requirements' },
+  { key: 'workspace', label: 'Prepare Workspace' },
+  { key: 'deploy', label: 'Deployment' },
+] as const;
+type TabKey = typeof TABS[number]['key'];
 import { useIsAuthenticated } from '@azure/msal-react';
 import LoginPage from './components/LoginPage';
 import InitStep from './components/InitStep';
@@ -24,6 +32,7 @@ function App() {
   const isAuthenticated = useIsAuthenticated();
   const [loginSkipped, setLoginSkipped] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>('init');
 
   // Setup state
   const [setupDeploymentId, setSetupDeploymentId] = useState<string | null>(null);
@@ -111,6 +120,18 @@ function App() {
         </div>
       </header>
 
+      <nav className="tab-bar">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            className={`tab-btn ${activeTab === tab.key ? 'tab-btn--active' : ''}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
       <main className="app-main">
         {!isConnected && (
           <div className="alert alert-warning">
@@ -120,37 +141,41 @@ function App() {
           </div>
         )}
 
-        <div className="panel">
-          <h2 className="panel-title">Step 1: Init Session</h2>
-          <InitStep
-            onSessionReady={handleInitReady}
-            currentWorkspaceDir={workspaceDir}
-            currentSessionId={sessionId}
-          />
-        </div>
+        {activeTab === 'init' && (
+          <div className="panel">
+            <InitStep
+              onSessionReady={handleInitReady}
+              currentWorkspaceDir={workspaceDir}
+              currentSessionId={sessionId}
+            />
+          </div>
+        )}
 
-        <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
-          <h2 className="panel-title">Step 2: Requirements {!workspaceDir && '🔒'}</h2>
-          {workspaceDir ? (
-            <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} initialConfig={loadedConfig} />
-          ) : (
-            <p className="panel-locked-msg">Complete init step to unlock.</p>
-          )}
-        </div>
+        {activeTab === 'requirements' && (
+          <div className="panel">
+            {workspaceDir ? (
+              <RequirementForm onSubmit={handleRequirementSubmit} isLoading={isSettingUp} initialConfig={loadedConfig} />
+            ) : (
+              <p className="panel-locked-msg">Complete Init Session first.</p>
+            )}
+          </div>
+        )}
 
-        <div className="panel">
-          <h2 className="panel-title">Step 3: Prepare Fabric Workspace</h2>
-          <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} sessionId={sessionId} workspaceDir={workspaceDir} />
-        </div>
+        {activeTab === 'workspace' && (
+          <div className="panel">
+            <WorkspaceSetup status={setupStatus} onReady={handleWorkspaceReady} sessionId={sessionId} workspaceDir={workspaceDir} />
+          </div>
+        )}
 
-        <div className={`panel ${!workspaceDir ? 'panel--locked' : ''}`}>
-          <h2 className="panel-title">Step 4: Deployment {!workspaceDir && '🔒'}</h2>
-          {workspaceDir ? (
-            <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
-          ) : (
-            <p className="panel-locked-msg">Complete workspace setup to unlock deployment.</p>
-          )}
-        </div>
+        {activeTab === 'deploy' && (
+          <div className="panel">
+            {workspaceDir ? (
+              <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
+            ) : (
+              <p className="panel-locked-msg">Complete workspace setup to unlock deployment.</p>
+            )}
+          </div>
+        )}
       </main>
 
       <footer className="app-footer">

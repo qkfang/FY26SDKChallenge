@@ -18,6 +18,40 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* ── Tab bar ────────────────────────────────────────────────────────────────── */
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid transparent;
+  border-radius: 10px 10px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.tab-btn--active {
+  background: #fff;
+  color: #374151;
+  border-color: #e5e7eb;
+  border-bottom-color: #fff;
+}
+
 .header-controls {
   display: flex;
   justify-content: center;
