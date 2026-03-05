@@ -12,6 +12,10 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
 const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
 
+for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR]) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
 const STEP_SCRIPTS: Record<string, string> = {
   bicep: 'deploy-bicep.ps1',
   cli: 'deploy-cli.ps1',

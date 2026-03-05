@@ -12,6 +12,10 @@ const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
 const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
 const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
 
+for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR, SESSION_DIR]) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
   message: string;
