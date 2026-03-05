@@ -371,7 +371,13 @@ Review the workspace structure and customize it for the requirement: "${requirem
     message: string,
     onMessage?: (msg: CopilotMessage) => void
   ): Promise<string> {
-    const session = this.sessions.get(sessionId);
+    let session = this.sessions.get(sessionId);
+    if (!session) {
+      // Re-initialize and create session on the fly
+      await this.initialize();
+      await this.createSession(sessionId);
+      session = this.sessions.get(sessionId);
+    }
     if (!this.isAvailable || !session) {
       throw new Error('No active Copilot session. Complete Init Session first.');
     }

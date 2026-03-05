@@ -4,7 +4,7 @@ const TABS = [
   { key: 'init', label: 'Init Session' },
   { key: 'requirements', label: 'Requirements' },
   { key: 'workspace', label: 'Prepare Workspace' },
-  { key: 'chat', label: 'Copilot Chat' },
+  { key: 'chat', label: 'Fabric Chat' },
   { key: 'deploy', label: 'Deployment' },
 ] as const;
 type TabKey = typeof TABS[number]['key'];
