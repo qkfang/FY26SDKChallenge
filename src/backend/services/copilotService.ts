@@ -8,9 +8,9 @@ import { workiqService } from './workiqService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
-const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
+const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo', 'copilot_session');
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -129,10 +129,14 @@ export class CopilotService {
             args: mcpConfig.args,
             tools: ['*'],
           },
+          github: {
+            url: 'https://api.githubcopilot.com/mcp/',
+            tools: ['*'],
+          },
         },
       });
       this.sessions.set(sessionId, session);
-      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}, mcpServers: [workiq]`);
+      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}, mcpServers: [workiq, github]`);
     } catch (error: any) {
       console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
     }
