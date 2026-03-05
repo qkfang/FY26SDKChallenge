@@ -3,6 +3,8 @@ import rateLimit from 'express-rate-limit';
 import { exec } from 'child_process';
 import { deploymentService } from '../services/deploymentService.js';
 import { fabricService } from '../services/fabricService.js';
+import { workiqService } from '../services/workiqService.js';
+import { copilotService } from '../services/copilotService.js';
 
 export const deploymentRouter = Router();
 
@@ -147,6 +149,59 @@ deploymentRouter.get('/workspaces', configLimiter, async (req, res) => {
     res.json(workspaces);
   } catch (error: any) {
     console.error('Error fetching workspaces:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ── Work IQ (SharePoint / M365 queries) ──────────────────────────────────────
+
+// Configure Work IQ tenant
+deploymentRouter.post('/workiq/configure', configLimiter, (req, res) => {
+  try {
+    const { tenantId } = req.body;
+    if (!tenantId) {
+      return res.status(400).json({ error: 'tenantId is required' });
+    }
+    workiqService.setTenantId(tenantId);
+    res.json({ message: 'Work IQ configured', tenantId });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Direct Work IQ query (uses workiq CLI)
+deploymentRouter.post('/workiq/ask', configLimiter, async (req, res) => {
+  try {
+    const { question } = req.body;
+    if (!question) {
+      return res.status(400).json({ error: 'question is required' });
+    }
+    const result = await workiqService.ask(question);
+    res.json(result);
+  } catch (error: any) {
+    console.error('Work IQ ask error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Work IQ query through Copilot SDK session (uses MCP tools)
+deploymentRouter.post('/workiq/query', configLimiter, async (req, res) => {
+  try {
+    const { question, sessionId } = req.body;
+    if (!question) {
+      return res.status(400).json({ error: 'question is required' });
+    }
+    if (!sessionId) {
+      return res.status(400).json({ error: 'sessionId is required' });
+    }
+
+    const messages: Array<{ type: string; message: string }> = [];
+    const answer = await copilotService.queryWorkIQ(sessionId, question, (msg) => {
+      messages.push(msg);
+    });
+    res.json({ question, answer, messages });
+  } catch (error: any) {
+    console.error('Work IQ query error:', error);
     res.status(500).json({ error: error.message });
   }
 });

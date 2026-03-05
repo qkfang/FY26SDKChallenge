@@ -2,6 +2,7 @@ import { CopilotClient, CopilotSession, approveAll } from '@github/copilot-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { workiqService } from './workiqService.js';
 
 // Resolve temp directories relative to the project root
 const __filename = fileURLToPath(import.meta.url);
@@ -115,16 +116,94 @@ export class CopilotService {
 
     const cwd = workspaceDir || SESSION_DIR;
     try {
+      const mcpConfig = workiqService.getMcpServerConfig();
       const session = await this.client.createSession({
         onPermissionRequest: approveAll,
         configDir: SESSION_DIR,
         workingDirectory: cwd,
-        model: 'claude-sonnet-4.6'
+        model: 'claude-sonnet-4.6',
+        mcpServers: {
+          workiq: {
+            command: mcpConfig.command,
+            args: mcpConfig.args,
+            tools: ['*'],
+          },
+        },
       });
       this.sessions.set(sessionId, session);
-      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}`);
+      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}, mcpServers: [workiq]`);
     } catch (error: any) {
       console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
+    }
+  }
+
+  async queryWorkIQ(
+    sessionId: string,
+    question: string,
+    onMessage?: (message: CopilotMessage) => void
+  ): Promise<string> {
+    const session = this.sessions.get(sessionId);
+
+    if (!this.isAvailable || !session) {
+      // Fall back to direct Work IQ CLI query
+      if (onMessage) {
+        onMessage({ type: 'info', message: 'Copilot session not available. Querying Work IQ directly...' });
+      }
+      const result = await workiqService.ask(question);
+      return result.answer;
+    }
+
+    try {
+      const prompt = `Use the Work IQ tools to answer this question about my Microsoft 365 data (SharePoint files, emails, meetings, Teams messages): ${question}`;
+
+      if (onMessage) {
+        onMessage({ type: 'progress', message: 'Querying Work IQ via Copilot...' });
+      }
+
+      session.on((event) => {
+        if (!onMessage) return;
+        switch (event.type) {
+          case 'assistant.message_delta':
+            if ('deltaContent' in event.data && event.data.deltaContent) {
+              onMessage({ type: 'progress', message: event.data.deltaContent });
+            }
+            break;
+          case 'tool.execution_start': {
+            const args = event.data.arguments ? JSON.stringify(event.data.arguments) : '';
+            onMessage({ type: 'info', message: `[WorkIQ] Tool: ${event.data.toolName} ${args}` });
+            break;
+          }
+          case 'tool.execution_complete': {
+            const result = event.data.result;
+            if (result?.content) {
+              onMessage({ type: 'info', message: `[WorkIQ] Result: ${result.content.substring(0, 500)}` });
+            }
+            break;
+          }
+          case 'session.error':
+            onMessage({ type: 'error', message: `[WorkIQ] Error: ${event.data.message}` });
+            break;
+        }
+      });
+
+      const response = await session.sendAndWait({ prompt }, 120000);
+      const content = response?.data?.content || '';
+
+      if (content) {
+        if (onMessage) {
+          onMessage({ type: 'success', message: 'Work IQ query completed' });
+        }
+        return content;
+      }
+      return 'No results from Work IQ query.';
+    } catch (error: any) {
+      console.error('Work IQ query error:', error.message);
+      if (onMessage) {
+        onMessage({ type: 'error', message: `[WorkIQ] Error: ${error.message}` });
+        onMessage({ type: 'info', message: 'Falling back to direct Work IQ CLI...' });
+      }
+      const result = await workiqService.ask(question);
+      return result.answer;
     }
   }
 

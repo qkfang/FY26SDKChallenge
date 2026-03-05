@@ -90,5 +90,21 @@ export const api = {
   async checkHealth(): Promise<{ status: string; message: string }> {
     const response = await axios.get(`${API_BASE_URL}/health`);
     return response.data;
-  }
+  },
+
+  // ── Work IQ (SharePoint / M365 queries) ──────────────────────────
+  async configureWorkIQ(tenantId: string): Promise<{ message: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/workiq/configure`, { tenantId });
+    return response.data;
+  },
+
+  async workiqAsk(question: string): Promise<{ query: string; answer: string; success: boolean }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/workiq/ask`, { question });
+    return response.data;
+  },
+
+  async workiqQuery(question: string, sessionId: string): Promise<{ question: string; answer: string; messages: Array<{ type: string; message: string }> }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/workiq/query`, { question, sessionId });
+    return response.data;
+  },
 };
