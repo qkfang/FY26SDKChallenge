@@ -7,9 +7,10 @@ import { workiqService } from './workiqService.js';
 // Resolve temp directories relative to the project root
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'ghcsdk');
-const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'ws');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
+const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -229,14 +230,18 @@ export class CopilotService {
       const prompt = `# Workspace Setup for: ${requirement}
 
 ## Context
-A new workspace has been created at: '${workspaceDir}'
-It is a copy of the fabric_cicd template.
+Setup local workspace and session: 
+Checkout template GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_Template' to this folder: '${TEMPLATE_DIR}'
+Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_UserRepo' to this folder: '${WORKSPACE_DIR}'
+
+If user repo is empty, copy template repo content to user repo as starting point.
 
 ## Task
 Review the workspace structure and customize it for the requirement: "${requirement}"
 - Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
 - Do NOT run any deployment scripts — they will be triggered separately
 - Check the workspace looks correct for the requirement
+- Once all done, commit and push user repo to remote
 
 `;
 
