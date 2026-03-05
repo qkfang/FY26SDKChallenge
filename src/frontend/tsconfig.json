@@ -18,7 +18,8 @@
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["vite/client"]
   },
   "include": ["**/*.ts", "**/*.tsx", "vite-env.d.ts"]
 }
