@@ -9,8 +9,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy-dev:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - uses: actions/checkout@v4
 
@@ -27,24 +28,9 @@ jobs:
         working-directory: src/frontend
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ vars.API_BASE_URL }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: src/frontend/dist
-
-  deploy-dev:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: dev
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-dist
-          path: dist
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          API_URL: ${{ vars.API_URL }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -53,18 +39,31 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           skip_app_build: true
-          app_location: "dist"
+          app_location: "src/frontend/dist"
 
   deploy-qa:
     needs: deploy-dev
     runs-on: ubuntu-latest
     environment: qa
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: frontend-dist
-          path: dist
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: src/frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend
+        working-directory: src/frontend
+        run: npm run build
+        env:
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          API_URL: ${{ vars.API_URL }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -73,18 +72,31 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           skip_app_build: true
-          app_location: "dist"
+          app_location: "src/frontend/dist"
 
   deploy-prod:
     needs: deploy-qa
     runs-on: ubuntu-latest
     environment: prod
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: frontend-dist
-          path: dist
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: src/frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend
+        working-directory: src/frontend
+        run: npm run build
+        env:
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          API_URL: ${{ vars.API_URL }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -93,4 +105,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           skip_app_build: true
-          app_location: "dist"
+          app_location: "src/frontend/dist"
