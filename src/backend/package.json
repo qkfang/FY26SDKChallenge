@@ -4,6 +4,9 @@
   "description": "Backend service for Fabric automation with Copilot SDK",
   "type": "module",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "dev": "tsx watch index.ts",
     "build": "tsc",
