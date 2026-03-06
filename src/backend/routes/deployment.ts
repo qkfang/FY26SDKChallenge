@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import { exec } from 'child_process';
 import { deploymentService } from '../services/deploymentService.js';
 import { fabricService } from '../services/fabricService.js';
@@ -8,21 +7,9 @@ import { copilotService } from '../services/copilotService.js';
 
 export const deploymentRouter = Router();
 
-// Rate limiting for deployment endpoints
-const deploymentLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: 'Too many deployment requests, please try again later.'
-});
-
-const configLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  message: 'Too many configuration requests, please try again later.'
-});
 
 // List existing sessions
-deploymentRouter.get('/sessions', configLimiter, (_req, res) => {
+deploymentRouter.get('/sessions', (_req, res) => {
   try {
     const sessions = deploymentService.listSessions();
     res.json(sessions);
@@ -32,7 +19,7 @@ deploymentRouter.get('/sessions', configLimiter, (_req, res) => {
 });
 
 // Init session (create workspace + copilot session)
-deploymentRouter.post('/init', deploymentLimiter, async (_req, res) => {
+deploymentRouter.post('/init', async (_req, res) => {
   try {
     const result = await deploymentService.initSession();
     res.json(result);
@@ -42,7 +29,7 @@ deploymentRouter.post('/init', deploymentLimiter, async (_req, res) => {
 });
 
 // Setup workspace (Tab 2)
-deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
+deploymentRouter.post('/setup', async (req, res) => {
   try {
     const { requirement, resourceConfig, workspaceDir, sessionId } = req.body;
 
@@ -59,7 +46,7 @@ deploymentRouter.post('/setup', deploymentLimiter, async (req, res) => {
 });
 
 // Run a single deploy step (Tab 3 buttons)
-deploymentRouter.post('/run-step', deploymentLimiter, async (req, res) => {
+deploymentRouter.post('/run-step', async (req, res) => {
   try {
     const { step, workspaceDir, environment } = req.body;
 
@@ -93,7 +80,7 @@ deploymentRouter.get('/status/:deploymentId', (req, res) => {
 });
 
 // Get workspace config.json
-deploymentRouter.get('/config', configLimiter, (req, res) => {
+deploymentRouter.get('/config', (req, res) => {
   try {
     const { workspaceDir } = req.query;
     if (!workspaceDir || typeof workspaceDir !== 'string') {
@@ -110,7 +97,7 @@ deploymentRouter.get('/config', configLimiter, (req, res) => {
 });
 
 // Open a local folder in the file explorer
-deploymentRouter.post('/open-folder', configLimiter, (req, res) => {
+deploymentRouter.post('/open-folder', (req, res) => {
   try {
     const { folderPath } = req.body;
     if (!folderPath) return res.status(400).json({ error: 'folderPath is required' });
@@ -122,7 +109,7 @@ deploymentRouter.post('/open-folder', configLimiter, (req, res) => {
 });
 
 // Configure Fabric API token
-deploymentRouter.post('/configure', configLimiter, (req, res) => {
+deploymentRouter.post('/configure', (req, res) => {
   try {
     const { accessToken } = req.body;
 
@@ -139,7 +126,7 @@ deploymentRouter.post('/configure', configLimiter, (req, res) => {
 });
 
 // Get Fabric workspaces
-deploymentRouter.get('/workspaces', configLimiter, async (req, res) => {
+deploymentRouter.get('/workspaces', async (req, res) => {
   try {
     if (!fabricService.isAuthenticated()) {
       return res.status(401).json({ error: 'Fabric API not authenticated' });
@@ -156,7 +143,7 @@ deploymentRouter.get('/workspaces', configLimiter, async (req, res) => {
 // ── Work IQ (SharePoint / M365 queries) ──────────────────────────────────────
 
 // Configure Work IQ tenant
-deploymentRouter.post('/workiq/configure', configLimiter, (req, res) => {
+deploymentRouter.post('/workiq/configure', (req, res) => {
   try {
     const { tenantId } = req.body;
     if (!tenantId) {
@@ -170,7 +157,7 @@ deploymentRouter.post('/workiq/configure', configLimiter, (req, res) => {
 });
 
 // Direct Work IQ query (uses workiq CLI)
-deploymentRouter.post('/workiq/ask', configLimiter, async (req, res) => {
+deploymentRouter.post('/workiq/ask', async (req, res) => {
   try {
     const { question } = req.body;
     if (!question) {
@@ -185,7 +172,7 @@ deploymentRouter.post('/workiq/ask', configLimiter, async (req, res) => {
 });
 
 // Work IQ query through Copilot SDK session (uses MCP tools)
-deploymentRouter.post('/workiq/query', configLimiter, async (req, res) => {
+deploymentRouter.post('/workiq/query', async (req, res) => {
   try {
     const { question, sessionId } = req.body;
     if (!question) {
