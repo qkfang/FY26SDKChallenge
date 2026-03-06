@@ -4,6 +4,8 @@ param appServicePlanName string
 param appInsightsConnectionString string
 param appInsightsInstrumentationKey string
 param keyVaultUri string
+@secure()
+param githubToken string
 param nodeVersion string = '22-lts'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
@@ -45,6 +47,10 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
           name: 'KEY_VAULT_URI'
           value: keyVaultUri
         }
+        // {
+        //   name: 'GITHUB_TOKEN'
+        //   value: githubToken
+        // }
       ]
     }
   }

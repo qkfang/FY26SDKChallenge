@@ -16,6 +16,10 @@ param azureTenantId string
 @description('Azure Entra ID client ID')
 param azureClientId string
 
+@description('GitHub token for Copilot SDK authentication')
+@secure()
+param githubToken string
+
 var suffix = '${baseName}-${environment}'
 var logAnalyticsName = '${suffix}-log'
 var appInsightsName = '${suffix}-ai'
@@ -53,6 +57,7 @@ module appService 'modules/appService.bicep' = {
     appInsightsConnectionString: appInsights.outputs.connectionString
     appInsightsInstrumentationKey: appInsights.outputs.instrumentationKey
     keyVaultUri: 'https://${keyVaultName}.vault.azure.net/'
+    githubToken: githubToken
   }
 }
 
