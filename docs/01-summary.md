@@ -1,7 +1,16 @@
 # Fabric Automation App
 
-This app unifies all three layers into a single prompt-driven workflow powered by the **GitHub Copilot SDK**:
+Fabric Automation App is an end-to-end web-based solution designed to accelerate Microsoft Fabric development and simplify CI/CD automation.
 
+Data engineer or business stake holder describe their Fabric requirements in natural language, and the app uses GitHub Copilot SDK to generate Fabric workspace artifacts — including lakehouses, notebooks, semantic models, and reports — then deploys them automatically via the Fabric REST API.
+
+The app streamlines version control by committing generated artifacts to a Git repository for futher modification and editing, and managing deployment across environments (dev, QA, prod). It eliminates manual setup, reduces the time from idea to deployed Fabric solution, and enforces consistent Fabric workspace structure and CI/CD practices across environements.
+
+Key capabilities:
+- Natural language to Fabric artifact generation via Copilot
+- Automated workspace deveopment, provisioning and deployment
+- Git-backed version control for all Fabric items and automation
+- Multi-environment promotion pipeline via GitHub Actions
 
 
 ## Screenshots
