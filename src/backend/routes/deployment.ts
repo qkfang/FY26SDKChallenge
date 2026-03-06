@@ -195,13 +195,7 @@ deploymentRouter.post('/workiq/query', async (req, res) => {
 
 // ── Copilot Chat ─────────────────────────────────────────────────────────────
 
-const chatLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 60,
-  message: 'Too many chat requests, please try again later.'
-});
-
-deploymentRouter.post('/chat', chatLimiter, async (req, res) => {
+deploymentRouter.post('/chat', async (req, res) => {
   try {
     const { message, sessionId } = req.body;
     if (!message || typeof message !== 'string') {
