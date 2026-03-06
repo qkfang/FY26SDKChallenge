@@ -1,33 +1,34 @@
 # Fabric Automation App
 
-Fabric Automation App is an end-to-end web-based solution designed to accelerate Microsoft Fabric development and simplify CI/CD automation.
+**A copilot-driven automation platform that turns Microsoft Fabric delivery from a manual, multi-tool process into a standardized, version-controlled, end-to-end deployment workflow.**
 
-Data engineer or business stake holder describe their Fabric requirements in natural language, and the app uses GitHub Copilot SDK to generate Fabric workspace artifacts — including lakehouses, notebooks, semantic models, and reports — then deploys them automatically via the Fabric REST API.
+Teams today spend hours manually setting up and deploying Microsoft Fabric environments across Azure, Fabric CLI, the Fabric portal, and Git tooling. Our solution unifies that into one web-based, chat-driven interface that automates the full workflow — from provisioning infrastructure to deploying workspaces, notebooks, lakehouses, semantic models, and Power BI reports. The result is faster delivery, fewer deployment errors, stronger governance, and a much better developer experience.
 
-The app streamlines version control by committing generated artifacts to a Git repository for futher modification and editing, and managing deployment across environments (dev, QA, prod). It eliminates manual setup, reduces the time from idea to deployed Fabric solution, and enforces consistent Fabric workspace structure and CI/CD practices across environements.
+This **Fabric Automation App** demonstrates how AI can move beyond simple assistance and become an **operational force multiplier** for data platforms. Rather than helping with one task at a time, the Fabric Automation App helps teams automate the **entire delivery lifecycle** of a Fabric environment — from infrastructure provisioning to workspace setup to analytics asset deployment.
 
-Key capabilities:
-- Natural language to Fabric artifact generation via Copilot
-- Automated workspace deveopment, provisioning and deployment
-- Git-backed version control for all Fabric items and automation
-- Multi-environment promotion pipeline via GitHub Actions
+That makes it compelling not just as a demo, but as a practical platform with real enterprise value:
+
+- faster project delivery
+- more reliable deployments
+- stronger governance
+- easier scaling across teams
 
 
 ## Screenshots
 
 ### Step 1 — Enter Requirements
-![Step 1](docs/step1.png)
+![Step 1](res/step1.png)
 
 ### Step 2 — Requirements
-![Step 2](docs/step2.png)
+![Step 2](res/step2.png)
 
 ### Step 3 — Workspace
-![Step 3](docs/step3.png)
+![Step 3](res/step3.png)
 
-![Step 3b](docs/step3b.png)
+![Step 3b](res/step3b.png)
 
 ### Step 4 — Deployment
-![Step 4](docs/step4.png)
+![Step 4](res/step4.png)
 
 ### Step 5 — Fabric Portal
-![Step 5](docs/step5.png)
+![Step 5](res/step5.png)

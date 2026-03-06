@@ -6,9 +6,24 @@ Standing up a Microsoft Fabric analytics solution requires juggling three discon
 
 1. **Azure provisioning** — Capacity, resource groups, and networking are managed with Bicep/ARM templates or the Azure portal, each with its own auth model and deployment patterns.
 2. **Fabric workspace configuration** — Creating workspaces, assigning capacity, linking Git repos, and enabling CI/CD pipelines all happen through Fabric admin screens with no declarative desired-state file.
-3. **Artifact authoring** — Lakehouses, notebooks, semantic models, and reports are built inside the Fabric portal and must be manually promoted across environments.
+3. **Artifact deployment** — Lakehouses, notebooks, semantic models, and reports are built inside the Fabric portal and must be manually promoted across environments.
 
 This fragmentation makes the process slow, error-prone, and hard to reproduce. A new team member must learn all three surfaces before they can stand up their first workspace.
+
+
+## What Makes This Different
+
+Current Fabric tooling is powerful, but fragmented.
+
+- The **Fabric portal** provides AI assistance mainly for queries or individual resources, but not for orchestrating an entire Fabric workspace end to end.
+- Fabric does support **Git integration**, but working with commits, conflict resolution, and testing through the portal can be difficult and can block progress when conflicts occur.
+- A typical Fabric deployment requires work across **multiple systems**:
+  1. provision Fabric capacity in Azure
+  2. create and configure a workspace
+  3. build assets such as notebooks, models, and data sources
+  4. manage source control and deployment separately
+
+Our app brings all of those disconnected steps into **one central experience**.
 
 ## Solution
 
