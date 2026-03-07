@@ -108,6 +108,10 @@ export const api = {
     return response.data;
   },
 
+  async approveTool(sessionId: string, approveAll: boolean): Promise<void> {
+    await axios.post(`${API_BASE_URL}/deployment/chat/approve`, { sessionId, approveAll });
+  },
+
   async chat(message: string, sessionId: string): Promise<{ reply: string; logs: Array<{ type: string; message: string }> }> {
     const response = await axios.post(`${API_BASE_URL}/deployment/chat`, { message, sessionId });
     return response.data;

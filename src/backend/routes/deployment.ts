@@ -193,25 +193,39 @@ deploymentRouter.post('/workiq/query', async (req, res) => {
   }
 });
 
-// ── Copilot Chat ─────────────────────────────────────────────────────────────
+// ── Copilot Chat (SSE stream) ────────────────────────────────────────────────
 
 deploymentRouter.post('/chat', async (req, res) => {
-  try {
-    const { message, sessionId } = req.body;
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'message is required' });
-    }
-    if (!sessionId || typeof sessionId !== 'string') {
-      return res.status(400).json({ error: 'sessionId is required' });
-    }
-
-    const logs: Array<{ type: string; message: string }> = [];
-    const reply = await copilotService.sendChat(sessionId, message, (msg) => {
-      logs.push(msg);
-    });
-    res.json({ reply, logs });
-  } catch (error: any) {
-    console.error('Chat error:', error);
-    res.status(500).json({ error: error.message });
+  const { message, sessionId } = req.body;
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'message is required' });
   }
+  if (!sessionId || typeof sessionId !== 'string') {
+    return res.status(400).json({ error: 'sessionId is required' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  const write = (event: object) => {
+    res.write(`data: ${JSON.stringify(event)}\n\n`);
+  };
+
+  try {
+    await copilotService.sendChatStream(sessionId, message, write);
+  } catch (err: any) {
+    write({ type: 'error', message: err.message });
+  }
+
+  res.write('data: [DONE]\n\n');
+  res.end();
+});
+
+deploymentRouter.post('/chat/approve', (req, res) => {
+  const { sessionId, approveAll } = req.body;
+  if (!sessionId) return res.status(400).json({ error: 'sessionId is required' });
+  copilotService.approveTool(sessionId, approveAll === true);
+  res.json({ ok: true });
 });

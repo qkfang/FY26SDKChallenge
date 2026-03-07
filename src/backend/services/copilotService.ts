@@ -1,4 +1,5 @@
-import { CopilotClient, CopilotSession, approveAll } from '@github/copilot-sdk';
+import { CopilotClient, CopilotSession } from '@github/copilot-sdk';
+import type { PermissionHandler, PermissionRequest, PermissionRequestResult } from '@github/copilot-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,6 +16,40 @@ const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
 for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR, SESSION_DIR]) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
+
+// Per-session human-in-the-loop permission resolver
+class PermissionResolver {
+  approveAllMode = false;
+  private pendingResolve: ((result: PermissionRequestResult) => void) | null = null;
+  pendingTool: { toolName: string; args: any } | null = null;
+  onPendingTool: ((tool: { toolName: string; args: any }) => void) | null = null;
+
+  getHandler(): PermissionHandler {
+    return async (request: PermissionRequest): Promise<PermissionRequestResult> => {
+      if (this.approveAllMode) return { kind: 'approved' };
+      const toolName = (request as any).name ?? (request as any).toolName ?? request.kind;
+      const toolArgs = { kind: request.kind, ...(request.toolCallId ? { toolCallId: request.toolCallId } : {}) };
+      this.pendingTool = { toolName, args: toolArgs };
+      this.onPendingTool?.(this.pendingTool);
+      return new Promise<PermissionRequestResult>(res => { this.pendingResolve = res; });
+    };
+  }
+
+  approve(all: boolean): void {
+    if (all) this.approveAllMode = true;
+    const res = this.pendingResolve;
+    this.pendingTool = null;
+    this.pendingResolve = null;
+    res?.({ kind: 'approved' });
+  }
+}
+
+type ChatStreamEvent =
+  | { type: 'delta'; text: string }
+  | { type: 'tool_executing'; toolName: string; args: string }
+  | { type: 'tool_permission_request'; toolName: string; args: any }
+  | { type: 'done'; reply: string }
+  | { type: 'error'; message: string };
 
 interface CopilotMessage {
   type: 'info' | 'success' | 'error' | 'progress';
@@ -51,6 +86,7 @@ Key guidelines:
 export class CopilotService {
   private client: CopilotClient | null = null;
   private sessions: Map<string, CopilotSession> = new Map();
+  private permissionResolvers = new Map<string, PermissionResolver>();
   private isAvailable: boolean = false;
   private clientInfo: { version?: string; protocolVersion?: number } = {};
   private authInfo: { isAuthenticated?: boolean; authType?: string; login?: string } = {};
@@ -136,8 +172,12 @@ export class CopilotService {
     try {
       const mcpConfig = workiqService.getMcpServerConfig();
       const githubToken = process.env.GITHUB_TOKEN || '';
+      const resolver = new PermissionResolver();
+      resolver.approveAllMode = true; // auto-approve for setup sessions
+      this.permissionResolvers.set(sessionId, resolver);
+
       const session = await this.client.createSession({
-        onPermissionRequest: approveAll,
+        onPermissionRequest: resolver.getHandler(),
         configDir: SESSION_DIR,
         workingDirectory: cwd,
         model: 'claude-sonnet-4.6',
@@ -384,52 +424,74 @@ Review the workspace structure and customize it for the requirement: "${requirem
     }
   }
 
-  async sendChat(
+  async sendChatStream(
     sessionId: string,
     message: string,
-    onMessage?: (msg: CopilotMessage) => void
-  ): Promise<string> {
+    onEvent: (event: ChatStreamEvent) => void
+  ): Promise<void> {
     let session = this.sessions.get(sessionId);
+    let resolver = this.permissionResolvers.get(sessionId);
+
     if (!session) {
-      // Re-initialize and create session on the fly
       await this.initialize();
+      // Create session in human-in-the-loop mode for chat
+      resolver = new PermissionResolver();
+      resolver.approveAllMode = false;
+      this.permissionResolvers.set(sessionId, resolver);
       await this.createSession(sessionId);
       session = this.sessions.get(sessionId);
+      // Overwrite resolver after createSession (which may have created its own)
+      resolver = this.permissionResolvers.get(sessionId)!;
+      resolver.approveAllMode = false;
+    } else if (resolver) {
+      // Switch existing session to human-in-the-loop mode
+      resolver.approveAllMode = false;
     }
+
     if (!this.isAvailable || !session) {
       throw new Error('No active Copilot session. Complete Init Session first.');
     }
 
+    if (resolver) {
+      resolver.onPendingTool = (tool) => {
+        onEvent({ type: 'tool_permission_request', toolName: tool.toolName, args: tool.args });
+      };
+    }
+
     session.on((event) => {
-      if (!onMessage) return;
       switch (event.type) {
         case 'assistant.message_delta':
           if ('deltaContent' in event.data && event.data.deltaContent) {
-            onMessage({ type: 'progress', message: event.data.deltaContent });
+            onEvent({ type: 'delta', text: event.data.deltaContent });
           }
           break;
         case 'tool.execution_start': {
           const args = event.data.arguments ? JSON.stringify(event.data.arguments) : '';
-          onMessage({ type: 'info', message: `[Tool] ${event.data.toolName} ${args}` });
-          break;
-        }
-        case 'tool.execution_complete': {
-          const result = event.data.result;
-          if (result?.content) {
-            onMessage({ type: 'info', message: `[Tool result] ${result.content.substring(0, 500)}` });
-          }
+          onEvent({ type: 'tool_executing', toolName: event.data.toolName, args });
           break;
         }
         case 'session.error':
-          onMessage({ type: 'error', message: event.data.message });
+          onEvent({ type: 'error', message: event.data.message });
           break;
         default:
           break;
       }
     });
 
-    const response = await session.sendAndWait({ prompt: message }, 300000);
-    return response?.data?.content || '';
+    try {
+      const response = await session.sendAndWait({ prompt: message }, 300000);
+      const reply = response?.data?.content || '';
+      onEvent({ type: 'done', reply });
+    } catch (err: any) {
+      onEvent({ type: 'error', message: err.message });
+    } finally {
+      if (resolver) resolver.onPendingTool = null;
+    }
+  }
+
+  approveTool(sessionId: string, approveAll: boolean): void {
+    const resolver = this.permissionResolvers.get(sessionId);
+    resolver?.approve(approveAll);
   }
 
   async destroySession(sessionId: string): Promise<void> {

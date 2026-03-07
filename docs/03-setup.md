@@ -220,6 +220,7 @@ Each environment job runs `az deployment group create` against its resource grou
 ## Responsible AI
 
 - **Human-in-the-loop** — all Copilot-generated artifacts are presented for review before deployment; no changes are applied without explicit user action.
+- **UI approval for agent actions** — every action proposed by the agent (workspace creation, artifact generation, deployment) requires explicit in-UI approval before execution; users can inspect, modify, or reject each step.
 - **Transparency** — every generated plan is visible in the workspace folder and committed to Git, providing full auditability.
 - **Rate limiting** — the backend enforces request rate limits to prevent abuse.
 - **Authentication** — optional Entra ID integration ensures only authorized users can trigger deployments.
