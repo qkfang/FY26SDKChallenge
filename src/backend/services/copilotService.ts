@@ -75,7 +75,7 @@ interface CopilotSessionInfo {
 }
 
 function buildCustomAgents(): CustomAgentConfig[] {
-  const agentsDir = path.join(process.cwd(), 'agents');
+  const agentsDir = path.join(process.cwd(), 'config/agents');
   if (!fs.existsSync(agentsDir)) return [];
 
   return fs.readdirSync(agentsDir)
@@ -96,7 +96,7 @@ function buildCustomAgents(): CustomAgentConfig[] {
 }
 
 function getSkillDirectories(): string[] {
-  const skillsDir = path.join(process.cwd(), 'skills');
+  const skillsDir = path.join(process.cwd(), 'config/skills');
   if (!fs.existsSync(skillsDir)) return [];
 
   return fs.readdirSync(skillsDir)
