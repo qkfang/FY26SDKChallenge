@@ -82,11 +82,42 @@
 
 .chat-input-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid #e5e7eb;
   background: #fafafa;
   border-radius: 0 0 12px 12px;
+}
+
+.approve-all-badge {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.approve-all-reset {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #065f46;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.approve-all-reset:hover {
+  color: #dc2626;
 }
 
 .chat-input {

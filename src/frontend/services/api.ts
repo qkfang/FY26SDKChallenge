@@ -112,6 +112,10 @@ export const api = {
     await axios.post(`${API_BASE_URL}/deployment/chat/approve`, { sessionId, approveAll });
   },
 
+  async resetApproveAll(sessionId: string): Promise<void> {
+    await axios.post(`${API_BASE_URL}/deployment/chat/approve/reset`, { sessionId });
+  },
+
   async chat(message: string, sessionId: string): Promise<{ reply: string; logs: Array<{ type: string; message: string }> }> {
     const response = await axios.post(`${API_BASE_URL}/deployment/chat`, { message, sessionId });
     return response.data;
