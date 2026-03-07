@@ -132,6 +132,7 @@ const DeploySteps: React.FC<DeployStepsProps> = ({ workspaceDir, sessionId: _ses
             <option key={env} value={env}>{env}</option>
           ))}
         </select>
+        <span className="deploy-steps__env-hint">Use GitHub Actions to deploy to QA &amp; Prod</span>
       </div>
       <div className="deploy-steps__grid">
         {STEPS.map(step => {
