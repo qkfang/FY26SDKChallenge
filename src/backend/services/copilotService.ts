@@ -9,6 +9,7 @@ import { workiqService } from './workiqService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
+const BACKEND_ROOT = path.resolve(process.cwd());
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
 const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'project_repo');
 const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
@@ -69,6 +70,29 @@ interface CopilotSessionInfo {
   model?: string;
   tempFolder?: string;
 }
+
+const AGENT_CONTEXT = (() => {
+  const parts: string[] = [];
+
+  const agentsDir = path.join(BACKEND_ROOT, 'agents');
+  if (fs.existsSync(agentsDir)) {
+    for (const file of fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'))) {
+      try { parts.push(fs.readFileSync(path.join(agentsDir, file), 'utf8')); } catch { /* skip */ }
+    }
+  }
+
+  const skillsDir = path.join(BACKEND_ROOT, 'skills');
+  if (fs.existsSync(skillsDir)) {
+    for (const skillName of fs.readdirSync(skillsDir)) {
+      const skillFile = path.join(skillsDir, skillName, 'SKILL.md');
+      if (fs.existsSync(skillFile)) {
+        try { parts.push(fs.readFileSync(skillFile, 'utf8')); } catch { /* skip */ }
+      }
+    }
+  }
+
+  return parts.join('\n\n');
+})();
 
 const SYSTEM_PROMPT = `You are an expert Microsoft Fabric deployment assistant. You help users set up and customize Fabric workspaces including notebooks, lakehouses, semantic models, and reports.
 
@@ -176,12 +200,13 @@ export class CopilotService {
       resolver.approveAllMode = true; // auto-approve for setup sessions
       this.permissionResolvers.set(sessionId, resolver);
 
+      const systemContent = AGENT_CONTEXT ? `${SYSTEM_PROMPT}\n${AGENT_CONTEXT}` : SYSTEM_PROMPT;
       const session = await this.client.createSession({
         onPermissionRequest: resolver.getHandler(),
         configDir: SESSION_DIR,
         workingDirectory: cwd,
         model: 'claude-sonnet-4.6',
-        systemMessage: { mode: 'append', content: SYSTEM_PROMPT },
+        systemMessage: { mode: 'append', content: systemContent },
         mcpServers: {
           workiq: {
             command: mcpConfig.command,
@@ -199,7 +224,7 @@ export class CopilotService {
         },
       });
       this.sessions.set(sessionId, session);
-      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}, mcpServers: [workiq, github]`);
+      console.log(`Session created — id: ${sessionId}, cwd: ${cwd}`);
     } catch (error: any) {
       console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
     }
