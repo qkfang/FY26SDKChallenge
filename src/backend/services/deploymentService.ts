@@ -54,7 +54,10 @@ export class DeploymentService {
     const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
     const workspaceDir = path.join(WORKSPACE_DIR, `ws-${ts}`);
     fs.mkdirSync(workspaceDir, { recursive: true });
-    await fs.promises.cp(TEMPLATE_DIR, workspaceDir, { recursive: true });
+    // await fs.promises.cp(TEMPLATE_DIR, workspaceDir, {
+    //   recursive: true,
+    //   filter: (src) => !src.includes(path.sep + '.git'),
+    // });
 
     const sessionId = randomUUID();
     await copilotService.initialize();
