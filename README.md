@@ -1,8 +1,12 @@
 # Fabric Automation Agent App
 
-> **Copilot-driven automation that turns Microsoft Fabric delivery from a multi-tool manual process into a single-click, end-to-end deployment workflow.**
+> **Agent-driven automation that turns Microsoft Fabric delivery from a multi-tool manual process into a single-click, end-to-end deployment workflow.**
 
-What used to take hours of portal navigation across Azure, Fabric, and Git tooling now happens in minutes — just describe what you need in plain English and let the agent handle the rest.
+Fabric Automation Agent App accelerates how organisations adopt and scale Microsoft Fabric by turning a complex, manual delivery process into a fast, guided, agent-assisted experience. Instead of spending hours provisioning Azure resources, configuring Fabric workspaces, creating analytics artifacts, and managing deployments across disconnected tools, data engineering team can use a single agent-driven interface to deliver data solution end to end across environments.
+
+The solution automates infrastructure provisioning, Fabric configuration, and artifact generation (like lakehouses, notebooks, semantic models, and Power BI reports), then promotes them across development, test, and production through a version-controlled deployment process. This gives data engineers a faster path from idea to working solution, while embedding engineering best practices from the start.
+
+Faster delivery, lower setup effort, fewer manual errors, and more consistent outcomes across teams. What makes this especially valuable for Fabric is its ability to unify development and deployment in one repeatable workflow, helping enterprises accelerate Fabric adoption with confidence, governance, and production-ready discipline.
 
 ![Solution Design](docs/res/solution-design.png)
 

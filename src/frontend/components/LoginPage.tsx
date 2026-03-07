@@ -26,7 +26,7 @@ function LoginPage({ onSkip, hasConfig }: LoginPageProps) {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>🚀 Fabric Automation</h1>
+        <h1>🚀 Fabric Automation Agent App</h1>
         <p>Sign in with Azure Entra ID or skip to continue as guest.</p>
 
         {error && <div className="login-error">{error}</div>}
