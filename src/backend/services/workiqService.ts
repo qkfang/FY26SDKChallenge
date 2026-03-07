@@ -6,18 +6,43 @@ export interface WorkIQQueryResult {
   success: boolean;
 }
 
+export interface WorkIQContext {
+  tenantId?: string;
+  userPrincipalName?: string;
+  userName?: string;
+}
+
 export class WorkIQService {
   private tenantId: string | undefined;
+  private userPrincipalName: string | undefined;
+  private userName: string | undefined;
 
   setTenantId(tenantId: string): void {
     this.tenantId = tenantId;
     console.log(`Work IQ tenant set: ${tenantId}`);
   }
 
+  setUserContext(userPrincipalName: string, userName?: string): void {
+    this.userPrincipalName = userPrincipalName;
+    this.userName = userName;
+    console.log(`Work IQ user context set: ${userName || userPrincipalName}`);
+  }
+
+  getContext(): WorkIQContext {
+    return {
+      tenantId: this.tenantId,
+      userPrincipalName: this.userPrincipalName,
+      userName: this.userName,
+    };
+  }
+
   getMcpServerConfig(): { command: string; args: string[] } {
     const args = ['-y', '@microsoft/workiq', 'mcp'];
     if (this.tenantId) {
       args.push('-t', this.tenantId);
+    }
+    if (this.userPrincipalName) {
+      args.push('-u', this.userPrincipalName);
     }
     return { command: 'npx', args };
   }
@@ -26,6 +51,9 @@ export class WorkIQService {
     const args = ['-y', '@microsoft/workiq', 'ask', '-q', question];
     if (this.tenantId) {
       args.push('-t', this.tenantId);
+    }
+    if (this.userPrincipalName) {
+      args.push('-u', this.userPrincipalName);
     }
 
     return new Promise((resolve) => {

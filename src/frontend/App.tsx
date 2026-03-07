@@ -8,7 +8,7 @@ const TABS = [
   { key: 'deploy', label: 'Deployment' },
 ] as const;
 type TabKey = typeof TABS[number]['key'];
-import { useIsAuthenticated } from '@azure/msal-react';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import LoginPage from './components/LoginPage';
 import InitStep from './components/InitStep';
 import RequirementForm from './components/RequirementForm';
@@ -32,9 +32,12 @@ function setCookie(name: string, value: string) {
 
 function App() {
   const isAuthenticated = useIsAuthenticated();
+  const { accounts } = useMsal();
+  const currentAccount = accounts[0] ?? null;
   const [loginSkipped, setLoginSkipped] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('init');
+  const [workiqUser, setWorkiqUser] = useState<string | null>(null);
 
   // Setup state
   const [setupDeploymentId, setSetupDeploymentId] = useState<string | null>(null);
@@ -51,6 +54,16 @@ function App() {
       .then(() => setIsConnected(true))
       .catch(() => setIsConnected(false));
   }, []);
+
+  // Auto-configure WorkIQ with the signed-in user's context
+  useEffect(() => {
+    if (!isAuthenticated || !currentAccount) return;
+    const userPrincipalName = currentAccount.username;
+    const userName = currentAccount.name ?? currentAccount.username;
+    api.configureWorkIQ({ userPrincipalName, userName })
+      .then(() => setWorkiqUser(userName))
+      .catch((err) => { console.warn('WorkIQ user configuration failed:', err.message); });
+  }, [isAuthenticated, currentAccount]);
 
   // Poll setup status
   useEffect(() => {
@@ -135,6 +148,12 @@ function App() {
       <header className="app-header">
         <h1>🚀 Fabric Automation Agent App</h1>
         <span style={{ margin: '0 12px', opacity: 0.7 }}>Powered by GitHub Copilot SDK</span>
+        {isAuthenticated && currentAccount && (
+          <span className="user-badge" title={currentAccount.username}>
+            👤 {currentAccount.name ?? currentAccount.username}
+            {workiqUser && <span className="workiq-badge" title="WorkIQ scoped to this user">· WorkIQ ✓</span>}
+          </span>
+        )}
         <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
           <span className="status-dot"></span>
           {isConnected ? 'Backend Connected' : 'Backend Disconnected'}

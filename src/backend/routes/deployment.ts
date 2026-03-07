@@ -142,15 +142,25 @@ deploymentRouter.get('/workspaces', async (req, res) => {
 
 // ── Work IQ (SharePoint / M365 queries) ──────────────────────────────────────
 
-// Configure Work IQ tenant
+// Get current Work IQ context (user, tenant)
+deploymentRouter.get('/workiq/context', (_req, res) => {
+  res.json(workiqService.getContext());
+});
+
+// Configure Work IQ tenant and user
 deploymentRouter.post('/workiq/configure', (req, res) => {
   try {
-    const { tenantId } = req.body;
-    if (!tenantId) {
-      return res.status(400).json({ error: 'tenantId is required' });
+    const { tenantId, userPrincipalName, userName } = req.body;
+    if (tenantId) {
+      workiqService.setTenantId(tenantId);
     }
-    workiqService.setTenantId(tenantId);
-    res.json({ message: 'Work IQ configured', tenantId });
+    if (userPrincipalName) {
+      workiqService.setUserContext(userPrincipalName, userName);
+    }
+    if (!tenantId && !userPrincipalName) {
+      return res.status(400).json({ error: 'tenantId or userPrincipalName is required' });
+    }
+    res.json({ message: 'Work IQ configured', ...workiqService.getContext() });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

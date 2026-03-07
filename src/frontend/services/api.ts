@@ -93,8 +93,13 @@ export const api = {
   },
 
   // ── Work IQ (SharePoint / M365 queries) ──────────────────────────
-  async configureWorkIQ(tenantId: string): Promise<{ message: string }> {
-    const response = await axios.post(`${API_BASE_URL}/deployment/workiq/configure`, { tenantId });
+  async getWorkIQContext(): Promise<{ tenantId?: string; userPrincipalName?: string; userName?: string }> {
+    const response = await axios.get(`${API_BASE_URL}/deployment/workiq/context`);
+    return response.data;
+  },
+
+  async configureWorkIQ(params: { tenantId?: string; userPrincipalName?: string; userName?: string }): Promise<{ message: string }> {
+    const response = await axios.post(`${API_BASE_URL}/deployment/workiq/configure`, params);
     return response.data;
   },
 
