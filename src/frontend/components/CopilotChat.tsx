@@ -22,6 +22,7 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
   const [loading, setLoading] = useState(false);
   const [streamingText, setStreamingText] = useState('');
   const [pendingTool, setPendingTool] = useState<PendingToolApproval | null>(null);
+  const [approveAllMode, setApproveAllMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,6 +98,7 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
 
   const handleApprove = async (approveAll: boolean) => {
     setPendingTool(null);
+    if (approveAll) setApproveAllMode(true);
     await api.approveTool(sessionId, approveAll);
   };
 
@@ -158,6 +160,12 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
       </div>
 
       <div className="chat-input-row">
+        {approveAllMode && (
+          <span className="approve-all-badge">
+            ✓ Auto-approving all tools
+            <button className="approve-all-reset" onClick={async () => { setApproveAllMode(false); await api.resetApproveAll(sessionId); }} title="Click to disable auto-approve">×</button>
+          </span>
+        )}
         <textarea
           className="chat-input"
           rows={1}

@@ -42,6 +42,10 @@ class PermissionResolver {
     this.pendingResolve = null;
     res?.({ kind: 'approved' });
   }
+
+  resetApproveAll(): void {
+    this.approveAllMode = false;
+  }
 }
 
 type ChatStreamEvent =
@@ -443,9 +447,6 @@ Review the workspace structure and customize it for the requirement: "${requirem
       // Overwrite resolver after createSession (which may have created its own)
       resolver = this.permissionResolvers.get(sessionId)!;
       resolver.approveAllMode = false;
-    } else if (resolver) {
-      // Switch existing session to human-in-the-loop mode
-      resolver.approveAllMode = false;
     }
 
     if (!this.isAvailable || !session) {
@@ -492,6 +493,11 @@ Review the workspace structure and customize it for the requirement: "${requirem
   approveTool(sessionId: string, approveAll: boolean): void {
     const resolver = this.permissionResolvers.get(sessionId);
     resolver?.approve(approveAll);
+  }
+
+  resetApproveAll(sessionId: string): void {
+    const resolver = this.permissionResolvers.get(sessionId);
+    resolver?.resetApproveAll();
   }
 
   async destroySession(sessionId: string): Promise<void> {

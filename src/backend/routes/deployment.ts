@@ -229,3 +229,10 @@ deploymentRouter.post('/chat/approve', (req, res) => {
   copilotService.approveTool(sessionId, approveAll === true);
   res.json({ ok: true });
 });
+
+deploymentRouter.post('/chat/approve/reset', (req, res) => {
+  const { sessionId } = req.body;
+  if (!sessionId) return res.status(400).json({ error: 'sessionId is required' });
+  copilotService.resetApproveAll(sessionId);
+  res.json({ ok: true });
+});
