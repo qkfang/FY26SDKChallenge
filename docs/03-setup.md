@@ -226,3 +226,7 @@ Each environment job runs `az deployment group create` against its resource grou
 - **Authentication** — optional Entra ID integration ensures only authorized users can trigger deployments.
 - **Least privilege** — Bicep templates assign managed identities with scoped Key Vault access policies rather than broad credentials.
 
+---
+
+[← Previous: Problem & Solution](02-problem.md) | [Next: Agent Integration →](04-agent-integration.md)
+

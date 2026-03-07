@@ -48,3 +48,7 @@ Our agent replaces all of that with **5 steps**:
 5. Publish artifacts to Fabric (fabric-cicd)
 
 **Saved from 30+ manual portal steps to 5 steps** — cutting delivery time from over an hour to under 10 minutes, with every artifact version-controlled and every environment reproducible.
+
+---
+
+[← Previous: Summary](01-summary.md) | [Next: Solution Overview →](03-setup.md)

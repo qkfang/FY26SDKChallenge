@@ -40,3 +40,7 @@ Setting up a Fabric environment manually takes **30+ portal steps and over an ho
 
 ### Step 5 — Fabric Portal
 ![Step 5](res/step5.png)
+
+---
+
+[Next: Problem & Solution →](02-problem.md)

@@ -37,3 +37,7 @@ Key benefits include:
 - **Better governance** with version control, audit trails, and approval workflows
 - **Improved developer experience** through a simple chat-based web interface
 - **Greater consistency** across teams, projects, and environments
+
+---
+
+[← Previous: Highlights](05-highlight.md) | [Next: User Guide →](07-user-guide.md)

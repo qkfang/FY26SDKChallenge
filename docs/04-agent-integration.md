@@ -99,3 +99,7 @@ mcpServers: {
 4. The agent commits and pushes changes to the user's GitHub repo
 5. Deployment scripts (`deploy-bicep.ps1`, `deploy-cli.ps1`, `deploy-fabric.ps1`) are triggered separately to provision infrastructure and publish Fabric items
 
+---
+
+[← Previous: Solution Overview](03-setup.md) | [Next: Highlights →](05-highlight.md)
+
