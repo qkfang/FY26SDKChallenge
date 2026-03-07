@@ -31,9 +31,15 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
   const [showTemplates, setShowTemplates] = useState(false);
   const templatesRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+    if (isAtBottom) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages, loading, streamingText, pendingTool]);
 
   useEffect(() => {
@@ -128,7 +134,7 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
 
   return (
     <div className="copilot-chat">
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesContainerRef}>
         {messages.length === 0 && !loading && !streamingText && (
           <p className="chat-empty">Send a message to start chatting with GitHub Copilot.</p>
         )}

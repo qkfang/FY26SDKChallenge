@@ -104,7 +104,8 @@ function getSkillDirectories(): string[] {
     .filter(dir => fs.statSync(dir).isDirectory() && fs.existsSync(path.join(dir, 'SKILL.md')));
 }
 
-const SYSTEM_PROMPT = `You are an expert Microsoft Fabric deployment assistant. You help users set up and customize Fabric workspaces including notebooks, lakehouses, semantic models, and reports.
+const SYSTEM_PROMPT = `
+You are an expert Microsoft Fabric deployment assistant. You help users set up and customize Fabric workspaces including notebooks, lakehouses, semantic models, and reports.
 
 Only allowed to modify content inside this folder: '${WORKSPACE_DIR}'
 
@@ -330,22 +331,23 @@ export class CopilotService {
     }
 
     try {
-      const prompt = `# Workspace Setup for: ${requirement}
+      const prompt = `
+# Fabric Workspace Setup Requirement
+${requirement}
 
-## Context
-Setup local workspace and session: 
-Checkout template GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_Template' to this folder: '${TEMPLATE_DIR}'
-Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_ProjectRepo' to this folder: '${WORKSPACE_DIR}/${workspaceDir}'
-
-If project repo is empty, copy template repo content to project repo as starting point.
+## Setup
+Follow below steps strictly
+1- Checkout and pull template repo 'https://github.com/qkfang/FY26SDKChallenge_Template_Repo' to this folder: '${TEMPLATE_DIR}'
+2- Checkout and pull user repo 'https://github.com/qkfang/FY26SDKChallenge_Project_Repo' to this folder: '${workspaceDir}'
+3- Copy template repo content to project repo as starting point. (must skip .git & .venv folders)
 
 ## Task
 Review the workspace structure and customize it for the requirement: "${requirement}"
-- Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
-- Do NOT run any deployment scripts — they will be triggered separately
-- Check the workspace looks correct for the requirement (clean up the fabric resource in workspace if not needed, update README.md, etc.)
-- Once all done, commit and push project repo to remote
-- Never ever change or commit to template repo
+1- Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
+2- Do NOT run any deployment scripts — they will be triggered separately
+3- Check the workspace looks correct for the requirement (clean up the fabric resource in workspace if not needed, update README.md, etc.)
+4- Once all done, commit and push project repo to remote, this folder only '${workspaceDir}'
+5- Never change or commit to template repo, this folder '${TEMPLATE_DIR}'
 
 `;
 
