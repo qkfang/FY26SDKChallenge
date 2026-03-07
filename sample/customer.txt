@@ -1,0 +1,12 @@
+Proposed Customer table:
+
+Column	Type
+CustomerID	int64
+FirstName	string
+LastName	string
+CompanyName	string
+EmailAddress	string
+Phone	string
+City	string
+StateProvince	string
+CountryRegion	string
