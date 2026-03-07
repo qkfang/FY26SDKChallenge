@@ -3,11 +3,13 @@
 
 ## The Challenge We Solved
 
-Data engineering teams often spend **4–5 hours manually building and deploying** Microsoft Fabric workspaces, semantic models, notebooks, lakehouses, and Power BI reports through the UI. That manual process creates a major productivity bottleneck and slows delivery.
-
-Manual deployments also introduce **configuration drift and human error**. Small mistakes can cause failed releases, inconsistent environments, and long rollback or troubleshooting cycles.
-
-On top of that, teams often lack a **standardized deployment pattern**. Each project ends up being configured slightly differently, making environments hard to reproduce, govern, and scale across the organisation.
+- Data engineering teams could spend **4–5 hours manually developing and deploying** Fabric workspaces, semantic models, and Power BI reports via UI, creating significant productivity drains
+- Configuration errors during manual deployments led to **deployment failures** and required time-consuming rollbacks and troubleshooting cycles
+- Teams lacked **standardized deployment patterns**, resulting in inconsistent environments and difficult-to-reproduce configurations across projects
+- Engineers had to **context-switch across Azure portal, Fabric portal, GitHub, and CLI tools** to complete a single end-to-end deployment, increasing cognitive load and error risk
+- **Knowledge was siloed** in a small number of engineers who understood the full deployment stack, creating bottlenecks and single points of failure
+- New team members required **days of onboarding** to learn the multi-tool Fabric deployment process before they could contribute independently
+- Without version-controlled workspace configurations, **changes were untracked and unauditable**, making rollbacks and environment comparisons error-prone
 
 
 ## The Solution
