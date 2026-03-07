@@ -338,7 +338,7 @@ ${requirement}
 ## Setup
 Follow below steps strictly
 1- Checkout and pull template repo 'https://github.com/qkfang/FY26SDKChallenge_Template_Repo' to this folder: '${TEMPLATE_DIR}'
-2- Checkout and pull user repo 'https://github.com/qkfang/FY26SDKChallenge_Project_Repo' to this folder: '${workspaceDir}'
+2- Checkout and pull project repo 'https://github.com/qkfang/FY26SDKChallenge_Project_Repo' to this folder: '${workspaceDir}'
 3- Copy template repo content to project repo as starting point. (must skip .git & .venv folders)
 
 ## Task

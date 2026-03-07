@@ -66,7 +66,7 @@ const WorkspaceSetup: React.FC<WorkspaceSetupProps> = ({ status, onReady, sessio
 
       {isDone && status.workspaceDir && (
         <div className="ws-ready-banner">
-          ✅ Workspace ready — proceed to the <strong>Deploy</strong> tab to run deployment steps.
+          ✅ Workspace ready — proceed to the <strong>Developer & Deploy</strong> tab to continue.
         </div>
       )}
 
