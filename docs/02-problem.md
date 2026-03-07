@@ -34,3 +34,17 @@ This app unifies all three layers into a single prompt-driven workflow powered b
 - **Git-backed version control** — every generated artifact is committed to a Git repo, enabling branching, PR reviews, and full history.
 - **Consistent environments** — AI-generated plans follow best practices, reducing configuration drift across dev / QA / prod.
 - **Repeatable workflows** — capture and replay common deployment patterns without manual template editing.
+
+### Business Value
+
+The [Fabric CI/CD tutorial](https://learn.microsoft.com/en-us/fabric/cicd/cicd-tutorial?tabs=azure-devops%2Cmanual) documents the current end-to-end process for standing up a Fabric analytics environment manually. It spans **30+ steps across the Fabric portal, Azure DevOps or GitHub, and Azure** — covering workspace creation, Git integration, deployment pipeline setup, artifact authoring, credential configuration, branch management, and environment promotion. For an experienced data engineer this takes **over an hour** per environment.
+
+Our agent replaces all of that with **5 steps**:
+
+1. Describe your requirements in natural language
+2. Review the AI-generated plan and workspace artifacts
+3. Deploy infrastructure (Bicep)
+4. Configure the Fabric workspace (CLI)
+5. Publish artifacts to Fabric (fabric-cicd)
+
+**Saved from 30+ manual portal steps to 5 steps** — cutting delivery time from over an hour to under 10 minutes, with every artifact version-controlled and every environment reproducible.

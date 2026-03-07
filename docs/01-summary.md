@@ -13,6 +13,10 @@ That makes it compelling not just as a demo, but as a practical platform with re
 - stronger governance
 - easier scaling across teams
 
+## Business Value
+
+Setting up a Fabric environment manually takes **30+ portal steps and over an hour** per environment. Our agent reduces this to **5 steps in under 10 minutes**. See [02-problem.md](02-problem.md) for the full breakdown.
+
 ## Solution Design
 
 ![Solution](res/solution-design.png)
