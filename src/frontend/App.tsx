@@ -114,7 +114,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🚀 Fabric Automation App</h1>
+        <h1>🚀 Fabric Automation Agent App</h1>
         <span style={{ margin: '0 12px', opacity: 0.7 }}>Powered by GitHub Copilot SDK</span>
         <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
           <span className="status-dot"></span>

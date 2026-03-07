@@ -1,4 +1,4 @@
-# Fabric Automation App
+# Fabric Automation Agent App
 
 Automates Microsoft Fabric resource deployment using GitHub Copilot CLI SDK. Describe deployment requirements in natural language and let Copilot generate and execute deployment plans.
 

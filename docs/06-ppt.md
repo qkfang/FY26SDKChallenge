@@ -1,4 +1,4 @@
-# Fabric Automation App  
+# Fabric Automation Agent App  
 **Automating end-to-end Microsoft Fabric development and deployment**
 
 ## The Challenge We Solved

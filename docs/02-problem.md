@@ -1,4 +1,4 @@
-# Fabric Automation App
+# Fabric Automation Agent App
 
 ## Problem
 
