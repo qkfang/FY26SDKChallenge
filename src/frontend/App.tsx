@@ -97,6 +97,14 @@ function App() {
     }
   }, []);
 
+  const handleReset = () => {
+    setWorkspaceDir('');
+    setCookie('workspaceDir', '');
+    setSessionId('');
+    setCookie('copilotSessionId', '');
+    setLoadedConfig(null);
+  };
+
   const handleInitReady = (dir: string, sid: string, config?: WorkspaceConfig | null) => {
     setWorkspaceDir(dir);
     setCookie('workspaceDir', dir);
@@ -147,6 +155,7 @@ function App() {
           <div className="panel">
             <InitStep
               onSessionReady={handleInitReady}
+              onReset={handleReset}
               currentWorkspaceDir={workspaceDir}
               currentSessionId={sessionId}
             />

@@ -4,6 +4,7 @@ import './InitStep.css';
 
 interface InitStepProps {
   onSessionReady: (workspaceDir: string, copilotSessionId: string, config?: WorkspaceConfig | null) => void;
+  onReset: () => void;
   currentWorkspaceDir: string;
   currentSessionId: string;
 }
@@ -27,7 +28,7 @@ function addToPastSessions(entry: SessionEntry) {
   savePastSessions(sessions.slice(0, 20));
 }
 
-const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir, currentSessionId }) => {
+const InitStep: React.FC<InitStepProps> = ({ onSessionReady, onReset, currentWorkspaceDir, currentSessionId }) => {
   const [pastSessions, setPastSessions] = useState<SessionEntry[]>([]);
   const [serverSessions, setServerSessions] = useState<SessionEntry[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -74,9 +75,14 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, currentWorkspaceDir
         <div className="init-step__option">
           <h3>Start New Project</h3>
           <p>Create a fresh workspace folder and Copilot session.</p>
-          <button className="btn-init" onClick={handleNewProject} disabled={isCreating}>
-            {isCreating ? 'Creating...' : '✨ New Project'}
-          </button>
+          <div className="init-step__action-row">
+            <button className="btn-init" onClick={handleNewProject} disabled={isCreating}>
+              {isCreating ? 'Creating...' : '✨ New Project'}
+            </button>
+            <button className="btn-init btn-init--reset" onClick={onReset} title="Clear current session and workspace">
+              🔄 Reset
+            </button>
+          </div>
         </div>
 
         <div className="init-step__divider">or</div>

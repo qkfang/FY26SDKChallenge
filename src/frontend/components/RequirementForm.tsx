@@ -63,6 +63,7 @@ const RequirementForm: React.FC<RequirementFormProps> = ({ onSubmit, isLoading, 
     'Create a new lakehouse for sales data analytics',
     'Set up a data pipeline that ingests CSV files from Azure Blob Storage into a lakehouse',
     'Create a workspace and lakehouse for marketing analytics with sample notebooks',
+    'Based on the sales dataset in Work IQ, create a notebook to populate mock data, generate a sales lakehouse and semantic model, then build a notebook for sample queiers and a Power BI report.',
   ];
 
   return (

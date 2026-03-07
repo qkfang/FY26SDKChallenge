@@ -79,6 +79,21 @@
   color: #6b7280;
 }
 
+.init-step__action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-init--reset {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+}
+.btn-init--reset:hover {
+  background: #e5e7eb !important;
+}
+
 .init-step__divider {
   display: flex;
   align-items: center;
