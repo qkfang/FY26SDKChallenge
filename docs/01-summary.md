@@ -13,6 +13,20 @@ That makes it compelling not just as a demo, but as a practical platform with re
 - stronger governance
 - easier scaling across teams
 
+## Business Value
+
+Setting up a Microsoft Fabric environment end-to-end through the Fabric portal requires navigating the [Fabric CI/CD tutorial](https://learn.microsoft.com/en-us/fabric/cicd/cicd-tutorial?tabs=azure-devops%2Cmanual) — a **30+ step, multi-portal process**. It covers workspace creation, Git integration, deployment pipeline setup, artifact authoring, credential configuration, branch management, and environment promotion. For an experienced data engineer this takes **over an hour** per environment, and is prone to configuration drift and human error.
+
+Our agent replaces this with a **5-step workflow**:
+
+1. Describe your requirements in natural language
+2. Review the AI-generated plan and workspace artifacts
+3. Deploy infrastructure (Bicep)
+4. Configure the Fabric workspace (CLI)
+5. Publish artifacts to Fabric (fabric-cicd)
+
+**Saved from 30+ portal steps to 5 steps** — with every artifact version-controlled, every environment consistent, and every deployment repeatable without manual work.
+
 ## Solution Design
 
 ![Solution](res/solution-design.png)
