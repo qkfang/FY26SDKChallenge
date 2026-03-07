@@ -205,12 +205,12 @@
 .app-footer {
   text-align: center;
   color: white;
-  padding: 20px;
+  padding: 2px;
   opacity: 0.9;
 }
 
 .app-footer p {
-  margin: 5px 0;
+  margin: 0;
   font-size: 14px;
 }
 

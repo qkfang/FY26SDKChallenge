@@ -147,7 +147,6 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>🚀 Fabric Automation Agent App</h1>
-        <span style={{ margin: '0 12px', opacity: 0.7 }}>Powered by GitHub Copilot SDK</span>
         {isAuthenticated && currentAccount && (
           <span className="user-badge" title={currentAccount.username}>
             👤 {currentAccount.name ?? currentAccount.username}
@@ -227,8 +226,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Built with React, TypeScript, and GitHub Copilot SDK</p>
-        <p>Microsoft Fabric Automation · 2026</p>
+        <p>App &amp; Data &amp; Software SE from Down Under · Microsoft Fabric Automation · 2026</p>
       </footer>
     </div>
   );
