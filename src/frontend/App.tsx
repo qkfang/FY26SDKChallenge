@@ -78,6 +78,7 @@ function App() {
     setIsSettingUp(true);
     setSetupStatus(null);
     setSetupDeploymentId(null);
+    setActiveTab('workspace');
 
     try {
       const { deploymentId } = await api.setupWorkspace(requirement, resourceConfig, workspaceDir || undefined, sessionId || undefined);
