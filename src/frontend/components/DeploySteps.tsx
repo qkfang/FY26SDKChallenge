@@ -33,7 +33,7 @@ const STEPS = [
     label: 'Fabric Resource',
     icon: '🧱',
     description: 'Deploy Fabric artifacts',
-    script: 'deploy.ps1',
+    script: 'deploy-fabric.ps1',
   },
 ];
 

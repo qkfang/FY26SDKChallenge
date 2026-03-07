@@ -19,7 +19,7 @@ for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR]) {
 const STEP_SCRIPTS: Record<string, string> = {
   bicep: 'deploy-bicep.ps1',
   cli: 'deploy-cli.ps1',
-  fabric: 'deploy.ps1',
+  fabric: 'deploy-fabric.ps1',
 };
 
 export interface SessionEntry {

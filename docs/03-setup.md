@@ -142,7 +142,7 @@ The `bicep/` directory contains modular infrastructure definitions:
 
 ```bash
 cd bicep
-./deploy.ps1 -Environment dev
+./deploy-fabric.ps1 -Environment dev
 ```
 
 This provisions:

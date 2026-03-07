@@ -97,5 +97,5 @@ mcpServers: {
 2. `deploymentService` creates a workspace directory, copies the template repo, and starts a Copilot session
 3. The Copilot agent (with WorkIQ + GitHub MCP servers) customizes workspace artifacts based on the requirement
 4. The agent commits and pushes changes to the user's GitHub repo
-5. Deployment scripts (`deploy-bicep.ps1`, `deploy-cli.ps1`, `deploy.ps1`) are triggered separately to provision infrastructure and publish Fabric items
+5. Deployment scripts (`deploy-bicep.ps1`, `deploy-cli.ps1`, `deploy-fabric.ps1`) are triggered separately to provision infrastructure and publish Fabric items
 

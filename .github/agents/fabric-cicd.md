@@ -14,7 +14,7 @@ Focus on the following instructions:
 - Store environment variables (workspace IDs, capacity IDs, SQL endpoints) in `config/variable.json`
 - Supported item types for deployment: Lakehouse, Notebook, SemanticModel, Report (DataPipeline requires UPN auth)
 - Write deployment scripts in Python for `deploy/deploy_workspace.py` and `deploy/validate_repo.py`
-- Write PowerShell wrapper scripts (`deploy.ps1`, `validate.ps1`) that load `.env` files and `config/variable.json` before invoking Python
+- Write PowerShell wrapper scripts (`deploy-fabric.ps1`, `validate.ps1`) that load `.env` files and `config/variable.json` before invoking Python
 - Provision Azure infrastructure with Bicep templates in `bicep/` — Fabric capacity (`fabric_capacity.bicep`), SQL server (`sql_server.bicep`), and workspace (`workspace.bicep`)
 - Configure GitHub Actions workflows for automated DEV → QA → PROD promotion with approval gates
 - Validate repository structure before deployment: check `workspace/` directory exists, `config/parameter.yml` is valid YAML with required environment keys, and each item folder has a `.platform` file

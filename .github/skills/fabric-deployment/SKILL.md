@@ -106,7 +106,7 @@ description: "Deploy Microsoft Fabric workspace items using fabric-cicd library 
 11. **Infrastructure provisioning** scripts (run before deployment):
     - `deploy-bicep.ps1` — Provisions Azure resources (Fabric capacity) via Bicep
     - `deploy-cli.ps1` — Creates workspaces via Fabric REST API, assigns roles, creates SQL databases
-    - `deploy.ps1` — Main entry: loads config, sets env vars, runs `deploy_workspace.py`
+    - `deploy-fabric.ps1` — Main entry: loads config, sets env vars, runs `deploy_workspace.py`
 
 12. **Orphan cleanup** — `unpublish_all_orphan_items(target)` removes items from the workspace that no longer exist in the Git repo.
 
@@ -117,7 +117,7 @@ description: "Deploy Microsoft Fabric workspace items using fabric-cicd library 
 | 1 | Infrastructure | `deploy-bicep.ps1` | Provision Fabric capacity and Azure resources |
 | 2 | Workspace setup | `deploy-cli.ps1` | Create workspaces, assign roles, create SQL DB |
 | 3 | Validation | `validate.ps1` | Validate repo structure and config |
-| 4 | Deploy items | `deploy.ps1` | Publish workspace items via fabric-cicd |
+| 4 | Deploy items | `deploy-fabric.ps1` | Publish workspace items via fabric-cicd |
 
 ## Output
 
