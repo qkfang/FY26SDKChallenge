@@ -106,12 +106,22 @@ function App() {
     setLoadedConfig(null);
   };
 
-  const handleInitReady = (dir: string, sid: string, config?: WorkspaceConfig | null) => {
+  const handleNewProject = (dir: string, sid: string) => {
+    setWorkspaceDir(dir);
+    setCookie('workspaceDir', dir);
+    setSessionId(sid);
+    setCookie('copilotSessionId', sid);
+    setLoadedConfig(null);
+    setActiveTab('requirements');
+  };
+
+  const handleOpenProject = (dir: string, sid: string, config?: WorkspaceConfig | null) => {
     setWorkspaceDir(dir);
     setCookie('workspaceDir', dir);
     setSessionId(sid);
     setCookie('copilotSessionId', sid);
     setLoadedConfig(config || null);
+    setActiveTab('chat');
   };
 
   const hasEntraConfig = Boolean(import.meta.env.AZURE_CLIENT_ID);
@@ -155,7 +165,8 @@ function App() {
         {activeTab === 'init' && (
           <div className="panel">
             <InitStep
-              onSessionReady={handleInitReady}
+              onNewProject={handleNewProject}
+              onOpenProject={handleOpenProject}
               onReset={handleReset}
               currentWorkspaceDir={workspaceDir}
               currentSessionId={sessionId}
@@ -179,25 +190,21 @@ function App() {
           </div>
         )}
 
-        {activeTab === 'chat' && (
-          <div className="panel">
-            {sessionId ? (
-              <CopilotChat sessionId={sessionId} />
-            ) : (
-              <p className="panel-locked-msg">Complete Init Session to unlock chat.</p>
-            )}
-          </div>
-        )}
+        <div className="panel" style={{ display: activeTab === 'chat' ? undefined : 'none' }}>
+          {sessionId ? (
+            <CopilotChat sessionId={sessionId} />
+          ) : (
+            <p className="panel-locked-msg">Complete Init Session to unlock chat.</p>
+          )}
+        </div>
 
-        {activeTab === 'deploy' && (
-          <div className="panel">
-            {workspaceDir ? (
-              <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
-            ) : (
-              <p className="panel-locked-msg">Complete workspace setup to unlock deployment.</p>
-            )}
-          </div>
-        )}
+        <div className="panel" style={{ display: activeTab === 'deploy' ? undefined : 'none' }}>
+          {workspaceDir ? (
+            <DeploySteps workspaceDir={workspaceDir} sessionId={sessionId || undefined} />
+          ) : (
+            <p className="panel-locked-msg">Complete workspace setup to unlock deployment.</p>
+          )}
+        </div>
       </main>
 
       <footer className="app-footer">

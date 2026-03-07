@@ -3,7 +3,8 @@ import { api, SessionEntry, WorkspaceConfig } from '../services/api';
 import './InitStep.css';
 
 interface InitStepProps {
-  onSessionReady: (workspaceDir: string, copilotSessionId: string, config?: WorkspaceConfig | null) => void;
+  onNewProject: (workspaceDir: string, copilotSessionId: string) => void;
+  onOpenProject: (workspaceDir: string, copilotSessionId: string, config?: WorkspaceConfig | null) => void;
   onReset: () => void;
   currentWorkspaceDir: string;
   currentSessionId: string;
@@ -28,7 +29,7 @@ function addToPastSessions(entry: SessionEntry) {
   savePastSessions(sessions.slice(0, 20));
 }
 
-const InitStep: React.FC<InitStepProps> = ({ onSessionReady, onReset, currentWorkspaceDir, currentSessionId }) => {
+const InitStep: React.FC<InitStepProps> = ({ onNewProject, onOpenProject, onReset, currentWorkspaceDir, currentSessionId }) => {
   const [pastSessions, setPastSessions] = useState<SessionEntry[]>([]);
   const [serverSessions, setServerSessions] = useState<SessionEntry[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -50,7 +51,7 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, onReset, currentWor
     try {
       const { workspaceDir, copilotSessionId } = await api.initSession();
       addToPastSessions({ workspaceDir, copilotSessionId, createdAt: new Date().toISOString() });
-      onSessionReady(workspaceDir, copilotSessionId);
+      onNewProject(workspaceDir, copilotSessionId);
     } catch (err: any) {
       alert(`Failed to create session: ${err.response?.data?.error || err.message}`);
     } finally {
@@ -64,7 +65,7 @@ const InitStep: React.FC<InitStepProps> = ({ onSessionReady, onReset, currentWor
     const sid = session?.copilotSessionId || '';
     if (session) addToPastSessions(session);
     const config = await api.getWorkspaceConfig(selectedDir);
-    onSessionReady(selectedDir, config?.copilotSessionId || sid, config);
+    onOpenProject(selectedDir, config?.copilotSessionId || sid, config);
   };
 
   const dirLabel = (dir: string) => dir.split(/[/\\]/).pop() || dir;
