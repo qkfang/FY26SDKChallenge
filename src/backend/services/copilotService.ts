@@ -1,5 +1,5 @@
 import { CopilotClient, CopilotSession } from '@github/copilot-sdk';
-import type { PermissionHandler, PermissionRequest, PermissionRequestResult } from '@github/copilot-sdk';
+import type { PermissionHandler, PermissionRequest, PermissionRequestResult, CustomAgentConfig } from '@github/copilot-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -72,6 +72,36 @@ interface CopilotSessionInfo {
   };
   model?: string;
   tempFolder?: string;
+}
+
+function buildCustomAgents(): CustomAgentConfig[] {
+  const agentsDir = path.join(process.cwd(), 'agents');
+  if (!fs.existsSync(agentsDir)) return [];
+
+  return fs.readdirSync(agentsDir)
+    .filter(f => f.endsWith('.md'))
+    .map(file => {
+      try {
+        const content = fs.readFileSync(path.join(agentsDir, file), 'utf8');
+        const match = content.match(/^[\s]*---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+        if (!match) return null;
+        const frontmatter = match[1];
+        const prompt = match[2].trim();
+        const name = frontmatter.match(/^name:\s*(.+)$/m)?.[1]?.trim() ?? file.replace('.md', '');
+        const description = frontmatter.match(/^description:\s*(.+)$/m)?.[1]?.trim();
+        return { name, description, prompt } as CustomAgentConfig;
+      } catch { return null; }
+    })
+    .filter((a): a is NonNullable<typeof a> => a !== null) as CustomAgentConfig[];
+}
+
+function getSkillDirectories(): string[] {
+  const skillsDir = path.join(process.cwd(), 'skills');
+  if (!fs.existsSync(skillsDir)) return [];
+
+  return fs.readdirSync(skillsDir)
+    .map(name => path.join(skillsDir, name))
+    .filter(dir => fs.statSync(dir).isDirectory() && fs.existsSync(path.join(dir, 'SKILL.md')));
 }
 
 const SYSTEM_PROMPT = `You are an expert Microsoft Fabric deployment assistant. You help users set up and customize Fabric workspaces including notebooks, lakehouses, semantic models, and reports.
@@ -186,6 +216,8 @@ export class CopilotService {
         workingDirectory: cwd,
         model: 'claude-sonnet-4.6',
         systemMessage: { mode: 'append', content: SYSTEM_PROMPT },
+        customAgents: buildCustomAgents(),
+        skillDirectories: getSkillDirectories(),
         mcpServers: {
           workiq: {
             command: mcpConfig.command,
@@ -203,7 +235,7 @@ export class CopilotService {
         },
       });
       this.sessions.set(sessionId, session);
-      console.log(`Session created — deployment: ${sessionId}, sdk: ${session.sessionId}, cwd: ${cwd}, mcpServers: [workiq, github]`);
+      console.log(`Session created — id: ${sessionId}, cwd: ${cwd}`);
     } catch (error: any) {
       console.warn(`Failed to create Copilot session: ${error.message}. Will use fallback.`);
     }
