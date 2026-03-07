@@ -151,6 +151,72 @@ This provisions:
 - **Key Vault** — stores secrets
 - **Application Insights + Log Analytics** — monitoring and diagnostics
 
+## CI/CD with GitHub Actions
+
+The project uses four GitHub Actions workflows that promote changes through **dev → qa → prod** environments with sequential gates.
+
+### Workflows
+
+| Workflow | File | Trigger | Purpose |
+|----------|------|---------|---------|
+| Deploy Infrastructure | `deploy-infra.yml` | Push to `bicep/**` | Provisions Azure resources via Bicep templates |
+| Deploy Backend | `deploy-backend.yml` | Push to `src/backend/**` or `src/shared/**` | Builds and deploys the Express API to Azure App Service |
+| Deploy Frontend | `deploy-frontend.yml` | Push to `src/frontend/**` or `src/shared/**` | Builds and deploys the React SPA to Azure Static Web Apps |
+| Copilot Setup Steps | `copilot-setup-steps.yml` | Push/PR to its own path | Validates the Copilot agent environment setup (checkout + Azure login) |
+
+All deployment workflows also support `workflow_dispatch` for manual runs.
+
+### Pipeline Flow
+
+```
+  push to main
+       │
+       ▼
+  ┌──────────┐     ┌──────────┐     ┌──────────┐
+  │   dev    │────►│    qa    │────►│   prod   │
+  └──────────┘     └──────────┘     └──────────┘
+```
+
+Each environment stage requires the previous stage to succeed before proceeding.
+
+### Secrets & Variables
+
+| Name | Type | Purpose |
+|------|------|---------|
+| `AZURE_CREDENTIALS` | Secret | Service principal JSON for Azure CLI login |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Secret | Deployment token for Static Web Apps |
+| `AZURE_TENANT_ID` | Variable | Entra ID tenant injected at build time |
+| `AZURE_CLIENT_ID` | Variable | Entra ID app client ID injected at build time |
+| `API_URL` | Variable | Backend API URL injected into the frontend build |
+
+### GitHub Environment Setup
+
+Create three environments (**dev**, **qa**, **prod**) under **Settings → Environments** in the repository. Each environment should have the secrets and variables listed above configured with environment-specific values. The qa environment should require dev to succeed, and prod should require qa, enforcing the sequential promotion gate.
+
+### Service Endpoints
+
+Resources follow the naming convention `ghcsdk-{env}-{role}`:
+
+| Environment | Backend (App Service) | Frontend (Static Web App) |
+|-------------|----------------------|--------------------------|
+| dev | `https://ghcsdk-dev-api.azurewebsites.net` | `https://ghcsdk-dev-web.azurestaticapps.net` |
+| qa | `https://ghcsdk-qa-api.azurewebsites.net` | `https://ghcsdk-qa-web.azurestaticapps.net` |
+| prod | `https://ghcsdk-prod-api.azurewebsites.net` | `https://ghcsdk-prod-web.azurestaticapps.net` |
+
+The backend API is served under the `/api` path on the App Service. The frontend build is configured with the `API_URL` variable pointing to the corresponding backend endpoint.
+
+### Backend Build & Deploy
+
+The backend workflow has a dedicated **build** job that compiles TypeScript, bundles production dependencies, and uploads an artifact. Each environment job then downloads and deploys the same artifact to its respective App Service (`ghcsdk-{env}-api`).
+
+### Frontend Build & Deploy
+
+Each environment job installs dependencies, builds the Vite app with environment-specific variables, and uploads the `dist/` folder to Azure Static Web Apps using the `Azure/static-web-apps-deploy` action.
+
+### Infrastructure Deploy
+
+Each environment job runs `az deployment group create` against its resource group (`rg-ghcsdk-{env}`) using the matching Bicep parameter file (`main.{env}.bicepparam`).
+
 ## Responsible AI
 
 - **Human-in-the-loop** — all Copilot-generated artifacts are presented for review before deployment; no changes are applied without explicit user action.
