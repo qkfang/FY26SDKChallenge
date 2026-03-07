@@ -335,7 +335,7 @@ export class CopilotService {
 ## Context
 Setup local workspace and session: 
 Checkout template GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_Template' to this folder: '${TEMPLATE_DIR}'
-Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_ProjectRepo' to this folder: '${WORKSPACE_DIR}'
+Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_ProjectRepo' to this folder: '${WORKSPACE_DIR}/${workspaceDir}'
 
 If project repo is empty, copy template repo content to project repo as starting point.
 

@@ -2,6 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { api } from '../services/api';
 import './CopilotChat.css';
 
+const TEMPLATE_PROMPTS = [
+  'Review the customer.txt content on my desktop demo file folder',
+  'What fabric resources are in the workspace I just set up?',
+];
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   text: string;
@@ -23,11 +28,23 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
   const [streamingText, setStreamingText] = useState('');
   const [pendingTool, setPendingTool] = useState<PendingToolApproval | null>(null);
   const [approveAllMode, setApproveAllMode] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const templatesRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading, streamingText, pendingTool]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (templatesRef.current && !templatesRef.current.contains(e.target as Node)) {
+        setShowTemplates(false);
+      }
+    };
+    if (showTemplates) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showTemplates]);
 
   const send = async () => {
     const text = input.trim();
@@ -175,6 +192,31 @@ const CopilotChat: React.FC<CopilotChatProps> = ({ sessionId }) => {
           onKeyDown={handleKeyDown}
           disabled={loading}
         />
+        <div className="chat-templates-wrap" ref={templatesRef}>
+          <button
+            className="chat-templates-btn"
+            type="button"
+            title="Template prompts"
+            onClick={() => setShowTemplates((v) => !v)}
+            disabled={loading}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <polyline points="3 6 4 7 6 5"/>
+              <polyline points="3 12 4 13 6 11"/>
+              <polyline points="3 18 4 19 6 17"/>
+            </svg>
+          </button>
+          {showTemplates && (
+            <div className="chat-templates-dropdown">
+              {TEMPLATE_PROMPTS.map((t, i) => (
+                <button key={i} type="button" onClick={() => { setInput(t); setShowTemplates(false); }}>{t}</button>
+              ))}
+            </div>
+          )}
+        </div>
         <button className="chat-send-btn" onClick={send} disabled={loading || !input.trim()}>
           Send
         </button>

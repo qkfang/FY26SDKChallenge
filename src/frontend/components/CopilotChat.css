@@ -156,6 +156,65 @@
   opacity: 0.9;
 }
 
+.chat-templates-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chat-templates-btn {
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  color: #4b5563;
+}
+
+.chat-templates-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.chat-templates-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-templates-dropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  min-width: 320px;
+  z-index: 100;
+  padding: 4px;
+}
+
+.chat-templates-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.chat-templates-dropdown button:hover {
+  background: #f3f4f6;
+}
+
 /* ── Tool approval dialog ──────────────────────────────────────────────────── */
 
 .tool-approval {
