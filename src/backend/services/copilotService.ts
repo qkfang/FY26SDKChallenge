@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
-const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'project_repo');
 const SESSION_DIR = path.join(PROJECT_ROOT, 'temp', 'copilot_session');
 
 for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR, SESSION_DIR]) {
@@ -43,8 +43,9 @@ Key guidelines:
 - Be concise and action-oriented
 - When modifying workspace files, explain what you changed and why
 - Never run deployment scripts directly — they are triggered separately
-- Always commit and push changes to the user repo when done
-- Never modify the template repo
+- Never modify or commit changes to the template repo
+- Always commit and push changes to the project repo when done
+
 `;
 
 export class CopilotService {
@@ -258,16 +259,16 @@ export class CopilotService {
 ## Context
 Setup local workspace and session: 
 Checkout template GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_Template' to this folder: '${TEMPLATE_DIR}'
-Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_UserRepo' to this folder: '${WORKSPACE_DIR}'
+Checkout user GitHub repo 'https://github.com/qkfang/FY26SDKChallenge_ProjectRepo' to this folder: '${WORKSPACE_DIR}'
 
-If user repo is empty, copy template repo content to user repo as starting point.
+If project repo is empty, copy template repo content to project repo as starting point.
 
 ## Task
 Review the workspace structure and customize it for the requirement: "${requirement}"
 - Update configuration files as needed (e.g., config/variable.json, config/parameter.yml)
 - Do NOT run any deployment scripts — they will be triggered separately
 - Check the workspace looks correct for the requirement (clean up the fabric resource in workspace if not needed, update README.md, etc.)
-- Once all done, commit and push user repo to remote
+- Once all done, commit and push project repo to remote
 - Never ever change or commit to template repo
 
 `;

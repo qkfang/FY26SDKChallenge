@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PROJECT_ROOT, 'temp', 'template_repo');
-const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'user_repo');
+const WORKSPACE_DIR = path.join(PROJECT_ROOT, 'temp', 'project_repo');
 
 for (const dir of [TEMPLATE_DIR, WORKSPACE_DIR]) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
