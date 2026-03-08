@@ -68,7 +68,7 @@ Work IQ is integrated directly into the copilot experience, enabling the AI to r
 
 ## Validated with a customer
 
-This solution was built by Solution Engineers in Sydney who work hands-on with financial services customers adopting Microsoft Fabric. It directly addresses pain points observed across multiple enterprise engagements: the complexity of setting up Fabric environments, the knowledge gap between data engineers and DevOps practices, and the need for repeatable, governed deployment workflows. The patterns here are drawn from real-world customer conversations and validated against production requirements. See [Customer Validation](09-customer-validation.md) for detailed feedback from two customers who reviewed the solution — one focused on end-to-end Fabric CI/CD orchestration, the other on agent-driven development with enterprise templates.
+This solution was built by Solution Engineers in Sydney who work hands-on with financial services customers adopting Microsoft Fabric. It directly addresses pain points observed across multiple enterprise engagements: the complexity of setting up Fabric environments, the knowledge gap between data engineers and DevOps practices, and the need for repeatable, governed deployment workflows. The patterns here are drawn from real-world customer conversations and validated against production requirements. See [Customer Validation](09-customer-validation.md) for detailed feedback from two customers who reviewed the solution — one focused on end-to-end Fabric CI/CD orchestration, the other on agent-driven development with enterprise templates. 
 
 ## Copilot SDK product feedback
 
