@@ -8,7 +8,7 @@ The solution automates infrastructure provisioning, Fabric configuration, and ar
 
 Faster delivery, lower setup effort, fewer manual errors, and more consistent outcomes across teams. What makes this especially valuable for Fabric is its ability to unify development and deployment in one repeatable workflow, helping enterprises accelerate Fabric adoption with confidence, governance, and production-ready discipline.
 
-[Watch the demo](https://www.youtube.com/watch?v=h2dbyhMQORI)
+[Watch the demo video](https://www.youtube.com/watch?v=h2dbyhMQORI)
 
 ![Solution Design](docs/res/solution-design.png)
 

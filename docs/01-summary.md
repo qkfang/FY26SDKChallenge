@@ -13,7 +13,7 @@ That makes it compelling not just as a demo, but as a practical platform with re
 - stronger governance
 - easier scaling across teams
 
-[Watch the demo](https://www.youtube.com/watch?v=h2dbyhMQORI)
+[Watch the demo video](https://www.youtube.com/watch?v=h2dbyhMQORI)
 
 ## Business Value
 
