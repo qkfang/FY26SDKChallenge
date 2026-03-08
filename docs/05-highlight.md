@@ -62,7 +62,6 @@ Security is not an afterthought — it is woven into every layer:
 
 **The problem is real and urgent.** In financial services, healthcare, and retail — industries where data teams are scaling rapidly — the gap between having a Fabric license and actually delivering analytics value is enormous. Data engineers spend their most valuable hours on repetitive infrastructure setup instead of building insights. Platform teams become bottlenecks. Standards drift. Technical debt accumulates before the first query is even written.
 
-![Agent Conversation Log](res/entra.png)
 
 **This solution tells a compelling story:**
 
@@ -73,6 +72,7 @@ Security is not an afterthought — it is woven into every layer:
 
 This is not incremental improvement — it is a **step-change in how data engineering teams operate**, and it is ready to demonstrate to any enterprise audience today.
 
+![Agent Conversation Log](res/entra.png)
 
 # Extras
 
