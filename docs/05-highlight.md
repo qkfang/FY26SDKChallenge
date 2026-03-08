@@ -72,7 +72,7 @@ Security is not an afterthought — it is woven into every layer:
 
 This is not incremental improvement — it is a **step-change in how data engineering teams operate**, and it is ready to demonstrate to any enterprise audience today.
 
-![Agent Conversation Log](res/entra.png)
+![](res/entra.png)
 
 # Extras
 
@@ -80,7 +80,7 @@ This is not incremental improvement — it is a **step-change in how data engine
 
 Work IQ is integrated directly into the copilot experience, enabling the AI to reference uploaded design documents, data dictionaries, and schema files during conversations. This means the copilot does not operate in a vacuum — it understands the customer's specific data landscape and generates resources that align with their actual requirements, not generic templates.
 
-
+![](res/workiq.png)
 
 ## Validated with a customer
 
