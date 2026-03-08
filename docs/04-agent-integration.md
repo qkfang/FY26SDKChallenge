@@ -53,6 +53,27 @@ The backend application uses the **GitHub Copilot SDK** (`@github/copilot-sdk`) 
 - Appends a system prompt that constrains the agent to only modify files inside the user's workspace folder
 - Streams events (`assistant.message_delta`, `tool.execution_start`, `tool.execution_complete`) back to the frontend for real-time progress
 
+### Runtime Custom Agents (`src/backend/config/agents/`)
+
+The backend loads custom agent definitions at session creation via `buildCustomAgents()`. Each `.md` file contains YAML frontmatter (name, description) and a system prompt. These are passed to the Copilot SDK's `customAgents` parameter so the runtime agent can delegate to domain specialists:
+
+| Agent | File | Scope |
+|---|---|---|
+| `fabric-dev` | `config/agents/fabric-dev.md` | Authoring Fabric workspace items — notebooks, lakehouses, semantic models, reports. Follows PySpark best practices, Delta format, AAD token auth, parameterized configs. |
+| `fabric-cicd` | `config/agents/fabric-cicd.md` | Deployment infrastructure — `fabric-cicd` Python library, environment promotion (DEV/QA/PROD), service principal auth, `parameter.yml` / `variable.json` config, repo validation. |
+
+### Runtime Skills (`src/backend/config/skills/`)
+
+The backend discovers skill directories at session creation via `getSkillDirectories()`. Each subdirectory contains a `SKILL.md` file with domain-specific guidance. These are passed to the Copilot SDK's `skillDirectories` parameter:
+
+| Skill | Purpose |
+|---|---|
+| `fabric-notebook` | PySpark notebook structure, `.platform` metadata, cell layout, Spark config, SQL connectivity via AAD tokens |
+| `fabric-lakehouse` | Lakehouse definitions, Delta table schemas, OneLake shortcuts, `lakehouse.metadata.json` |
+| `fabric-semantic-model` | TMDL files, Direct Lake mode, table definitions, relationships, expressions, measures, DAX |
+| `fabric-report` | Power BI reports in PBIR format, page layouts, visual definitions, themes |
+| `fabric-deployment` | `fabric-cicd` library, `deploy_workspace.py`, `parameter.yml`, `variable.json`, multi-env deployment |
+
 ### MCP Server Integration
 
 Two MCP servers are attached to every Copilot session:

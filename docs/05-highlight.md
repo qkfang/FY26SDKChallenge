@@ -1,4 +1,4 @@
-# Solutions
+# Highlights & Differentiators
 
 ## Enterprise applicability, reusability & business value
 
@@ -23,6 +23,7 @@ This solution is deeply embedded in the Microsoft ecosystem, combining **15+ Azu
 - **Microsoft Entra ID** — Enterprise-grade identity and access management with SSO, MFA, and conditional access
 - **Work IQ** — Enriches copilot conversations with contextual awareness from design documents and data files
 - **Microsoft Fabric** — Full lifecycle management across Workspaces, Lakehouses, Semantic Models, Power BI Reports, and Notebooks
+- **GitHub Repo** — Source control backbone enabling agentic development via custom agents, skills, and instructions that guide Copilot SDK sessions
 - **GitHub Actions** — Multi-environment CI/CD pipelines for infrastructure, frontend, and backend with approval gates
 - **GitHub Copilot & Copilot CLI SDK** — Powers the intelligent conversational interface that orchestrates the entire provisioning and deployment workflow
 
@@ -67,11 +68,13 @@ Work IQ is integrated directly into the copilot experience, enabling the AI to r
 
 ## Validated with a customer
 
-This solution was built by Solution Engineers in Sydney who work hands-on with financial services customers adopting Microsoft Fabric. It directly addresses pain points observed across multiple enterprise engagements: the complexity of setting up Fabric environments, the knowledge gap between data engineers and DevOps practices, and the need for repeatable, governed deployment workflows. The patterns here are drawn from real-world customer conversations and validated against production requirements.
+This solution was built by Solution Engineers in Sydney who work hands-on with financial services customers adopting Microsoft Fabric. It directly addresses pain points observed across multiple enterprise engagements: the complexity of setting up Fabric environments, the knowledge gap between data engineers and DevOps practices, and the need for repeatable, governed deployment workflows. The patterns here are drawn from real-world customer conversations and validated against production requirements. See [Customer Validation](09-customer-validation.md) for detailed feedback from two customers who reviewed the solution — one focused on end-to-end Fabric CI/CD orchestration, the other on agent-driven development with enterprise templates.
 
 ## Copilot SDK product feedback
 
-We have provided product feedback as attached in screenshot.
+We shared feedback directly with the Copilot SDK product team via the SDK Teams channel. Two key areas were highlighted: **fan-out parallel processing with subagents** — enabling a single session to spin up multiple subagents working on parts of a problem in parallel then merging back into a shared session state, which would make complex agent workflows faster and more scalable; and **remote session state storage** — moving session state from the client to cloud-backed storage so that orchestrators can write initial context to a central store, fan work out to parallel subagents, and merge outputs back into one unified session. The SDK team acknowledged the feedback and pointed to existing fan-out support for simpler cases and Squad Docs for heavier patterns.
+
+![Copilot SDK Feedback](res/copilot-sdk-feedback.png)
 
 ---
 
