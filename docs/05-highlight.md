@@ -72,9 +72,8 @@ This solution was built by Solution Engineers in Sydney who work hands-on with f
 
 ## Copilot SDK product feedback
 
-We shared feedback directly with the Copilot SDK product team via the SDK Teams channel. Two key areas were highlighted: **fan-out parallel processing with subagents** — enabling a single session to spin up multiple subagents working on parts of a problem in parallel then merging back into a shared session state, which would make complex agent workflows faster and more scalable; and **remote session state storage** — moving session state from the client to cloud-backed storage so that orchestrators can write initial context to a central store, fan work out to parallel subagents, and merge outputs back into one unified session. The SDK team acknowledged the feedback and pointed to existing fan-out support for simpler cases and Squad Docs for heavier patterns.
+We shared feedback directly with the Copilot SDK product team via the SDK Teams channel. Two key areas were highlighted: **fan-out parallel processing with subagents** — enabling a single session to spin up multiple subagents working on parts of a problem in parallel then merging back into a shared session state, which would make complex agent workflows faster and more scalable; and **remote session state storage** — moving session state from the client to cloud-backed storage so that orchestrators can write initial context to a central store, fan work out to parallel subagents, and merge outputs back into one unified session. The SDK team acknowledged the feedback and pointed to existing fan-out support for simpler cases and Squad Docs for heavier patterns. See [Product Feedback](10-product-feedback.md)
 
-![Copilot SDK Feedback](res/copilot-sdk-feedback.png)
 
 ---
 

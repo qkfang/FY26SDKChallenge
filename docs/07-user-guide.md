@@ -139,14 +139,5 @@ This mirrors the branching workflow described in [Steps 6–9 of the Fabric CI/C
 
 ---
 
-## Reference Links
-
-- [Microsoft Fabric CI/CD Tutorial](https://learn.microsoft.com/en-us/fabric/cicd/cicd-tutorial?tabs=azure-devops%2Cmanual)
-- [Introduction to Git integration in Fabric](https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration)
-- [Introduction to deployment pipelines](https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines)
-- [fabric-cicd Python library](https://github.com/microsoft/fabric-cicd)
-- [GitHub Copilot CLI](https://docs.github.com/en/copilot/github-copilot-in-the-cli/about-github-copilot-in-the-cli)
-
----
 
 [← Previous: Presentation](06-ppt.md) | [Next: Customer Validation →](09-customer-validation.md)
