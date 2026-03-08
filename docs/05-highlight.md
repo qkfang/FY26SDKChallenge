@@ -38,6 +38,9 @@ This is not just a demo — it is built having production in mind from the groun
 - **Full copilot activity transparency** — The UI surfaces detailed copilot activity logs, giving operators and stakeholders complete visibility into every action the AI assistant takes — building trust and enabling audit trails.
 - **Repeatable and portable** — The entire solution can be deployed to any Azure subscription with minimal configuration, making it ready for customer demos, internal adoption, and partner distribution.
 
+![CI CD](res/cicd.png)
+
+
 ## Security, governance & Responsible AI excellence
 
 Security is not an afterthought — it is woven into every layer:
