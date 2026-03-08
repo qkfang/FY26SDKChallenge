@@ -12,6 +12,23 @@ Faster delivery, lower setup effort, fewer manual errors, and more consistent ou
 
 ---
 
+
+## Documentation
+
+| | |
+|---|---|
+| [Summary](docs/01-summary.md) | Solution overview and value proposition |
+| [Problem Statement](docs/02-problem.md) | The Fabric delivery fragmentation problem and how we solve it |
+| [Setup & Architecture](docs/03-setup.md) | Technical components, architecture diagram, and prerequisites |
+| [Agent Integration](docs/04-agent-integration.md) | GitHub Copilot SDK and agent customization details |
+| [Solution Highlights](docs/05-highlight.md) | Enterprise applicability, integrations, and scoring criteria |
+| [Presentation](docs/06-ppt.md) | Challenge presentation and demo narrative |
+| [User Guide](docs/07-user-guide.md) | Step-by-step walkthrough from requirements to deployment |
+| [Customer Validation](docs/09-customer-validation.md) | Real enterprise pain points and customer feedback |
+| [Product Feedback](docs/10-product-feedback.md) | GitHub Copilot SDK feedback and improvement suggestions |
+
+---
+
 ## Why It Matters
 
 Data engineering teams working with Microsoft Fabric face a fragmented delivery process spanning three disconnected worlds: **Azure infrastructure**, **Fabric workspace administration**, and **artifact deployment**. Each requires different tools, different auth models, and different skill sets. The result is slow onboarding, inconsistent environments, and deployments that are hard to reproduce.
@@ -71,14 +88,3 @@ npm run dev
 **Prerequisites:** Node.js v18+, GitHub Copilot CLI authenticated (`gh copilot --version`), Microsoft Fabric access
 
 ---
-
-## Documentation
-
-| | |
-|---|---|
-| [Summary](docs/01-summary.md) | Solution overview and value proposition |
-| [Problem Statement](docs/02-problem.md) | The Fabric delivery fragmentation problem and how we solve it |
-| [Setup & Architecture](docs/03-setup.md) | Technical components, architecture diagram, and prerequisites |
-| [Agent Integration](docs/04-agent-integration.md) | GitHub Copilot SDK and agent customization details |
-| [Solution Highlights](docs/05-highlight.md) | Enterprise applicability, integrations, and scoring criteria |
-
