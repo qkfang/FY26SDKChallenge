@@ -27,6 +27,8 @@ This solution is deeply embedded in the Microsoft ecosystem, combining **15+ Azu
 - **GitHub Actions** — Multi-environment CI/CD pipelines for infrastructure, frontend, and backend with approval gates
 - **GitHub Copilot & Copilot CLI SDK** — Powers the intelligent conversational interface that orchestrates the entire provisioning and deployment workflow
 
+![CI CD](res/azure.png)
+
 ## Operational readiness (deployability, observability, CI/CD)
 
 This is not just a demo — it is built having production in mind from the ground up:
@@ -52,8 +54,8 @@ Security is not an afterthought — it is woven into every layer:
 - **Agent tool call approval in the UI** — Before the copilot executes any tool action, the UI presents a permission request dialog showing the tool name and arguments, requiring explicit user approval or rejection to ensure humans remain in control of all automated operations.
 - **Agent conversation logging** — Every copilot interaction is captured and persisted as structured event logs, providing a full audit trail of user messages, assistant responses, and tool executions for compliance and governance review.
 
+![Agent Conversation Log](res/rai-approval.png)
 ![Agent Conversation Log](res/rai-log.png)
-
 
 
 ## Storytelling, clarity & "amplification ready" quality
@@ -75,6 +77,8 @@ This is not incremental improvement — it is a **step-change in how data engine
 ## Use of Work IQ / Fabric IQ / Foundry IQ
 
 Work IQ is integrated directly into the copilot experience, enabling the AI to reference uploaded design documents, data dictionaries, and schema files during conversations. This means the copilot does not operate in a vacuum — it understands the customer's specific data landscape and generates resources that align with their actual requirements, not generic templates.
+
+
 
 ## Validated with a customer
 
