@@ -29,11 +29,12 @@ This solution is deeply embedded in the Microsoft ecosystem, combining **15+ Azu
 
 ## Operational readiness (deployability, observability, CI/CD)
 
-This is not a demo — it is built for production from the ground up:
+This is not just a demo — it is built having production in mind from the ground up:
 
 - **Infrastructure as Code (Bicep)** — All Azure resources are defined declaratively with parameterized templates supporting dev, QA, and production environments. One command deploys the entire stack.
 - **Multi-environment CI/CD with GitHub Actions** — Separate pipelines for infrastructure, frontend, and backend with environment-specific configurations and **approval gates** ensuring safe promotion from dev through QA to production.
 - **End-to-end observability** — The deployed application streams telemetry to Application Insights and Log Analytics Workspace, enabling real-time performance monitoring, error tracking, and usage analytics across every layer of the stack.
+- **Automated deployment to Azure** — Frontend and backend are built, tested, and deployed to Azure Static Web App and Web App respectively via GitHub Actions on every merge to main. (https://victorious-mud-07576dc0f.6.azurestaticapps.net/)
 - **Full copilot activity transparency** — The UI surfaces detailed copilot activity logs, giving operators and stakeholders complete visibility into every action the AI assistant takes — building trust and enabling audit trails.
 - **Repeatable and portable** — The entire solution can be deployed to any Azure subscription with minimal configuration, making it ready for customer demos, internal adoption, and partner distribution.
 
