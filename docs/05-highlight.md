@@ -45,6 +45,12 @@ Security is not an afterthought — it is woven into every layer:
 - **Secure API communication** — The backend leverages OAuth 2.0 workflows for GitHub Copilot SDK integration, ensuring all AI interactions are authenticated and authorized through industry-standard protocols.
 - **Secrets management** — All application configurations, API keys, and sensitive credentials are stored in Azure Key Vault or GitHub Actions secrets — never hardcoded, never exposed in source control.
 - **Role-based access control** — Azure RBAC and Fabric workspace permissions ensure that users only access the resources and environments they are authorized to manage.
+- **Agent tool call approval in the UI** — Before the copilot executes any tool action, the UI presents a permission request dialog showing the tool name and arguments, requiring explicit user approval or rejection to ensure humans remain in control of all automated operations.
+- **Agent conversation logging** — Every copilot interaction is captured and persisted as structured event logs, providing a full audit trail of user messages, assistant responses, and tool executions for compliance and governance review.
+
+![Agent Conversation Log](res/rai-log.png)
+
+
 
 ## Storytelling, clarity & "amplification ready" quality
 
