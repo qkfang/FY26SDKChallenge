@@ -32,7 +32,15 @@ Not every data team has DevOps experience. Our agent-based web interface abstrac
 
 ## Customer Validation
 
+We presented and demonstrated our hack project to two of the customers listed above, gathering direct feedback on the solution.
 
+### Customer A — End-to-End Fabric CI/CD
+
+Customer A's data team has been struggling to manage the full end-to-end Fabric CI/CD lifecycle. They currently rely on a patchwork of manual steps across Azure provisioning, workspace setup, and artifact deployment — with no unified process. During our demo, we walked them through how the solution orchestrates the entire pipeline from a single prompt-driven workflow: infrastructure deployment via Bicep, Fabric workspace configuration, Git integration, and artifact publishing all in one coordinated action. The team acknowledged this directly addresses their core pain point and expressed strong interest in adopting the approach for their next Fabric rollout.
+
+### Customer B — Agent-Driven Fabric Development with Templates
+
+Customer B was excited about using an agent to drive Fabric development that follows predefined templates. Their concern has been ensuring consistency and compliance across lakehouses, notebooks, semantic models, and reports created by different team members. We demonstrated how the Copilot agent takes natural language input and generates Fabric artifacts using skill-based templates that encode enterprise standards. Customer B was particularly impressed by the conversational interface and how it lowers the barrier for data engineers who are not familiar with DevOps tooling. They expressed strong interest in piloting the agent-based workflow within their team.
 
 ---
 
