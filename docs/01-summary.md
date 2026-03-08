@@ -28,6 +28,7 @@ Setting up a Fabric workspace manually takes **30+ steps in portal** per environ
 | [Solution Highlights](docs/05-highlight.md) | Enterprise applicability, integrations, and scoring criteria |
 | [Presentation](docs/06-ppt.md) | Challenge presentation and demo narrative |
 | [User Guide](docs/07-user-guide.md) | Step-by-step walkthrough from requirements to deployment |
+| [Screenshots](docs/08-screenshot.md) | Step-by-step screenshots of the solution |
 | [Customer Validation](docs/09-customer-validation.md) | Real enterprise pain points and customer feedback |
 | [Product Feedback](docs/10-product-feedback.md) | GitHub Copilot SDK feedback and improvement suggestions |
 
@@ -36,25 +37,6 @@ Setting up a Fabric workspace manually takes **30+ steps in portal** per environ
 
 ![Solution](res/solution-design.png)
 
-
-## Screenshots
-
-### Step 1 — Enter Requirements
-![Step 1](res/step1.png)
-
-### Step 2 — Requirements
-![Step 2](res/step2.png)
-
-### Step 3 — Workspace
-![Step 3](res/step3.png)
-
-![Step 3a](res/step3a.png)
-
-### Step 4 — Deployment
-![Step 4](res/step4.png)
-
-### Step 5 — Fabric Portal
-![Step 5](res/step5.png)
 
 ---
 

@@ -48,4 +48,4 @@ Customer B's data team has been struggling to manage the full end-to-end Fabric 
 
 ---
 
-[← Previous: User Guide](07-user-guide.md) | [Next: Product Feedback →](10-product-feedback.md)
+[← Previous: Screenshots](08-screenshot.md) | [Next: Product Feedback →](10-product-feedback.md)

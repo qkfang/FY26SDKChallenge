@@ -140,4 +140,4 @@ This mirrors the branching workflow described in [Steps 6–9 of the Fabric CI/C
 ---
 
 
-[← Previous: Presentation](06-ppt.md) | [Next: Customer Validation →](09-customer-validation.md)
+[← Previous: Presentation](06-ppt.md) | [Next: Screenshots →](08-screenshot.md)
