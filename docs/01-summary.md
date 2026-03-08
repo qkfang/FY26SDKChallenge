@@ -13,9 +13,24 @@ That makes it compelling not just as a demo, but as a practical platform with re
 - stronger governance
 - easier scaling across teams
 
+[Watch the demo](https://www.youtube.com/watch?v=h2dbyhMQORI)
+
 ## Business Value
 
-Setting up a Fabric environment manually takes **30+ portal steps and over an hour** per environment. Our agent reduces this to **5 steps in under 10 minutes**. See [02-problem.md](02-problem.md) for the full breakdown.
+Setting up a Fabric workspace manually takes **30+ steps in portal** per environment. Our agent reduces this to **5 steps in under 15 minutes**. See [02-problem.md](02-problem.md) for the full breakdown.
+
+|||
+|---|---|
+| [Summary](docs/01-summary.md) | Solution overview and value proposition |
+| [Problem Statement](docs/02-problem.md) | The Fabric delivery fragmentation problem and how we solve it |
+| [Setup & Architecture](docs/03-setup.md) | Technical components, architecture diagram, and prerequisites |
+| [Agent Integration](docs/04-agent-integration.md) | GitHub Copilot SDK and agent customization details |
+| [Solution Highlights](docs/05-highlight.md) | Enterprise applicability, integrations, and scoring criteria |
+| [Presentation](docs/06-ppt.md) | Challenge presentation and demo narrative |
+| [User Guide](docs/07-user-guide.md) | Step-by-step walkthrough from requirements to deployment |
+| [Customer Validation](docs/09-customer-validation.md) | Real enterprise pain points and customer feedback |
+| [Product Feedback](docs/10-product-feedback.md) | GitHub Copilot SDK feedback and improvement suggestions |
+
 
 ## Solution Design
 

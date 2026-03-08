@@ -8,6 +8,8 @@ The solution automates infrastructure provisioning, Fabric configuration, and ar
 
 Faster delivery, lower setup effort, fewer manual errors, and more consistent outcomes across teams. What makes this especially valuable for Fabric is its ability to unify development and deployment in one repeatable workflow, helping enterprises accelerate Fabric adoption with confidence, governance, and production-ready discipline.
 
+[Watch the demo](https://www.youtube.com/watch?v=h2dbyhMQORI)
+
 ![Solution Design](docs/res/solution-design.png)
 
 ---
@@ -32,8 +34,6 @@ Faster delivery, lower setup effort, fewer manual errors, and more consistent ou
 ## Why It Matters
 
 Data engineering teams working with Microsoft Fabric face a fragmented delivery process spanning three disconnected worlds: **Azure infrastructure**, **Fabric workspace administration**, and **artifact deployment**. Each requires different tools, different auth models, and different skill sets. The result is slow onboarding, inconsistent environments, and deployments that are hard to reproduce.
-
-This app eliminates that friction entirely.
 
 ---
 
@@ -70,6 +70,7 @@ Describe your Fabric environment in natural language. The agent generates, provi
 Built on **GitHub Copilot SDK** as the AI backbone, integrated with the full Microsoft Platform:
 
 `React` · `TypeScript` · `Node.js` · `GitHub Copilot SDK` · `Microsoft Fabric API` · `Work IQ MCP` · `Bicep` · `Azure App Service` · `Azure Static Web App` · `Entra ID` · `Key Vault` · `App Insights` · `fabric-cicd` · `GitHub Actions`
+
 
 ---
 
