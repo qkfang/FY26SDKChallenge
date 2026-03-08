@@ -1,6 +1,6 @@
 # Fabric Automation Agent App
 
-> **Agent-driven automation that turns Microsoft Fabric delivery from a multi-tool manual process into a centralised end-to-end development & deployment workflow across environements**
+> **Agent-driven automation that turns Microsoft Fabric delivery from a multi-tool manual process into a centralised end-to-end development & deployment workflow across environments with work context**
 
 Fabric Automation Agent App accelerates how organisations adopt and scale Microsoft Fabric by turning a complex, manual delivery process into a fast, guided, agent-assisted experience. Instead of spending hours provisioning Azure resources, configuring Fabric workspaces, creating analytics artifacts, and managing deployments across disconnected tools, data engineering team can use a single agent-driven interface to deliver data solution end to end across environments.
 
