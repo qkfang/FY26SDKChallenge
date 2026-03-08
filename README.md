@@ -26,6 +26,7 @@ Faster delivery, lower setup effort, fewer manual errors, and more consistent ou
 | [Solution Highlights](docs/05-highlight.md) | Enterprise applicability, integrations, and scoring criteria |
 | [Presentation](docs/06-ppt.md) | Challenge presentation and demo narrative |
 | [User Guide](docs/07-user-guide.md) | Step-by-step walkthrough from requirements to deployment |
+| [Screenshots](docs/08-screenshot.md) | Step-by-step screenshots of the solution |
 | [Customer Validation](docs/09-customer-validation.md) | Real enterprise pain points and customer feedback |
 | [Product Feedback](docs/10-product-feedback.md) | GitHub Copilot SDK feedback and improvement suggestions |
 
